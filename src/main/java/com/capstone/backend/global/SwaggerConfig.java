@@ -18,6 +18,7 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .servers(List.of(
+                        new Server().url("https://capstone-backend.o-r.kr").description("Production Server"),
                         new Server().url("http://localhost:8080").description("Local Server")
                 ))
                 .components(components())

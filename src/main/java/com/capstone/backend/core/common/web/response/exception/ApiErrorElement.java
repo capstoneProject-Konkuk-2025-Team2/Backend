@@ -8,4 +8,8 @@ public record ApiErrorElement(
         ApiErrorCode code,
         ApiErrorMessage message,
         Object data
-) {}
+) {
+    public static ApiErrorElement of(String appId, ExtendedHttpStatus status, ApiErrorCode code, ApiErrorMessage message) {
+        return new ApiErrorElement(appId, status, code, message, null);
+    }
+}

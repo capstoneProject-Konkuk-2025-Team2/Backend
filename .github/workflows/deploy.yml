@@ -34,11 +34,13 @@ jobs:
       - name: YML 파일 세팅
         env:
           APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
+          ERROR_MESSAGES_PROPERTIES: ${{ secrets.ERROR_MESSAGES_PROPERTIES }}
         run: |
           cd ./src
           rm -rf main/resources/application.yml
           mkdir -p main/resources
           echo "$APPLICATION_PROPERTIES" > main/resources/application.yml
+          echo "$ERROR_MESSAGES_PROPERTIES" > main/resources/api-error-messages.properties
 
       - name: gradlew 권한 부여
         run: chmod +x gradlew

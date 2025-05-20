@@ -1,4 +1,4 @@
-package com.capstone.backend.global;
+package com.capstone.backend.core.configuration;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

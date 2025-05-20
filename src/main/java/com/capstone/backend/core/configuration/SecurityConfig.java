@@ -1,4 +1,4 @@
-package com.capstone.backend.global;
+package com.capstone.backend.core.configuration;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;

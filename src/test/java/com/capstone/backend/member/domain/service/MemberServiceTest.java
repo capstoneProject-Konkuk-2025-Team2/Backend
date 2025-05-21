@@ -50,7 +50,7 @@ class MemberServiceTest {
                 .build();
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         // when
-        Member result = memberService.getById(memberId);
+        memberService.findById(memberId);
 
         //then
         verify(memberRepository).findById(memberId);

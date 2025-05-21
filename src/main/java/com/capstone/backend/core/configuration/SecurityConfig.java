@@ -24,6 +24,7 @@ public class SecurityConfig {
             "/",
             "/swagger-ui/**",
             "/v3/api-docs/**",
+            "/v1/member/auth-mail"
     };
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

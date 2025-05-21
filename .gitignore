@@ -39,6 +39,8 @@ out/
 ### yml ###
 src/main/resources/application.yml
 src/main/resources/application-local.yml
+src/test/resources/application.yml
 
 ###properties###
 src/main/resources/api-error-messages.properties
+src/test/resources/api-error-messages.properties

@@ -35,12 +35,16 @@ jobs:
         env:
           APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
           ERROR_MESSAGES_PROPERTIES: ${{ secrets.ERROR_MESSAGES_PROPERTIES }}
+          TEST_APPLICATION_PROPERTIES: ${{ secrets.TEST_APPLICATION_PROPERTIES }}
+
         run: |
           cd ./src
           rm -rf main/resources/application.yml
           mkdir -p main/resources
+          mkdir -p test/resources
           echo "$APPLICATION_PROPERTIES" > main/resources/application.yml
           echo "$ERROR_MESSAGES_PROPERTIES" > main/resources/api-error-messages.properties
+          echo "$TEST_APPLICATION_PROPERTIES" > test/resources/application.yml
 
       - name: gradlew 권한 부여
         run: chmod +x gradlew

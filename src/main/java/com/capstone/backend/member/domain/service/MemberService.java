@@ -32,7 +32,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public void isAlreadyPresentMemberEmail(String email) {
         if(findByEmail(email).isPresent()) {
-            throw new CustomException("capstone.member.not.found");
+            throw new CustomException("capstone.member.already.exists");
         }
     }
 

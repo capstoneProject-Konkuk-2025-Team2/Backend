@@ -1,7 +1,6 @@
 package com.capstone.backend.member.domain.entity;
 
 import com.capstone.backend.global.entity.BaseEntity;
-import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.value.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

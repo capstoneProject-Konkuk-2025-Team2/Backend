@@ -1,8 +1,12 @@
 package com.capstone.backend.member.domain.entity;
 
 import com.capstone.backend.global.entity.BaseEntity;
+import com.capstone.backend.member.domain.service.MemberService;
+import com.capstone.backend.member.domain.value.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,4 +35,14 @@ public class Member extends BaseEntity {
     @Column(name = "PASSWORD", length = 100)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ROLE")
+    private Role role;
+
+    public static Member createTemporaryMember(String email) {
+        return Member.builder()
+                .email(email)
+                .role(Role.TEMPORARY_MEMBER)
+                .build();
+    }
 }

@@ -35,4 +35,9 @@ public class MemberService {
             throw new CustomException("capstone.member.not.found");
         }
     }
+
+    @Transactional
+    public void save(Member member){
+        memberRepository.save(member);
+    }
 }

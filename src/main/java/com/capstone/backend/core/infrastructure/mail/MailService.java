@@ -107,6 +107,11 @@ public class MailService {
     public Boolean verifyCode(String email, String authCode) {
         memberService.isAlreadyPresentMemberEmail(email);
 
+        if(!redisTemplate.hasKey(AUTH_CODE_PREFIX + email)){
+            log.warn("이메일 인증 실패: email={}, 입력 코드={}", email, authCode);
+            return false;
+        }
+
         String redisAuthCode = redisTemplate.opsForValue().get(AUTH_CODE_PREFIX + email).toString();
 
         if (redisAuthCode == null || !redisAuthCode.equals(authCode)) {

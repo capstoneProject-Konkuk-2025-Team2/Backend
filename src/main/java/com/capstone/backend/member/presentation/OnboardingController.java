@@ -6,9 +6,9 @@ import com.capstone.backend.member.dto.request.VerifyAuthCodeRequest;
 import com.capstone.backend.member.facade.OnboardingFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -34,8 +34,9 @@ public class OnboardingController {
     @PostMapping(ApiPath.VERIFY_AUTH_CODE)
     @Operation(summary = "메일 인증 번호 확인", description = "sendAuthMail")
     public ApiResponse<Boolean> verifyAuthCode(
-            @RequestBody VerifyAuthCodeRequest verifyAuthCodeRequest
+            @RequestBody VerifyAuthCodeRequest verifyAuthCodeRequest,
+            HttpServletResponse response
     ) {
-        return ApiResponse.success(onboardingFacade.verifyAuthCode(verifyAuthCodeRequest));
+        return ApiResponse.success(onboardingFacade.verifyAuthCode(verifyAuthCodeRequest, response));
     }
 }

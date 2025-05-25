@@ -1,0 +1,33 @@
+package com.capstone.backend.member.presentation;
+
+import com.capstone.backend.core.auth.dto.CustomUserDetails;
+import com.capstone.backend.core.common.web.response.ApiResponse;
+import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
+import com.capstone.backend.member.facade.SetMemberInfoFacade;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+@Tag(name = "내 정보 설정 컨트롤러", description = "SetMemberInfoController")
+public class SetMemberInfoController {
+    private final SetMemberInfoFacade setMemberInfoFacade;
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(ApiPath.MAKE_TIMETABLE)
+    @Operation(summary = "시간표 만들기", description = "makeMemberTimetable")
+    public ApiResponse<Boolean> makeTimetable(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody List<MakeMemberTimetableRequest> makeMemberTimetableRequestList
+    ){
+        return ApiResponse.success(setMemberInfoFacade.makeTimetable(customUserDetails, makeMemberTimetableRequestList));
+    }
+}

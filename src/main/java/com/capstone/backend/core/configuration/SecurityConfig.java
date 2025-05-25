@@ -51,7 +51,7 @@ public class SecurityConfig {
     };
 
     private final String[] requireMemberRole = {
-            "/v1/member/time-table"
+            "/v1/member/timetable"
     };
 
     @Bean

@@ -1,7 +1,5 @@
 package com.capstone.backend.core.configuration;
 
-import static com.capstone.backend.member.domain.value.Role.TEMPORARY_MEMBER;
-
 import com.capstone.backend.core.auth.exception.CustomAccessDeniedHandler;
 import com.capstone.backend.core.auth.exception.CustomAuthenticationEntryPoint;
 import com.capstone.backend.core.auth.jwt.JWTFilter;

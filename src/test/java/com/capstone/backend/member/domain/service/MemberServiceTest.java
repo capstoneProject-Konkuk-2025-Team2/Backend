@@ -1,8 +1,7 @@
 package com.capstone.backend.member.domain.service;
 
-import static com.capstone.backend.member.domain.value.Role.MEMBER;
+import static com.capstone.backend.member.domain.value.Role.ROLE_MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.useDefaultDateFormatsOnly;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -141,7 +140,7 @@ class MemberServiceTest {
                 .id(memberId)
                 .email(email)
                 .build();
-        Role updateRole = MEMBER;
+        Role updateRole = ROLE_MEMBER;
         when(memberRepository.findById(memberId)).thenReturn(Optional.ofNullable(member));
         //when
         memberService.updateRole(memberId, updateRole);

@@ -1,6 +1,6 @@
 package com.capstone.backend.member.domain.entity;
 
-import static com.capstone.backend.member.domain.value.Role.TEMPORARY_MEMBER;
+import static com.capstone.backend.member.domain.value.Role.ROLE_TEMPORARY_MEMBER;
 
 import com.capstone.backend.global.entity.BaseEntity;
 import com.capstone.backend.member.domain.value.Role;
@@ -43,7 +43,7 @@ public class Member extends BaseEntity {
     public static Member createTemporaryMember(String email) {
         return Member.builder()
                 .email(email)
-                .role(TEMPORARY_MEMBER)
+                .role(ROLE_TEMPORARY_MEMBER)
                 .build();
     }
 

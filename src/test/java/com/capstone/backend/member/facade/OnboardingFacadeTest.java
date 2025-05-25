@@ -1,7 +1,7 @@
 package com.capstone.backend.member.facade;
 
 import static com.capstone.backend.core.auth.jwt.value.TokenInfo.ACCESS_TOKEN;
-import static com.capstone.backend.member.domain.value.Role.MEMBER;
+import static com.capstone.backend.member.domain.value.Role.ROLE_MEMBER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -52,7 +52,7 @@ class OnboardingFacadeTest {
     @BeforeEach
     void setUp() {
         String email = "test@test.com";
-        Role role = Role.TEMPORARY_MEMBER;
+        Role role = Role.ROLE_TEMPORARY_MEMBER;
         member = Member.builder()
                 .id(1L)
                 .email(email)
@@ -101,8 +101,8 @@ class OnboardingFacadeTest {
         when(customUserDetails.getUsername()).thenReturn(member.getEmail());
         when(memberService.getByEmail(member.getEmail())).thenReturn(member);
         doNothing().when(memberService).updatePassword(member.getId(), password);
-        doNothing().when(memberService).updateRole(member.getId(), MEMBER);
-        when(jwtUtil.createJwt(ACCESS_TOKEN.category(), member.getEmail(), MEMBER.name(), ACCESS_TOKEN.expireMs()))
+        doNothing().when(memberService).updateRole(member.getId(), ROLE_MEMBER);
+        when(jwtUtil.createJwt(ACCESS_TOKEN.category(), member.getEmail(), ROLE_MEMBER.name(), ACCESS_TOKEN.expireMs()))
                 .thenReturn(accessToken);
         doNothing().when(httpServletResponse).setCharacterEncoding(headerEncoding);
         doNothing().when(httpServletResponse).setContentType(headerContentType);
@@ -112,8 +112,8 @@ class OnboardingFacadeTest {
         //then
         verify(memberService).getByEmail(member.getEmail());
         verify(memberService).updatePassword(member.getId(), setPasswordRequest.password());
-        verify(memberService).updateRole(member.getId(), MEMBER);
-        verify(jwtUtil).createJwt(ACCESS_TOKEN.category(), member.getEmail(), MEMBER.name(), ACCESS_TOKEN.expireMs());
+        verify(memberService).updateRole(member.getId(), ROLE_MEMBER);
+        verify(jwtUtil).createJwt(ACCESS_TOKEN.category(), member.getEmail(), ROLE_MEMBER.name(), ACCESS_TOKEN.expireMs());
         verify(httpServletResponse).setCharacterEncoding(headerEncoding);
         verify(httpServletResponse).setContentType(headerContentType);
         verify(httpServletResponse).setHeader(ACCESS_TOKEN.category(), accessToken);

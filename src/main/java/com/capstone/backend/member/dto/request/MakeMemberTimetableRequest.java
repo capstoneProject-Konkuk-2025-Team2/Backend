@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalTime;
 
 public record MakeMemberTimetableRequest(
-        @Schema(description = "요일", example = "MON / TUE / WEN / THU / FRI / SAT / SUN")
+        @Schema(description = "요일", example = "MON / TUE / WED / THU / FRI / SAT / SUN")
         Day day,
         @Schema(description = "시작시간", example = "09:00:00.000000")
         LocalTime startTime,

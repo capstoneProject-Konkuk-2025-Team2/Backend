@@ -1,11 +1,15 @@
 package com.capstone.backend.member.domain.service;
 
+import static com.capstone.backend.member.domain.value.Role.MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.useDefaultDateFormatsOnly;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.repository.MemberRepository;
+import com.capstone.backend.member.domain.value.Role;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,11 +17,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @InjectMocks
     private MemberService memberService;
@@ -100,5 +108,44 @@ class MemberServiceTest {
         memberService.save(member);
         //then
         verify(memberRepository).save(member);
+    }
+
+    @DisplayName("updatePassword - 성공")
+    @Test
+    void updatePassword_success() {
+        //given
+        Long memberId = 1L;
+        String email = "abc@def.com";
+        Member member = Member.builder()
+                .id(memberId)
+                .email(email)
+                .build();
+        String updatePassword = "password";
+        String encodedPassword = "encodedPassword";
+        when(bCryptPasswordEncoder.encode(updatePassword)).thenReturn(encodedPassword);
+        when(memberRepository.findById(memberId)).thenReturn(Optional.ofNullable(member));
+        //when
+        memberService.updatePassword(memberId, updatePassword);
+        //then
+        verify(bCryptPasswordEncoder).encode(updatePassword);
+        assertEquals(encodedPassword, member.getPassword());
+    }
+
+    @DisplayName("updateRole - 성공")
+    @Test
+    void updateRole_success() {
+        //given
+        Long memberId = 1L;
+        String email = "abc@def.com";
+        Member member = Member.builder()
+                .id(memberId)
+                .email(email)
+                .build();
+        Role updateRole = MEMBER;
+        when(memberRepository.findById(memberId)).thenReturn(Optional.ofNullable(member));
+        //when
+        memberService.updateRole(memberId, updateRole);
+        //then
+        assertEquals(updateRole, member.getRole());
     }
 }

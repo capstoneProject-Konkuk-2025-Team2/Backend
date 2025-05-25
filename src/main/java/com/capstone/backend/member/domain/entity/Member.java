@@ -1,5 +1,7 @@
 package com.capstone.backend.member.domain.entity;
 
+import static com.capstone.backend.member.domain.value.Role.TEMPORARY_MEMBER;
+
 import com.capstone.backend.global.entity.BaseEntity;
 import com.capstone.backend.member.domain.value.Role;
 import jakarta.persistence.Column;
@@ -41,7 +43,15 @@ public class Member extends BaseEntity {
     public static Member createTemporaryMember(String email) {
         return Member.builder()
                 .email(email)
-                .role(Role.TEMPORARY_MEMBER)
+                .role(TEMPORARY_MEMBER)
                 .build();
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updateRole(Role role) {
+        this.role = role;
     }
 }

@@ -3,7 +3,7 @@ package com.capstone.backend.member.facade;
 
 import static com.capstone.backend.member.domain.value.Day.MON;
 import static com.capstone.backend.member.domain.value.Day.TUE;
-import static com.capstone.backend.member.domain.value.Day.WEN;
+import static com.capstone.backend.member.domain.value.Day.WED;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.member.domain.entity.Member;
-import com.capstone.backend.member.domain.entity.Timetable;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.domain.value.Role;
@@ -73,7 +72,7 @@ class SetMemberInfoFacadeTest {
                         "#f6f6f6"
                 ),
                 new MakeMemberTimetableRequest(
-                        WEN,
+                        WED,
                         LocalTime.of(11,0,0,0),
                         LocalTime.of(13,0,0,0),
                         "test1",

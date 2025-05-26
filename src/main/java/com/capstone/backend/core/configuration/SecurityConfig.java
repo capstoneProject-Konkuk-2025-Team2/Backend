@@ -86,7 +86,8 @@ public class SecurityConfig {
                         CorsConfiguration configuration = new CorsConfiguration();
                         configuration.setAllowedOrigins(List.of(
                                 "http://localhost:5173",
-                                "http://localhost:3000"
+                                "http://localhost:3000",
+                                "https://capstone-backend.o-r.kr"
                         ));
                         configuration.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
                         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Access-Control-Allow-Origin"));

@@ -31,6 +31,7 @@ public class SetMemberInfoFacade {
         return true;
     }
 
+    @Transactional
     public Boolean createInterestInfo(CustomUserDetails customUserDetails, List<CreateInterestRequest> createInterestInfoRequestList) {
         Member member = memberService.getByEmail(customUserDetails.getUsername());
         List<Interest> interestList = createInterestInfoRequestList.stream()

@@ -24,14 +24,14 @@ public class InterestServiceTest {
     @Test
     void saveAll_success() {
         //given
-        List<Interest> timetableList = List.of(
+        List<Interest> interestList = List.of(
                 Interest.builder().id(1L).build(),
                 Interest.builder().id(2L).build(),
                 Interest.builder().id(3L).build()
         );
         //when
-        interestService.saveAll(timetableList);
+        interestService.saveAll(interestList);
         //then
-        verify(interestRepository).saveAll(timetableList);
+        verify(interestRepository).saveAll(interestList);
     }
 }

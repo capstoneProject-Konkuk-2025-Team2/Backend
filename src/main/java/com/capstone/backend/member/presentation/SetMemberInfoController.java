@@ -2,6 +2,7 @@ package com.capstone.backend.member.presentation;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.core.common.web.response.ApiResponse;
+import com.capstone.backend.member.dto.request.CreateInterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import com.capstone.backend.member.facade.SetMemberInfoFacade;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,5 +30,15 @@ public class SetMemberInfoController {
             @RequestBody List<MakeMemberTimetableRequest> makeMemberTimetableRequestList
     ){
         return ApiResponse.success(setMemberInfoFacade.makeTimetable(customUserDetails, makeMemberTimetableRequestList));
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(ApiPath.SETTING_INTEREST)
+    @Operation(summary = "관심사항 입력받기", description = "createInterestInfo")
+    public ApiResponse<Boolean> createInterestInfo(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody List<CreateInterestRequest> createInterestInfoRequestList
+    ){
+        return ApiResponse.success(setMemberInfoFacade.createInterestInfo(customUserDetails, createInterestInfoRequestList));
     }
 }

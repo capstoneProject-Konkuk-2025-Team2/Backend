@@ -11,9 +11,11 @@ import static org.mockito.Mockito.when;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.member.domain.entity.Member;
+import com.capstone.backend.member.domain.service.InterestService;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.domain.value.Role;
+import com.capstone.backend.member.dto.request.CreateInterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import java.time.LocalTime;
 import java.util.List;
@@ -32,6 +34,8 @@ class SetMemberInfoFacadeTest {
     private MemberService memberService;
     @Mock
     private TimetableService timetableService;
+    @Mock
+    private InterestService interestService;
 
     @InjectMocks
     private SetMemberInfoFacade setMemberInfoFacade;
@@ -88,5 +92,30 @@ class SetMemberInfoFacadeTest {
         //then
         verify(memberService).getByEmail(customUserDetails.getUsername());
         verify(timetableService).saveAll(anyList());
+    }
+
+    @DisplayName("관심사항 입력받기 테스트")
+    @Test
+    void createInterestInfo(){
+        //given
+        List<CreateInterestRequest> createInterestRequestList = List.of(
+                new CreateInterestRequest(
+                        "관심사항1"
+                ),
+                new CreateInterestRequest(
+                        "관심사항2"
+                ),
+                new CreateInterestRequest(
+                        "관심사항3"
+                )
+        );
+        when(customUserDetails.getUsername()).thenReturn(member.getEmail());
+        when(memberService.getByEmail(member.getEmail())).thenReturn(member);
+        doNothing().when(interestService).saveAll(anyList());
+        //when
+        setMemberInfoFacade.createInterestInfo(customUserDetails, createInterestRequestList);
+        //then
+        verify(memberService).getByEmail(customUserDetails.getUsername());
+        verify(interestService).saveAll(anyList());
     }
 }

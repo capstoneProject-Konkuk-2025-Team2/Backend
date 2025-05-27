@@ -1,6 +1,7 @@
 package com.capstone.backend.member.facade;
 
 
+import static com.capstone.backend.member.domain.value.AcademicStatus.ENROLLED;
 import static com.capstone.backend.member.domain.value.Day.MON;
 import static com.capstone.backend.member.domain.value.Day.TUE;
 import static com.capstone.backend.member.domain.value.Day.WED;
@@ -15,6 +16,7 @@ import com.capstone.backend.member.domain.service.InterestService;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.domain.value.Role;
+import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
 import com.capstone.backend.member.dto.request.CreateInterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import java.time.LocalTime;
@@ -52,6 +54,8 @@ class SetMemberInfoFacadeTest {
                 .role(role)
                 .build();
         customUserDetails = Mockito.mock(CustomUserDetails.class);
+        when(customUserDetails.getUsername()).thenReturn(member.getEmail());
+        when(memberService.getByEmail(member.getEmail())).thenReturn(member);
     }
 
     @DisplayName("시간표 만들기 테스트")
@@ -84,8 +88,6 @@ class SetMemberInfoFacadeTest {
                         "#f6f6f6"
                 )
         );
-        when(customUserDetails.getUsername()).thenReturn(member.getEmail());
-        when(memberService.getByEmail(member.getEmail())).thenReturn(member);
         doNothing().when(timetableService).saveAll(anyList());
         //when
         setMemberInfoFacade.makeTimetable(customUserDetails, makeMemberTimetableRequestList);
@@ -109,13 +111,29 @@ class SetMemberInfoFacadeTest {
                         "관심사항3"
                 )
         );
-        when(customUserDetails.getUsername()).thenReturn(member.getEmail());
-        when(memberService.getByEmail(member.getEmail())).thenReturn(member);
         doNothing().when(interestService).saveAll(anyList());
         //when
         setMemberInfoFacade.createInterestInfo(customUserDetails, createInterestRequestList);
         //then
         verify(memberService).getByEmail(customUserDetails.getUsername());
         verify(interestService).saveAll(anyList());
+    }
+
+    @DisplayName("학적 정보 입력받기 테스트")
+    @Test
+    void createAcademicInfo() {
+        //given
+        CreateAcademicInfoRequest createAcademicInfoRequest = new CreateAcademicInfoRequest(
+                ENROLLED,
+                4L,
+                "공과대학",
+                "컴퓨터공학부"
+        );
+        doNothing().when(memberService).updateAcademicInfo(member.getId(), createAcademicInfoRequest);
+        //when
+        setMemberInfoFacade.createAcademicInfo(customUserDetails, createAcademicInfoRequest);
+        //then
+        verify(memberService).getByEmail(customUserDetails.getUsername());
+        verify(memberService).updateAcademicInfo(member.getId(), createAcademicInfoRequest);
     }
 }

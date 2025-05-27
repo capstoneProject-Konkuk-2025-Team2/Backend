@@ -7,6 +7,7 @@ import com.capstone.backend.member.domain.entity.Timetable;
 import com.capstone.backend.member.domain.service.InterestService;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.TimetableService;
+import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
 import com.capstone.backend.member.dto.request.CreateInterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import java.util.List;
@@ -38,6 +39,13 @@ public class SetMemberInfoFacade {
                 .map(req -> Interest.createInterest(member.getId(), req.interestContent()))
                 .toList();
         interestService.saveAll(interestList);
+        return true;
+    }
+
+    @Transactional
+    public Boolean createAcademicInfo(CustomUserDetails customUserDetails, CreateAcademicInfoRequest createAcademicInfoRequest) {
+        Member member = memberService.getByEmail(customUserDetails.getUsername());
+        memberService.updateAcademicInfo(member.getId(), createAcademicInfoRequest);
         return true;
     }
 }

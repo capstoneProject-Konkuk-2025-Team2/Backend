@@ -2,6 +2,7 @@ package com.capstone.backend.member.presentation;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.core.common.web.response.ApiResponse;
+import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
 import com.capstone.backend.member.dto.request.CreateInterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import com.capstone.backend.member.facade.SetMemberInfoFacade;
@@ -40,5 +41,15 @@ public class SetMemberInfoController {
             @RequestBody List<CreateInterestRequest> createInterestInfoRequestList
     ){
         return ApiResponse.success(setMemberInfoFacade.createInterestInfo(customUserDetails, createInterestInfoRequestList));
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(ApiPath.SETTING_ACADEMIC_INFO)
+    @Operation(summary = "학적정보 입력 받기", description = "createAcademicInfo")
+    public ApiResponse<Boolean> createAcademicInfo(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody CreateAcademicInfoRequest createAcademicInfoRequest
+    ) {
+        return ApiResponse.success(setMemberInfoFacade.createAcademicInfo(customUserDetails, createAcademicInfoRequest));
     }
 }

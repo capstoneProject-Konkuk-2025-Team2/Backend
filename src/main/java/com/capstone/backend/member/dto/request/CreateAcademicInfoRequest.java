@@ -9,7 +9,7 @@ public record CreateAcademicInfoRequest(
     @Schema(description = "학년", example = "1")
     Long grade,
     @Schema(description = "단과대학", example = "공과대학")
-    String collage,
+    String college,
     @Schema(description = "학과", example = "컴퓨터공학부")
     String department
 ) {

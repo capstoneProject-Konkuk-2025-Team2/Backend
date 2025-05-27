@@ -172,7 +172,7 @@ class MemberServiceTest {
         //then
         assertEquals(createAcademicInfoRequest.academicStatus(), member.getAcademicStatus());
         assertEquals(createAcademicInfoRequest.grade(), member.getGrade());
-        assertEquals(createAcademicInfoRequest.collage(), member.getCollage());
+        assertEquals(createAcademicInfoRequest.college(), member.getCollege());
         assertEquals(createAcademicInfoRequest.department(), member.getDepartment());
     }
 }

@@ -48,10 +48,10 @@ public class Member extends BaseEntity {
     @Column(name = "GRADE")
     private Long grade;
 
-    @Column(name = "COLLEAGE")
-    private String collage;
+    @Column(name = "COLLEGE", length = 30)
+    private String college;
 
-    @Column(name = "DEPARTMENT")
+    @Column(name = "DEPARTMENT", length = 30)
     private String department;
 
     public static Member createTemporaryMember(String email) {
@@ -72,12 +72,12 @@ public class Member extends BaseEntity {
     public void updateAcademicInfo(
             AcademicStatus academicStatus,
             Long grade,
-            String collage,
+            String college,
             String department
     ) {
         this.academicStatus = academicStatus;
         this.grade = grade;
-        this.collage = collage;
+        this.college = college;
         this.department = department;
     }
 }

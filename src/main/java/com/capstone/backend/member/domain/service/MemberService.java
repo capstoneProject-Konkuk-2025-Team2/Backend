@@ -72,7 +72,7 @@ public class MemberService {
         member.updateAcademicInfo(
                 createAcademicInfoRequest.academicStatus(),
                 createAcademicInfoRequest.grade(),
-                createAcademicInfoRequest.collage(),
+                createAcademicInfoRequest.college(),
                 createAcademicInfoRequest.department()
         );
     }

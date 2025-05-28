@@ -23,7 +23,7 @@ public class ChatbotService {
 
     public void register(ChatbotRegisterRequest chatbotRegisterRequest) {
         ResponseEntity<ExternalApiResponse> response = externalApiRequestService.post(
-                chatbotApiHost+ ChatbotApiPath.REGISTER , chatbotRegisterRequest, ExternalApiResponse.class
+                chatbotApiHost + ChatbotApiPath.REGISTER , chatbotRegisterRequest, ExternalApiResponse.class
         );
         log.info(response.getBody().message());
         if(response.getBody().code() != 200) {

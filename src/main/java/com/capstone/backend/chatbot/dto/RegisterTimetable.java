@@ -12,8 +12,8 @@ public record RegisterTimetable(
     ) {
         return new RegisterTimetable(
                 timetable.getDay().getKorean(),
-                timetable.getStartTime().toString(),
-                timetable.getEndTime().toString()
+                timetable.getStringStartTime(),
+                timetable.getStringEndTime()
         );
     }
 }

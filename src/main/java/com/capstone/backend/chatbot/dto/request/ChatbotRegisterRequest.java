@@ -14,7 +14,7 @@ public record ChatbotRegisterRequest (
 ) {
     public static ChatbotRegisterRequest of(
             Member member,
-            List<String> interest,
+            List<String> interests,
             List<RegisterTimetable> timetable
     ) {
         return new ChatbotRegisterRequest(
@@ -22,7 +22,7 @@ public record ChatbotRegisterRequest (
                 member.getName(),
                 member.getDepartment(),
                 member.getStringGrade(),
-                interest,
+                interests,
                 timetable
         );
     }

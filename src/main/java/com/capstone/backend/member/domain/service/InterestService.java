@@ -16,4 +16,9 @@ public class InterestService {
     public void saveAll(List<Interest> interestList) {
         interestRepository.saveAll(interestList);
     }
+
+    @Transactional(readOnly = true)
+    public List<Interest> findAllByMemberId(Long memberId) {
+        return interestRepository.findAllByMemberId(memberId);
+    }
 }

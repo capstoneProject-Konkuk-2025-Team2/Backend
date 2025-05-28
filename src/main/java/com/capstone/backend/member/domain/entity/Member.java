@@ -31,6 +31,9 @@ public class Member extends BaseEntity {
     @Column(name = "MEMBER_ID")
     private Long id;
 
+    @Column(name = "NAME", length = 30)
+    private String name;
+
     @Column(name = "EMAIL", length = 30)
     private String email;
 
@@ -79,5 +82,9 @@ public class Member extends BaseEntity {
         this.grade = grade;
         this.college = college;
         this.department = department;
+    }
+
+    public String getStringGrade(){
+        return this.grade.toString() + "학년";
     }
 }

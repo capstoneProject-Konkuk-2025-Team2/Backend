@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -62,5 +63,17 @@ public class Timetable extends BaseEntity {
                 .eventDetail(makeMemberTimetableRequest.eventDetail())
                 .color(makeMemberTimetableRequest.color())
                 .build();
+    }
+
+    public String getStringStartTime() {
+        return formatTime(this.startTime);
+    }
+
+    public String getStringEndTime() {
+        return formatTime(this.endTime);
+    }
+
+    private static String formatTime(LocalTime time) {
+        return time != null ? time.format(DateTimeFormatter.ofPattern("HH:mm")) : "";
     }
 }

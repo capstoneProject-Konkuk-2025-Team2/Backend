@@ -17,4 +17,9 @@ public class TimetableService {
         timetableRepository.saveAll(timetableList);
     }
 
+    @Transactional(readOnly = true)
+    public List<Timetable> findAllByMemberId(Long memberId) {
+        return timetableRepository.findByMemberId(memberId);
+    }
+
 }

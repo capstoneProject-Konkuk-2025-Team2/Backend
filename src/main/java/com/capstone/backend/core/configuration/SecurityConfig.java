@@ -50,11 +50,6 @@ public class SecurityConfig {
             "/v1/member/password"
     };
 
-    private final String[] requireMemberRole = {
-            "/v1/member/timetable",
-            "/v1/member/interest"
-    };
-
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();
@@ -104,8 +99,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers(allowedUrls).permitAll()
                 .requestMatchers(requireTemporaryMemberRole).hasRole("TEMPORARY_MEMBER")
-                .requestMatchers(requireMemberRole).hasRole("MEMBER")
-                .anyRequest().authenticated());
+                .anyRequest().hasRole("MEMBER"));
 
         http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 

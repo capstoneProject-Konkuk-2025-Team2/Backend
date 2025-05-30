@@ -164,7 +164,8 @@ class MemberServiceTest {
                 ENROLLED,
                 4L,
                 "공과대학",
-                "컴퓨터공학부"
+                "컴퓨터공학부",
+                "홍길동"
         );
         when(memberRepository.findById(memberId)).thenReturn(Optional.ofNullable(member));
         //when
@@ -174,5 +175,6 @@ class MemberServiceTest {
         assertEquals(createAcademicInfoRequest.grade(), member.getGrade());
         assertEquals(createAcademicInfoRequest.college(), member.getCollege());
         assertEquals(createAcademicInfoRequest.department(), member.getDepartment());
+        assertEquals(createAcademicInfoRequest.name(), member.getName());
     }
 }

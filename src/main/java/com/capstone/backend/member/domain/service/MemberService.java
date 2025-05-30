@@ -73,7 +73,8 @@ public class MemberService {
                 createAcademicInfoRequest.academicStatus(),
                 createAcademicInfoRequest.grade(),
                 createAcademicInfoRequest.college(),
-                createAcademicInfoRequest.department()
+                createAcademicInfoRequest.department(),
+                createAcademicInfoRequest.name()
         );
     }
 }

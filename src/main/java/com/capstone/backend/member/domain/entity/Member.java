@@ -76,12 +76,14 @@ public class Member extends BaseEntity {
             AcademicStatus academicStatus,
             Long grade,
             String college,
-            String department
+            String department,
+            String name
     ) {
         this.academicStatus = academicStatus;
         this.grade = grade;
         this.college = college;
         this.department = department;
+        this.name = name;
     }
 
     public String getStringGrade(){

@@ -127,7 +127,8 @@ class SetMemberInfoFacadeTest {
                 ENROLLED,
                 4L,
                 "공과대학",
-                "컴퓨터공학부"
+                "컴퓨터공학부",
+                "홍길동"
         );
         doNothing().when(memberService).updateAcademicInfo(member.getId(), createAcademicInfoRequest);
         //when

@@ -11,6 +11,8 @@ public record CreateAcademicInfoRequest(
     @Schema(description = "단과대학", example = "공과대학")
     String college,
     @Schema(description = "학과", example = "컴퓨터공학부")
-    String department
+    String department,
+    @Schema(description = "이름", example = "홍길동")
+    String name
 ) {
 }

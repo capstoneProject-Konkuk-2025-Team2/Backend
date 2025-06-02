@@ -82,7 +82,8 @@ public class SecurityConfig {
                         configuration.setAllowedOrigins(List.of(
                                 "http://localhost:5173",
                                 "http://localhost:3000",
-                                "https://capstone-backend.o-r.kr"
+                                "https://capstone-backend.o-r.kr",
+                                "https://real-vercel-ccsyjulrz-glyph8s-projects.vercel.app"
                         ));
                         configuration.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
                         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Access-Control-Allow-Origin"));

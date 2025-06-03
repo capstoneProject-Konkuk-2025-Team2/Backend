@@ -1,7 +1,11 @@
 package com.capstone.backend.chatbot.facade;
 
-import com.capstone.backend.chatbot.dto.request.ChatbotRegisterRequest;
-import com.capstone.backend.chatbot.dto.RegisterTimetable;
+import com.capstone.backend.chatbot.dto.chatbot.request.ChatbotQuestionRequest;
+import com.capstone.backend.chatbot.dto.chatbot.request.ChatbotRegisterRequest;
+import com.capstone.backend.chatbot.dto.chatbot.RegisterTimetable;
+import com.capstone.backend.chatbot.dto.chatbot.response.ChatbotQuestionResponse;
+import com.capstone.backend.chatbot.dto.our.request.QuestionToChatServerRequest;
+import com.capstone.backend.chatbot.dto.our.response.QuestionToChatServerResponse;
 import com.capstone.backend.chatbot.service.ChatbotService;
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.member.domain.entity.Interest;
@@ -39,5 +43,14 @@ public class ChatbotFacade {
         );
         chatbotService.register(chatbotRegisterRequest);
         return true;
+    }
+
+    public QuestionToChatServerResponse questionToChatServer(CustomUserDetails customUserDetails, QuestionToChatServerRequest questionToChatServerRequest) {
+        Member member = memberService.getByEmail(customUserDetails.getUsername());
+        ChatbotQuestionRequest chatbotQuestionRequest = ChatbotQuestionRequest.of(
+                member,
+                questionToChatServerRequest.question()
+        );
+        return chatbotService.question(chatbotQuestionRequest);
     }
 }

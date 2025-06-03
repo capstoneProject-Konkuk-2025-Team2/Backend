@@ -1,6 +1,6 @@
-package com.capstone.backend.chatbot.dto.request;
+package com.capstone.backend.chatbot.dto.chatbot.request;
 
-import com.capstone.backend.chatbot.dto.RegisterTimetable;
+import com.capstone.backend.chatbot.dto.chatbot.RegisterTimetable;
 import com.capstone.backend.member.domain.entity.Member;
 import java.util.List;
 

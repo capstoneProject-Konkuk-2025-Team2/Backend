@@ -1,4 +1,4 @@
-package com.capstone.backend.chatbot.dto.response;
+package com.capstone.backend.chatbot.dto.chatbot.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

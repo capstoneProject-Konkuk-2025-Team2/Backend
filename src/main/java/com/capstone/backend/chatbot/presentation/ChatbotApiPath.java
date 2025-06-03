@@ -6,4 +6,5 @@ public final class ChatbotApiPath {
     }
 
     public static final String REGISTER = "register";
+    public static final String CHAT = "chat";
 }

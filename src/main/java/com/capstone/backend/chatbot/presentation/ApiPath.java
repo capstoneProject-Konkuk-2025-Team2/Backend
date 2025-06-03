@@ -6,4 +6,5 @@ public final class ApiPath {
     }
 
     public static final String CHAT_REGISTER = "/v1/chat/registration";
+    public static final String CHAT_REQUEST = "/v1/chat";
 }

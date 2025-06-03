@@ -1,6 +1,9 @@
 package com.capstone.backend.chatbot.service;
 
-import com.capstone.backend.chatbot.dto.request.ChatbotRegisterRequest;
+import com.capstone.backend.chatbot.dto.chatbot.request.ChatbotQuestionRequest;
+import com.capstone.backend.chatbot.dto.chatbot.request.ChatbotRegisterRequest;
+import com.capstone.backend.chatbot.dto.chatbot.response.ChatbotQuestionResponse;
+import com.capstone.backend.chatbot.dto.our.response.QuestionToChatServerResponse;
 import com.capstone.backend.chatbot.presentation.ChatbotApiPath;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.core.infrastructure.externalAPI.dto.ExternalApiResponse;
@@ -29,5 +32,16 @@ public class ChatbotService {
         if(response.getBody().code() != 200) {
             throw new CustomException(response.getBody().message());
         }
+    }
+
+    public QuestionToChatServerResponse question(ChatbotQuestionRequest chatbotQuestionRequest) {
+        ResponseEntity<ExternalApiResponse> response = externalApiRequestService.post(
+                chatbotApiHost + ChatbotApiPath.CHAT, chatbotQuestionRequest, ExternalApiResponse.class
+        );
+        log.info(response.getBody().message());
+        if(response.getBody().code() != 200) {
+            throw new CustomException(response.getBody().message());
+        }
+        return QuestionToChatServerResponse.of(response.getBody().data());
     }
 }

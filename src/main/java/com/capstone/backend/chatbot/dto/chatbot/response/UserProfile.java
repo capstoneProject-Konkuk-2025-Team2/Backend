@@ -1,6 +1,6 @@
-package com.capstone.backend.chatbot.dto.response;
+package com.capstone.backend.chatbot.dto.chatbot.response;
 
-import com.capstone.backend.chatbot.dto.RegisterTimetable;
+import com.capstone.backend.chatbot.dto.chatbot.RegisterTimetable;
 import java.util.List;
 
 public record UserProfile(

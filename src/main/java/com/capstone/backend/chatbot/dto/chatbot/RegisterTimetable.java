@@ -1,4 +1,4 @@
-package com.capstone.backend.chatbot.dto;
+package com.capstone.backend.chatbot.dto.chatbot;
 
 import com.capstone.backend.member.domain.entity.Timetable;
 

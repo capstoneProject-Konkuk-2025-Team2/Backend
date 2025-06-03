@@ -19,8 +19,8 @@ public record Program(
 ) {
 
     private static Pair<Integer, Boolean> isSkip(String line, int index) {
-        for(int i=index+1; i<ProgramContentParser.parsingContentKeys.size(); i++) {
-            if(line.startsWith(ProgramContentParser.parsingContentKeys.get(i))){
+        for(int i=index+1; i<ProgramContentParser.PARSING_CONTENT_KEYS.size(); i++) {
+            if(line.startsWith(ProgramContentParser.PARSING_CONTENT_KEYS.get(i))){
                 return Pair.of(i-index, true);
             }
         }
@@ -36,7 +36,7 @@ public record Program(
                 continue;
             }
             line = line.trim();
-            String parsingKey = ProgramContentParser.parsingContentKeys.get(i);
+            String parsingKey = ProgramContentParser.PARSING_CONTENT_KEYS.get(i);
             if(line.startsWith(parsingKey)){
                 contents.add(line.substring(parsingKey.length()).trim());
             }
@@ -47,7 +47,7 @@ public record Program(
                         contents.add("");
                     }
                     i+=skipInfo.getLeft();
-                    contents.add(line.substring(ProgramContentParser.parsingContentKeys.get(i).length()).trim());
+                    contents.add(line.substring(ProgramContentParser.PARSING_CONTENT_KEYS.get(i).length()).trim());
                     i++;
                     continue;
                 }

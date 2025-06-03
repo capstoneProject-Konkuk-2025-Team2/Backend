@@ -3,7 +3,7 @@ package com.capstone.backend.chatbot.dto.our.parser;
 import java.util.List;
 
 public final class ProgramContentParser {
-    public static final List<String> parsingContentKeys = List.of(
+    public static final List<String> PARSING_CONTENT_KEYS = List.of(
             "제목:",
             "URL:",
             "신청기간:",

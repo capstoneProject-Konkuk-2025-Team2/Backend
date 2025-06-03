@@ -12,7 +12,7 @@ public record ChatbotQuestionResponse(
         @JsonProperty("answer")
         String answer,
         @JsonProperty("total_programs")
-        Long total_programs,
+        Long totalPrograms,
         @JsonProperty("recommended_programs")
         List<RecommendedProgram> recommendedPrograms
 ) {

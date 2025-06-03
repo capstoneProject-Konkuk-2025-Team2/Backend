@@ -25,7 +25,6 @@ public record QuestionToChatServerResponse(
                         for (JsonNode node : programArray) {
                                 String programText = node.get("text").asText("");
                                 Program program = Program.of(programText);  // 위에서 정의한 정적 팩토리 메서드
-                                System.out.println("god");
                                 recommendedPrograms.add(program);
                         }
                 }

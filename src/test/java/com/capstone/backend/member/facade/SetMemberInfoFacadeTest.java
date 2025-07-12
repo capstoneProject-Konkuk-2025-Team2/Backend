@@ -100,20 +100,12 @@ class SetMemberInfoFacadeTest {
     @Test
     void createInterestInfo(){
         //given
-        List<CreateInterestRequest> createInterestRequestList = List.of(
-                new CreateInterestRequest(
-                        "관심사항1"
-                ),
-                new CreateInterestRequest(
-                        "관심사항2"
-                ),
-                new CreateInterestRequest(
-                        "관심사항3"
-                )
+        CreateInterestRequest createInterestRequest = new CreateInterestRequest(
+                "AI, 프로그래밍, 경영"
         );
         doNothing().when(interestService).saveAll(anyList());
         //when
-        setMemberInfoFacade.createInterestInfo(customUserDetails, createInterestRequestList);
+        setMemberInfoFacade.createInterestInfo(customUserDetails, createInterestRequest.interestContent());
         //then
         verify(memberService).getByEmail(customUserDetails.getUsername());
         verify(interestService).saveAll(anyList());

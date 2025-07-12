@@ -8,8 +8,8 @@ import com.capstone.backend.member.domain.service.InterestService;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
-import com.capstone.backend.member.dto.request.CreateInterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -33,10 +33,10 @@ public class SetMemberInfoFacade {
     }
 
     @Transactional
-    public Boolean createInterestInfo(CustomUserDetails customUserDetails, List<CreateInterestRequest> createInterestInfoRequestList) {
+    public Boolean createInterestInfo(CustomUserDetails customUserDetails, String createInterestInfoRequest) {
         Member member = memberService.getByEmail(customUserDetails.getUsername());
-        List<Interest> interestList = createInterestInfoRequestList.stream()
-                .map(req -> Interest.createInterest(member.getId(), req.interestContent()))
+        List<Interest> interestList = Arrays.stream(createInterestInfoRequest.split(",")).toList().stream()
+                .map(req -> Interest.createInterest(member.getId(), req.trim()))
                 .toList();
         interestService.saveAll(interestList);
         return true;

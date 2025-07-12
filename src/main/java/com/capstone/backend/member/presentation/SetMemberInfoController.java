@@ -38,9 +38,9 @@ public class SetMemberInfoController {
     @Operation(summary = "관심사항 입력받기", description = "createInterestInfo")
     public ApiResponse<Boolean> createInterestInfo(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody List<CreateInterestRequest> createInterestInfoRequestList
+            @RequestBody CreateInterestRequest createInterestInfoRequest
     ){
-        return ApiResponse.success(setMemberInfoFacade.createInterestInfo(customUserDetails, createInterestInfoRequestList));
+        return ApiResponse.success(setMemberInfoFacade.createInterestInfo(customUserDetails, createInterestInfoRequest.interestContent()));
     }
 
     @ResponseStatus(HttpStatus.CREATED)

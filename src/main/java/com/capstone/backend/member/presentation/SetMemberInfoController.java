@@ -8,6 +8,7 @@ import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import com.capstone.backend.member.facade.SetMemberInfoFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,7 @@ public class SetMemberInfoController {
     @Operation(summary = "관심사항 입력받기", description = "createInterestInfo")
     public ApiResponse<Boolean> createInterestInfo(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody CreateInterestRequest createInterestInfoRequest
+            @RequestBody @Valid CreateInterestRequest createInterestInfoRequest
     ){
         return ApiResponse.success(setMemberInfoFacade.createInterestInfo(customUserDetails, createInterestInfoRequest.interestContent()));
     }

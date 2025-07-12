@@ -35,8 +35,11 @@ public class SetMemberInfoFacade {
     @Transactional
     public Boolean createInterestInfo(CustomUserDetails customUserDetails, String createInterestInfoRequest) {
         Member member = memberService.getByEmail(customUserDetails.getUsername());
-        List<Interest> interestList = Arrays.stream(createInterestInfoRequest.split(",")).toList().stream()
-                .map(req -> Interest.createInterest(member.getId(), req.trim()))
+        List<Interest> interestList = Arrays.stream(createInterestInfoRequest.split(","))
+                .map(String::trim)
+                .filter(interest -> !interest.isEmpty())
+                .distinct()
+                .map(req -> Interest.createInterest(member.getId(), req))
                 .toList();
         interestService.saveAll(interestList);
         return true;

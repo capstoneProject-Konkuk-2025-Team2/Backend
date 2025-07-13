@@ -1,8 +1,6 @@
 package com.capstone.backend.member.facade;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
-import com.capstone.backend.core.common.web.response.ExtendedHttpStatus;
-import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Interest;
 import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.entity.Timetable;
@@ -59,11 +57,7 @@ public class SetMemberInfoFacade {
     public Boolean changeTimetable(CustomUserDetails customUserDetails, ChangeTimetableRequest changeTimetableRequest) {
         Member member = memberService.getByEmail(customUserDetails.getUsername());
         Timetable timetable = timetableService.findByMemberIdAndId(member.getId(), changeTimetableRequest.id());
-        try {
-            timetableService.changeTimetable(timetable, changeTimetableRequest);
-        } catch (NullPointerException e) {
-            throw new CustomException(ExtendedHttpStatus.BAD_REQUEST, "capstone.timetable.not.found");
-        }
+        timetableService.changeTimetable(timetable, changeTimetableRequest);
         return true;
     }
 }

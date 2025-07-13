@@ -2,6 +2,7 @@ package com.capstone.backend.member.presentation;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.core.common.web.response.ApiResponse;
+import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
 import com.capstone.backend.member.dto.request.CreateInterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
@@ -13,6 +14,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -52,5 +54,15 @@ public class SetMemberInfoController {
             @RequestBody CreateAcademicInfoRequest createAcademicInfoRequest
     ) {
         return ApiResponse.success(setMemberInfoFacade.createAcademicInfo(customUserDetails, createAcademicInfoRequest));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping(ApiPath.CHANGE_TIMETABLE)
+    @Operation(summary = "시간표 변경", description = "changeTimetable")
+    public ApiResponse<Boolean> changeTimetable(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody ChangeTimetableRequest changeTimetableRequest
+    ) {
+        return ApiResponse.success(setMemberInfoFacade.changeTimetable(customUserDetails, changeTimetableRequest));
     }
 }

@@ -12,10 +12,12 @@ import static org.mockito.Mockito.when;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.member.domain.entity.Member;
+import com.capstone.backend.member.domain.entity.Timetable;
 import com.capstone.backend.member.domain.service.InterestService;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.domain.value.Role;
+import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
 import com.capstone.backend.member.dto.request.CreateInterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
@@ -128,5 +130,26 @@ class SetMemberInfoFacadeTest {
         //then
         verify(memberService).getByEmail(customUserDetails.getUsername());
         verify(memberService).updateAcademicInfo(member.getId(), createAcademicInfoRequest);
+    }
+
+    @DisplayName("시간표 변경 테스트")
+    @Test
+    void changeTimetable() {
+        //given
+        ChangeTimetableRequest changeTimetableRequest = new ChangeTimetableRequest(
+                1L,
+                TUE,
+                LocalTime.of(13,0,0,0),
+                LocalTime.of(14,0,0,0),
+                "분산시스템",
+                "공C487",
+                "#f6f6f6"
+        );
+        Timetable timetable = Timetable.builder().build();
+        when(timetableService.findByMemberIdAndId(member.getId(), changeTimetableRequest.id())).thenReturn(timetable);
+        //when
+        setMemberInfoFacade.changeTimetable(customUserDetails, changeTimetableRequest);
+        //then
+        verify(timetableService).changeTimetable(timetable, changeTimetableRequest);
     }
 }

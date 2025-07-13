@@ -2,6 +2,7 @@ package com.capstone.backend.member.domain.entity;
 
 import com.capstone.backend.global.entity.BaseEntity;
 import com.capstone.backend.member.domain.value.Day;
+import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,7 +36,7 @@ public class Timetable extends BaseEntity {
     private Long memberId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "DAY")
+    @Column(name = "DAY_OF_WEEK")
     private Day day;
 
     @Column(name = "START_TIME")
@@ -63,6 +64,14 @@ public class Timetable extends BaseEntity {
                 .eventDetail(makeMemberTimetableRequest.eventDetail())
                 .color(makeMemberTimetableRequest.color())
                 .build();
+    }
+    public void changeTimetable(ChangeTimetableRequest changeTimetableRequest) {
+        this.day = changeTimetableRequest.day();
+        this.startTime = changeTimetableRequest.startTime();
+        this.endTime = changeTimetableRequest.endTime();
+        this.eventName = changeTimetableRequest.eventName();
+        this.eventDetail = changeTimetableRequest.eventDetail();
+        this.color = changeTimetableRequest.color();
     }
 
     public String getStringStartTime() {

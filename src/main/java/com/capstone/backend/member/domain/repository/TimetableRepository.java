@@ -9,4 +9,7 @@ import org.springframework.data.repository.query.Param;
 public interface TimetableRepository extends JpaRepository<Timetable, Long> {
     @Query("SELECT t FROM Timetable t WHERE t.memberId = :memberId")
     List<Timetable> findByMemberId(@Param("memberId") Long memberId);
+
+    @Query("SELECT t FROM Timetable t WHERE t.memberId =:memberId AND t.id = :id")
+    Timetable findByMemberIdAndId(@Param("memberId") Long memberId, @Param("id") Long id);
 }

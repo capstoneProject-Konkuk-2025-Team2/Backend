@@ -1,12 +1,15 @@
 package com.capstone.backend.member.facade;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
+import com.capstone.backend.core.common.web.response.ExtendedHttpStatus;
+import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Interest;
 import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.entity.Timetable;
 import com.capstone.backend.member.domain.service.InterestService;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.TimetableService;
+import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import java.util.Arrays;
@@ -49,6 +52,18 @@ public class SetMemberInfoFacade {
     public Boolean createAcademicInfo(CustomUserDetails customUserDetails, CreateAcademicInfoRequest createAcademicInfoRequest) {
         Member member = memberService.getByEmail(customUserDetails.getUsername());
         memberService.updateAcademicInfo(member.getId(), createAcademicInfoRequest);
+        return true;
+    }
+
+    @Transactional
+    public Boolean changeTimetable(CustomUserDetails customUserDetails, ChangeTimetableRequest changeTimetableRequest) {
+        Member member = memberService.getByEmail(customUserDetails.getUsername());
+        Timetable timetable = timetableService.findByMemberIdAndId(member.getId(), changeTimetableRequest.id());
+        try {
+            timetableService.changeTimetable(timetable, changeTimetableRequest);
+        } catch (NullPointerException e) {
+            throw new CustomException(ExtendedHttpStatus.BAD_REQUEST, "capstone.timetable.not.found");
+        }
         return true;
     }
 }

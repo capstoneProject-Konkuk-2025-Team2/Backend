@@ -2,6 +2,7 @@ package com.capstone.backend.member.domain.service;
 
 import com.capstone.backend.member.domain.entity.Timetable;
 import com.capstone.backend.member.domain.repository.TimetableRepository;
+import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,4 +23,13 @@ public class TimetableService {
         return timetableRepository.findByMemberId(memberId);
     }
 
+    @Transactional(readOnly = true)
+    public Timetable findByMemberIdAndId(Long memberId, Long id) {
+        return timetableRepository.findByMemberIdAndId(memberId, id);
+    }
+
+    @Transactional
+    public void changeTimetable(Timetable timetable, ChangeTimetableRequest changeTimetableRequest) {
+        timetable.changeTimetable(changeTimetableRequest);
+    }
 }

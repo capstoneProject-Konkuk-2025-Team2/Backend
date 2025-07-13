@@ -1,7 +1,9 @@
 package com.capstone.backend.member.domain.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.capstone.backend.member.domain.entity.Timetable;
 import com.capstone.backend.member.domain.repository.TimetableRepository;
@@ -9,6 +11,7 @@ import com.capstone.backend.member.domain.value.Day;
 import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +45,11 @@ class TimetableServiceTest {
     @DisplayName("findByMemberIdAndId - 성공")
     @Test
     void findByMemberIdAndId_success() {
-        Timetable timetable = timetableService.findByMemberIdAndId(1L, 1L);
+        //given
+        Timetable timetable = Timetable.builder().build();
+        when(timetableRepository.findByMemberIdAndId(1L, 1L)).thenReturn(Optional.ofNullable(timetable));
+        //when
+        timetableService.findByMemberIdAndId(1L, 1L);
         //then
         verify(timetableRepository).findByMemberIdAndId(1L, 1L);
     }

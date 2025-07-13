@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalTime;
 import lombok.Builder;
 
-@Builder
 public record LookupTimetableResponse(
         @Schema(description = "시간표 엔트리 ID(DB PK값)", example = "1")
         Long id,
@@ -24,14 +23,14 @@ public record LookupTimetableResponse(
         LocalTime endTime
 ) {
     public static LookupTimetableResponse of(Timetable timetable) {
-        return LookupTimetableResponse.builder()
-                .id(timetable.getId())
-                .day(timetable.getDay())
-                .color(timetable.getColor())
-                .eventName(timetable.getEventName())
-                .eventDetail(timetable.getEventDetail())
-                .startTime(timetable.getStartTime())
-                .endTime(timetable.getEndTime())
-                .build();
+        return new LookupTimetableResponse(
+                timetable.getId(),
+                timetable.getDay(),
+                timetable.getColor(),
+                timetable.getEventName(),
+                timetable.getEventDetail(),
+                timetable.getStartTime(),
+                timetable.getEndTime()
+        );
     }
 }

@@ -29,7 +29,7 @@ public class TimetableRepositoryTest {
         timetableRepository.saveAll(timetableList);
         Long timeTableId = timetableList.get(0).getId();
         //when
-        Timetable timetable = timetableRepository.findByMemberIdAndId(4L , timeTableId);
+        Timetable timetable = timetableRepository.findByMemberIdAndId(4L , timeTableId).get();
         //then
         assertEquals(4L, timetable.getMemberId());
         assertEquals(timeTableId , timetable.getId());

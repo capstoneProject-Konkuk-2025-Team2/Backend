@@ -2,7 +2,6 @@ package com.capstone.backend.member.facade;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;

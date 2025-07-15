@@ -88,7 +88,7 @@ public class SecurityConfig {
                         ));
                         configuration.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
                         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Access-Control-Allow-Origin"));
-                        configuration.setExposedHeaders(List.of("Set-Cookie", "access")); // 추가 가능
+                        configuration.setExposedHeaders(List.of("Set-Cookie", "access", "access_token")); // 추가 가능
                         configuration.setAllowCredentials(true);
                         configuration.setMaxAge(3600L);
                         return configuration;

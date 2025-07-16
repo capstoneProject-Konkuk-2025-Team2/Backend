@@ -5,6 +5,7 @@ import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.entity.Timetable;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.TimetableService;
+import com.capstone.backend.member.dto.response.LookupMemberInfoResponse;
 import com.capstone.backend.member.dto.response.LookupTimetableResponse;
 import java.util.Comparator;
 import java.util.List;
@@ -26,5 +27,11 @@ public class LookupFacade {
                 .sorted(Comparator.comparing(Timetable::getId))
                 .map(LookupTimetableResponse::of)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public LookupMemberInfoResponse lookupMemberInfo(CustomUserDetails customUserDetails) {
+        Member member = memberService.getByEmail(customUserDetails.getUsername());
+        return LookupMemberInfoResponse.of(member);
     }
 }

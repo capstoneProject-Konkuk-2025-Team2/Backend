@@ -2,6 +2,7 @@ package com.capstone.backend.member.facade;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
@@ -9,8 +10,10 @@ import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.entity.Timetable;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.TimetableService;
+import com.capstone.backend.member.domain.value.AcademicStatus;
 import com.capstone.backend.member.domain.value.Day;
 import com.capstone.backend.member.domain.value.Role;
+import com.capstone.backend.member.dto.response.LookupMemberInfoResponse;
 import com.capstone.backend.member.dto.response.LookupTimetableResponse;
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -42,11 +45,24 @@ public class LookupFacadeTest {
         member = Member.builder()
                 .id(1L)
                 .email(email)
+                .grade(1L)
+                .name("김철수")
+                .academicStatus(AcademicStatus.ENROLLED)
+                .department("컴퓨터공학부")
+                .college("공과대학")
+                .email("abc@test.com")
                 .role(role)
                 .build();
         customUserDetails = Mockito.mock(CustomUserDetails.class);
         when(customUserDetails.getUsername()).thenReturn(member.getEmail());
         when(memberService.getByEmail(member.getEmail())).thenReturn(member);
+
+    }
+
+    @DisplayName("시간표 조회")
+    @Test
+    void lookupTimetable() {
+        //given
         when(timetableService.findAllByMemberId(member.getId())).thenReturn(Arrays.asList(
                 Timetable.builder()
                         .id(1L)
@@ -69,11 +85,6 @@ public class LookupFacadeTest {
                         .memberId(1L)
                         .build()
         ));
-    }
-
-    @DisplayName("시간표 조회")
-    @Test
-    void lookupTimetable() {
         //when
         List<LookupTimetableResponse> timetableList = lookupFacade.lookupTimetable(customUserDetails);
         //then
@@ -86,5 +97,20 @@ public class LookupFacadeTest {
                         tuple(1L, Day.MON, "#f6f6f6", "분산컴퓨팅", "공C487", LocalTime.of(9, 0, 0, 0), LocalTime.of(11, 0, 0, 0)),
                         tuple(2L, Day.TUE, "#f6f6f6", "이산수학", "공C485", LocalTime.of(15, 0, 0, 0), LocalTime.of(16, 0, 0, 0))
                 );
+    }
+
+    @DisplayName("멤버 정보 조회")
+    @Test
+    void lookupMemberInfo() {
+        //when
+        LookupMemberInfoResponse lookupMemberInfoResponse = lookupFacade.lookupMemberInfo(customUserDetails);
+        //then
+        assertEquals(lookupMemberInfoResponse.id(), member.getId());
+        assertEquals(lookupMemberInfoResponse.email(), member.getEmail());
+        assertEquals(lookupMemberInfoResponse.name(), member.getName());
+        assertEquals(lookupMemberInfoResponse.academicStatus(), member.getAcademicStatus());
+        assertEquals(lookupMemberInfoResponse.college(), member.getCollege());
+        assertEquals(lookupMemberInfoResponse.department(), member.getDepartment());
+        assertEquals(lookupMemberInfoResponse.grade(), member.getGrade());
     }
 }

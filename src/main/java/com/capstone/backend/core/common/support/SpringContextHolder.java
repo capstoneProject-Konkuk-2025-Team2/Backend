@@ -11,6 +11,11 @@ public class SpringContextHolder implements ApplicationContextAware {
 
     private static ApplicationContext context;
 
+    // 테스트 전용 - 프로덕션 코드에서는 사용하지 말 것
+    public static void setContextForTesting(ApplicationContext testContext) {
+        context = testContext;
+    }
+
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         SpringContextHolder.context = applicationContext;

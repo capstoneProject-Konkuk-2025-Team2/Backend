@@ -46,7 +46,7 @@ class MemberServiceTest {
 
     @BeforeEach
     void setup() {
-        SpringContextHolder.context = mockApplicationContext;
+        SpringContextHolder.setContextForTesting(mockApplicationContext);
         lenient().when(mockApplicationContext.getBean(AppEnv.class)).thenReturn(mockAppEnv);
         lenient().when(mockAppEnv.getId()).thenReturn("test-env");
     }

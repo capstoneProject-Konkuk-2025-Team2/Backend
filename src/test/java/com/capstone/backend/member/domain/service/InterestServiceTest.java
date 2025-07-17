@@ -48,7 +48,7 @@ public class InterestServiceTest {
                 Interest.builder().id(2L).build(),
                 Interest.builder().id(3L).build()
         );
-        when(interestService.findAllByMemberId(memberId)).thenReturn(
+        when(interestRepository.findAllByMemberId(memberId)).thenReturn(
                 expected
         );
         //when

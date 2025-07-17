@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpringContextHolder implements ApplicationContextAware {
 
-    public static ApplicationContext context;
+    private static ApplicationContext context;
 
     // 테스트 전용 - 프로덕션 코드에서는 사용하지 말 것
     public static void setContextForTesting(ApplicationContext testContext) {

@@ -2,6 +2,7 @@ package com.capstone.backend.member.presentation;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.core.common.web.response.ApiResponse;
+import com.capstone.backend.member.dto.response.LookupInterestResponse;
 import com.capstone.backend.member.dto.response.LookupMemberInfoResponse;
 import com.capstone.backend.member.dto.response.LookupTimetableResponse;
 import com.capstone.backend.member.facade.LookupFacade;
@@ -39,4 +40,12 @@ public class LookUpMemberInfoController {
         return ApiResponse.success(lookupFacade.lookupMemberInfo(customUserDetails));
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(ApiPath.LOOKUP_INTEREST)
+    @Operation(summary = "관심사항 조회", description = "lookupInterest")
+    public ApiResponse<LookupInterestResponse> lookupInterest(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        return ApiResponse.success(lookupFacade.lookupInterest(customUserDetails));
+    }
 }

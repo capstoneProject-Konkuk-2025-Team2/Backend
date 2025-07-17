@@ -3,16 +3,20 @@ package com.capstone.backend.member.facade;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
+import com.capstone.backend.member.domain.entity.Interest;
 import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.entity.Timetable;
+import com.capstone.backend.member.domain.service.InterestService;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.domain.value.AcademicStatus;
 import com.capstone.backend.member.domain.value.Day;
 import com.capstone.backend.member.domain.value.Role;
+import com.capstone.backend.member.dto.response.LookupInterestResponse;
 import com.capstone.backend.member.dto.response.LookupMemberInfoResponse;
 import com.capstone.backend.member.dto.response.LookupTimetableResponse;
 import java.time.LocalTime;
@@ -33,6 +37,8 @@ public class LookupFacadeTest {
     private MemberService memberService;
     @Mock
     private TimetableService timetableService;
+    @Mock
+    private InterestService interestService;
     @InjectMocks
     private LookupFacade lookupFacade;
 
@@ -112,5 +118,24 @@ public class LookupFacadeTest {
         assertEquals(lookupMemberInfoResponse.college(), member.getCollege());
         assertEquals(lookupMemberInfoResponse.department(), member.getDepartment());
         assertEquals(lookupMemberInfoResponse.grade(), member.getGrade());
+    }
+
+    @DisplayName("관심 사항 조회")
+    @Test
+    void lookupInterests() {
+        //given
+        when(interestService.findAllByMemberId(member.getId())).thenReturn(
+                List.of(
+                        Interest.builder().content("AI").build(),
+                        Interest.builder().content("웹").build()
+                )
+        );
+        //when
+        LookupInterestResponse lookupInterestResponse = lookupFacade.lookupInterest(customUserDetails);
+        //then
+        List<String> interests = lookupInterestResponse.interests();
+        assertEquals(2, interests.size());
+        assertTrue(interests.contains("AI"));
+        assertTrue(interests.contains("웹"));
     }
 }

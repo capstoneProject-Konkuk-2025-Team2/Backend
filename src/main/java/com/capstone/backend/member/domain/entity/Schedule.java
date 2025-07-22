@@ -1,6 +1,7 @@
 package com.capstone.backend.member.domain.entity;
 
 import com.capstone.backend.member.domain.value.ScheduleType;
+import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -43,4 +44,14 @@ public class Schedule {
 
     @Column(name = "TITLE")
     private String title;
+
+    public static Schedule createSchedule(Long memberId, CreateScheduleRequest createScheduleRequest) {
+        return Schedule.builder()
+                .memberId(memberId)
+                .startDate(createScheduleRequest.startDate())
+                .endDate(createScheduleRequest.endDate())
+                .scheduleType(createScheduleRequest.scheduleType())
+                .title(createScheduleRequest.title())
+                .build();
+    }
 }

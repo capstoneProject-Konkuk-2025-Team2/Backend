@@ -4,6 +4,7 @@ import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
+import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,5 +36,11 @@ public class ScheduleService {
     public void changeSchedule(Long memberId, ChangeScheduleRequest changeScheduleRequest) {
         Schedule schedule = getByMemberIdAndId(memberId, changeScheduleRequest.scheduleId());
         schedule.changeSchedule(changeScheduleRequest);
+    }
+
+    @Transactional
+    public void deleteSchedule(Long memberId, DeleteScheduleRequest deleteScheduleRequest) {
+        Schedule schedule = getByMemberIdAndId(memberId, deleteScheduleRequest.deleteScheduleId());
+        scheduleRepository.delete(schedule);
     }
 }

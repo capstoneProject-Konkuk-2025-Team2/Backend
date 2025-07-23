@@ -4,6 +4,7 @@ import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.core.common.web.response.ApiResponse;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
+import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import com.capstone.backend.member.facade.ScheduleFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,5 +42,15 @@ public class ScheduleController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         return ApiResponse.success(scheduleFacade.changeSchedule(customUserDetails, changeScheduleRequest));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping(ApiPath.DELETE_SCHEDULE)
+    @Operation(summary = "스케쥴 삭제", description = "deleteSchedule")
+    public ApiResponse<Boolean> deleteSchedule(
+            @RequestBody DeleteScheduleRequest deleteScheduleRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        return ApiResponse.success(scheduleFacade.deleteSchedule(customUserDetails, deleteScheduleRequest));
     }
 }

@@ -15,4 +15,7 @@ public final class ApiPath {
     public static final String SETTING_ACADEMIC_INFO = "/v1/member/academic-info";
     public static final String LOOKUP_MEMBER_INFO = "/v1/member/information";
     public static final String LOOKUP_INTEREST = "/v1/member/interest";
+    public static final String ADD_SCHEDULE = "/v1/member/schedule";
+    public static final String CHANGE_SCHEDULE = "/v1/member/schedule";
+    public static final String DELETE_SCHEDULE = "/v1/member/schedule";
 }

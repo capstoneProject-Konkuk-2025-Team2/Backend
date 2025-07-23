@@ -1,5 +1,6 @@
 package com.capstone.backend.member.domain.service;
 
+import com.capstone.backend.core.common.web.response.ExtendedHttpStatus;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
@@ -28,7 +29,7 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public Schedule getByMemberIdAndId(Long memberId, Long scheduleId) {
         return findByMemberIdAndId(memberId, scheduleId).orElseThrow(
-                () -> new CustomException("capstone.schedule.not.found")
+                () -> new CustomException(ExtendedHttpStatus.BAD_REQUEST, "capstone.schedule.not.found")
         );
     }
 

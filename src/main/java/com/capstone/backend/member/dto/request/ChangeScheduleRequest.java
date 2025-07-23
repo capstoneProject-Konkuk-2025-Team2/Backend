@@ -1,11 +1,12 @@
 package com.capstone.backend.member.dto.request;
 
+import com.capstone.backend.core.customAnnotation.ValidDateRange;
 import com.capstone.backend.member.domain.value.ScheduleType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-
+@ValidDateRange
 public record ChangeScheduleRequest(
         @NotNull(message = "스케쥴 id를 입력해주세요")
         @Schema(description = "수정할 스케쥴 id(pk값)", example = "1")

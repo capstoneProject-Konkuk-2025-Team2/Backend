@@ -14,6 +14,7 @@ import com.capstone.backend.member.domain.value.Role;
 import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
+import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -84,5 +85,19 @@ public class ScheduleFacadeTest {
         assertThat(result).isTrue();
         verify(memberService).getByEmail(customUserDetails.getUsername());
         verify(scheduleService).changeSchedule(member.getId(), changeScheduleRequest);
+    }
+
+    @DisplayName("스케쥴 삭제")
+    @Test
+    void deleteSchedule() {
+        //given
+        DeleteScheduleRequest request = new DeleteScheduleRequest(1L);
+        doNothing().when(scheduleService).deleteSchedule(member.getId(), request);
+        //when
+        Boolean result = scheduleFacade.deleteSchedule(customUserDetails, request);
+        //then
+        assertThat(result).isTrue();
+        verify(memberService).getByEmail(customUserDetails.getUsername());
+        verify(scheduleService).deleteSchedule(member.getId(), request);
     }
 }

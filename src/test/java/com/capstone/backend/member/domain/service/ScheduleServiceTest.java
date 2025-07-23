@@ -13,6 +13,7 @@ import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
 import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
+import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -130,5 +131,19 @@ public class ScheduleServiceTest {
         assertThat(schedule.getStartDate()).isEqualTo(request.startDate());
         assertThat(schedule.getEndDate()).isEqualTo(request.endDate());
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
+    }
+
+    @DisplayName("deleteSchedule - 성공")
+    @Test
+    void deleteSchedule_success() {
+        // given
+        DeleteScheduleRequest request = new DeleteScheduleRequest(schedule.getId());
+        when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
+                .thenReturn(Optional.of(schedule));
+        // when
+        scheduleService.deleteSchedule(memberId, request);
+        //then
+        verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
+        verify(scheduleRepository).delete(schedule);
     }
 }

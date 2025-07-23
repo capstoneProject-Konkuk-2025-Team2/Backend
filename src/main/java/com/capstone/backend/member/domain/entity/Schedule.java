@@ -1,6 +1,7 @@
 package com.capstone.backend.member.domain.entity;
 
 import com.capstone.backend.member.domain.value.ScheduleType;
+import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,5 +54,12 @@ public class Schedule {
                 .scheduleType(createScheduleRequest.scheduleType())
                 .title(createScheduleRequest.title())
                 .build();
+    }
+
+    public void changeSchedule(ChangeScheduleRequest changeScheduleRequest) {
+        this.startDate = changeScheduleRequest.startDate();
+        this.endDate = changeScheduleRequest.endDate();
+        this.scheduleType = changeScheduleRequest.scheduleType();
+        this.title = changeScheduleRequest.title();
     }
 }

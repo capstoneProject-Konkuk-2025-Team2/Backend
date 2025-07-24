@@ -1,6 +1,7 @@
 package com.capstone.backend.member.facade;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.member.domain.entity.Member;
+import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.ScheduleService;
 import com.capstone.backend.member.domain.value.Role;
@@ -15,7 +17,9 @@ import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
+import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -101,5 +105,39 @@ public class ScheduleFacadeTest {
         assertThat(result).isTrue();
         verify(memberService).getByEmail(customUserDetails.getUsername());
         verify(scheduleService).deleteSchedule(member.getId(), request);
+    }
+
+    @DisplayName("년월별 스케쥴 조회")
+    @Test
+    void getScheduleByYearAndMonth() {
+        //given
+        Long year = 2025L;
+        Long month = 7L;
+        Schedule schedule1 = Schedule.builder()
+                .memberId(member.getId())
+                .title("비교과1")
+                .scheduleType(ScheduleType.EXTRACURRICULAR)
+                .startDate(LocalDate.of(2025, 7, 1))
+                .endDate(LocalDate.of(2025, 8, 1))
+                .build();
+        Schedule schedule2 = Schedule.builder()
+                .memberId(member.getId())
+                .title("비교과2")
+                .scheduleType(ScheduleType.NORMAL)
+                .startDate(LocalDate.of(2025, 6, 1))
+                .endDate(LocalDate.of(2025, 7, 2))
+                .build();
+        GetScheduleByYearAndMonthResponse response1 = GetScheduleByYearAndMonthResponse.of(schedule1);
+        GetScheduleByYearAndMonthResponse response2 = GetScheduleByYearAndMonthResponse.of(schedule2);
+        when(scheduleService.findByMemberIdAndYearAndMonth(member.getId(), year, month))
+                .thenReturn(List.of(response1, response2));
+        //when
+        List<GetScheduleByYearAndMonthResponse> result = scheduleFacade.getScheduleByYearAndMonth(year, month, customUserDetails);
+        //then
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting("scheduleId","title","scheduleType","startDate","endDate").containsExactlyInAnyOrder(
+                tuple(response1.scheduleId(), response1.title(), response1.scheduleType(), response1.startDate(), response1.endDate()),
+                tuple(response2.scheduleId(), response2.title(), response2.scheduleType(), response2.startDate(), response2.endDate())
+        );
     }
 }

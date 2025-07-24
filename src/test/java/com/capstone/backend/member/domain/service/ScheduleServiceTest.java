@@ -2,6 +2,7 @@ package com.capstone.backend.member.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -14,7 +15,9 @@ import com.capstone.backend.member.domain.repository.ScheduleRepository;
 import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
+import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -147,5 +150,41 @@ public class ScheduleServiceTest {
         //then
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
         verify(scheduleRepository).delete(schedule);
+    }
+
+    @DisplayName("findByMemberIdAndYearAndMonth - 성공")
+    @Test
+    void findByMemberIdAndYearAndMonth_success() {
+        //given
+        Long year = 2025L;
+        Long month = 7L;
+        Schedule schedule1 = Schedule.builder()
+                .memberId(memberId)
+                .title("비교과1")
+                .scheduleType(ScheduleType.EXTRACURRICULAR)
+                .startDate(LocalDate.of(2025, 7, 1))
+                .endDate(LocalDate.of(2025, 8, 1))
+                .build();
+        Schedule schedule2 = Schedule.builder()
+                .memberId(memberId)
+                .title("비교과2")
+                .scheduleType(ScheduleType.NORMAL)
+                .startDate(LocalDate.of(2025, 6, 1))
+                .endDate(LocalDate.of(2025, 7, 2))
+                .build();
+        when(scheduleRepository.findByMemberIdAndYearAndMonth(memberId, year, month))
+                .thenReturn(List.of(
+                        schedule1,
+                        schedule2
+                ));
+        //when
+        List<GetScheduleByYearAndMonthResponse> result = scheduleService.findByMemberIdAndYearAndMonth(memberId, year, month);
+        //then
+        verify(scheduleRepository).findByMemberIdAndYearAndMonth(memberId, year, month);
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting("scheduleId","title","scheduleType","startDate","endDate").containsExactlyInAnyOrder(
+                tuple(schedule1.getId(), schedule1.getTitle(), schedule1.getScheduleType(), schedule1.getStartDate(), schedule1.getEndDate()),
+                tuple(schedule2.getId(), schedule2.getTitle(), schedule2.getScheduleType(), schedule2.getStartDate(), schedule2.getEndDate())
+        );
     }
 }

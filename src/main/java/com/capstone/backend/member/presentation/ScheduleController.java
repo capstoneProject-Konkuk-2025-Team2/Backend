@@ -6,6 +6,7 @@ import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
+import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
 import com.capstone.backend.member.facade.ScheduleFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -59,7 +60,7 @@ public class ScheduleController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(ApiPath.MONTHLY_SCHEDULE)
+    @GetMapping(ApiPath.YEAR_AND_MONTH_SCHEDULE)
     @Operation(summary = "년월별 스케쥴 조회", description = "getmonthlySchedule")
     public ApiResponse<List<GetScheduleByYearAndMonthResponse>> getScheduleByYearAndMonth(
             @PathVariable(name = "year") Long year,
@@ -67,5 +68,15 @@ public class ScheduleController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         return ApiResponse.success(scheduleFacade.getScheduleByYearAndMonth(year, month, customUserDetails));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(ApiPath.DETAIL_SCHEDULE)
+    @Operation(summary = "스케쥴 상세 조회", description = "getScheduleDetail")
+    public ApiResponse<GetScheduleDetailResponse> getScheduleDetail(
+            @PathVariable(name = "scheduleId") Long scheduleId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        return ApiResponse.success(scheduleFacade.getScheduleDetail(scheduleId, customUserDetails));
     }
 }

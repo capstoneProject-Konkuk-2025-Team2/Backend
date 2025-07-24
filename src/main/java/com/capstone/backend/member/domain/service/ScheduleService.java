@@ -7,6 +7,7 @@ import com.capstone.backend.member.domain.repository.ScheduleRepository;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
+import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -47,11 +48,17 @@ public class ScheduleService {
         scheduleRepository.delete(schedule);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<GetScheduleByYearAndMonthResponse> findByMemberIdAndYearAndMonth(Long memberId, Long year, Long month) {
         return scheduleRepository.findByMemberIdAndYearAndMonth(memberId, year, month)
                 .stream()
                 .map(GetScheduleByYearAndMonthResponse::of)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public GetScheduleDetailResponse getScheduleDetail(Long memberId, Long scheduleId) {
+        Schedule schedule = getByMemberIdAndId(memberId, scheduleId);
+        return GetScheduleDetailResponse.of(schedule);
     }
 }

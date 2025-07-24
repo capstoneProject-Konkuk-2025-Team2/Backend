@@ -18,6 +18,7 @@ import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
+import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -139,5 +140,35 @@ public class ScheduleFacadeTest {
                 tuple(response1.scheduleId(), response1.title(), response1.scheduleType(), response1.startDate(), response1.endDate()),
                 tuple(response2.scheduleId(), response2.title(), response2.scheduleType(), response2.startDate(), response2.endDate())
         );
+    }
+
+    @DisplayName("스케쥴 상세 조회")
+    @Test
+    void getScheduleDetail() {
+        //given
+        Schedule schedule = Schedule.builder()
+                .memberId(member.getId())
+                .title("비교과1")
+                .content("비교과 상세정보")
+                .scheduleType(ScheduleType.EXTRACURRICULAR)
+                .startDate(LocalDate.of(2025, 7, 1))
+                .endDate(LocalDate.of(2025, 8, 1))
+                .build();
+        GetScheduleDetailResponse response = GetScheduleDetailResponse.of(schedule);
+        when(scheduleService.getScheduleDetail(member.getId(), schedule.getId()))
+                .thenReturn(response);
+        //when
+        GetScheduleDetailResponse result = scheduleFacade.getScheduleDetail(schedule.getId(), customUserDetails);
+        //then
+        verify(scheduleService).getScheduleDetail(member.getId(), schedule.getId());
+        assertThat(result)
+                .extracting("title", "content", "scheduleType", "startDate", "endDate")
+                .containsExactly(
+                        schedule.getTitle(),
+                        schedule.getContent(),
+                        schedule.getScheduleType(),
+                        schedule.getStartDate(),
+                        schedule.getEndDate()
+                );
     }
 }

@@ -50,6 +50,7 @@ public class ScheduleServiceTest {
         lenient().when(mockAppEnv.getId()).thenReturn("test-env");
         schedule = Schedule.builder()
                 .title("스케쥴1")
+                .content("세부사항")
                 .scheduleType(ScheduleType.EXTRACURRICULAR)
                 .startDate(LocalDate.of(2025, 7, 1))
                 .endDate(LocalDate.of(2025, 8, 1))
@@ -114,6 +115,7 @@ public class ScheduleServiceTest {
         ChangeScheduleRequest request = new ChangeScheduleRequest(
                 schedule.getId(),
                 "변경된 제목",
+                "변경된 세부사항",
                 ScheduleType.NORMAL,
                 LocalDate.of(2025, 9, 1),
                 LocalDate.of(2025, 10, 1)

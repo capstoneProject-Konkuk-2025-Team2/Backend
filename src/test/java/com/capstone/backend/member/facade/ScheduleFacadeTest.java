@@ -56,6 +56,7 @@ public class ScheduleFacadeTest {
         //given
         CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
                 "테스트 스케쥴",
+                "테스트 상세정보",
                 ScheduleType.EXTRACURRICULAR,
                 LocalDate.of(2025,7,1),
                 LocalDate.of(2025,7,25)
@@ -74,6 +75,7 @@ public class ScheduleFacadeTest {
         ChangeScheduleRequest changeScheduleRequest = new ChangeScheduleRequest(
                 1L,
                 "스케쥴1",
+                "스케쥴 상세정보",
                 ScheduleType.EXTRACURRICULAR,
                 LocalDate.of(2025, 7, 1),
                 LocalDate.of(2025, 8, 1)

@@ -7,6 +7,8 @@ import com.capstone.backend.member.domain.service.ScheduleService;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
+import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -31,5 +33,9 @@ public class ScheduleFacade {
         Long memberId = memberService.getByEmail(customUserDetails.getUsername()).getId();
         scheduleService.deleteSchedule(memberId, deleteScheduleRequest);
         return true;
+    }
+    public List<GetScheduleByYearAndMonthResponse> getScheduleByYearAndMonth(Long year, Long month, CustomUserDetails customUserDetails) {
+        Long memberId = memberService.getByEmail(customUserDetails.getUsername()).getId();
+        return scheduleService.findByMemberIdAndYearAndMonth(memberId, year, month);
     }
 }

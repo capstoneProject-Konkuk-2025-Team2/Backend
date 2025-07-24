@@ -46,6 +46,9 @@ public class Schedule {
     @Column(name = "TITLE")
     private String title;
 
+    @Column(name = "CONTENT")
+    private String content;
+
     public static Schedule createSchedule(Long memberId, CreateScheduleRequest createScheduleRequest) {
         return Schedule.builder()
                 .memberId(memberId)
@@ -53,6 +56,7 @@ public class Schedule {
                 .endDate(createScheduleRequest.endDate())
                 .scheduleType(createScheduleRequest.scheduleType())
                 .title(createScheduleRequest.title())
+                .content(createScheduleRequest.content())
                 .build();
     }
 
@@ -61,5 +65,6 @@ public class Schedule {
         this.endDate = changeScheduleRequest.endDate();
         this.scheduleType = changeScheduleRequest.scheduleType();
         this.title = changeScheduleRequest.title();
+        this.content = changeScheduleRequest.content();
     }
 }

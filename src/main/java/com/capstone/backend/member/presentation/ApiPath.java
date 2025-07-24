@@ -18,4 +18,6 @@ public final class ApiPath {
     public static final String ADD_SCHEDULE = "/v1/member/schedule";
     public static final String CHANGE_SCHEDULE = "/v1/member/schedule";
     public static final String DELETE_SCHEDULE = "/v1/member/schedule";
+    public static final String YEAR_AND_MONTH_SCHEDULE = "/v1/member/schedule/{year}/{month}";
+    public static final String DETAIL_SCHEDULE = "/v1/member/schedule/{scheduleId}";
 }

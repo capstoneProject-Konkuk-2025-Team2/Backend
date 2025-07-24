@@ -1,6 +1,7 @@
 package com.capstone.backend.member.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.capstone.backend.member.domain.entity.Schedule;
@@ -58,5 +59,38 @@ public class ScheduleRepositoryTest {
         //then
         Optional<Schedule> result = scheduleRepository.findById(id);
         assertThat(result).isEmpty();
+    }
+
+    @DisplayName("findByMemberIdAndYearAndMonth 테스트")
+    @Test
+    void findByMemberIdAndYearAndMonth_success() {
+        //given
+        Long memberId = 1L;
+        Schedule scheduleStartJuly = Schedule.builder().memberId(memberId)
+                .startDate(LocalDate.of(2025, 7, 24))
+                .endDate(LocalDate.of(2025, 7, 30))
+                .build();
+        Schedule scheduleEndJuly = Schedule.builder().memberId(memberId)
+                .startDate(LocalDate.of(2025, 6, 24))
+                .endDate(LocalDate.of(2025, 7, 30))
+                .build();
+        Schedule scheduleStartAndEndAugust = Schedule.builder().memberId(memberId)
+                .startDate(LocalDate.of(2025, 8, 24))
+                .endDate(LocalDate.of(2025, 8, 30))
+                .build();
+        List<Schedule> scheduleList = List.of(
+                scheduleStartJuly,
+                scheduleEndJuly,
+                scheduleStartAndEndAugust
+        );
+        scheduleRepository.saveAll(scheduleList);
+        // when
+        List<Schedule> result = scheduleRepository.findByMemberIdAndYearAndMonth(1L, 2025L, 7L);
+        //then
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting("startDate", "endDate").containsExactlyInAnyOrder(
+                tuple(scheduleStartJuly.getStartDate(), scheduleStartJuly.getEndDate()),
+                tuple(scheduleEndJuly.getStartDate(), scheduleEndJuly.getEndDate())
+        );
     }
 }

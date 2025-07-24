@@ -1,12 +1,14 @@
 package com.capstone.backend.member.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.capstone.backend.core.common.support.SpringContextHolder;
+import com.capstone.backend.core.common.web.response.exception.ApiError;
 import com.capstone.backend.core.configuration.env.AppEnv;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Schedule;
@@ -14,7 +16,10 @@ import com.capstone.backend.member.domain.repository.ScheduleRepository;
 import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
+import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
+import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +55,7 @@ public class ScheduleServiceTest {
         lenient().when(mockAppEnv.getId()).thenReturn("test-env");
         schedule = Schedule.builder()
                 .title("스케쥴1")
+                .content("세부사항")
                 .scheduleType(ScheduleType.EXTRACURRICULAR)
                 .startDate(LocalDate.of(2025, 7, 1))
                 .endDate(LocalDate.of(2025, 8, 1))
@@ -101,10 +107,13 @@ public class ScheduleServiceTest {
                 .thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> scheduleService.getByMemberIdAndId(memberId, schedule.getId()))
-                .isInstanceOf(CustomException.class);
+        CustomException exception = assertThrows(
+                CustomException.class,
+                () -> scheduleService.getByMemberIdAndId(memberId, schedule.getId())
+        );
 
-        verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
+        ApiError error = exception.getError();
+        assertThat(error.element().code().value()).isEqualTo("capstone.schedule.not.found");
     }
 
     @DisplayName("changeSchedule - 성공")
@@ -114,6 +123,7 @@ public class ScheduleServiceTest {
         ChangeScheduleRequest request = new ChangeScheduleRequest(
                 schedule.getId(),
                 "변경된 제목",
+                "변경된 세부사항",
                 ScheduleType.NORMAL,
                 LocalDate.of(2025, 9, 1),
                 LocalDate.of(2025, 10, 1)
@@ -145,5 +155,77 @@ public class ScheduleServiceTest {
         //then
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
         verify(scheduleRepository).delete(schedule);
+    }
+
+    @DisplayName("findByMemberIdAndYearAndMonth - 성공")
+    @Test
+    void findByMemberIdAndYearAndMonth_success() {
+        //given
+        Long year = 2025L;
+        Long month = 7L;
+        Schedule schedule1 = Schedule.builder()
+                .memberId(memberId)
+                .title("비교과1")
+                .scheduleType(ScheduleType.EXTRACURRICULAR)
+                .startDate(LocalDate.of(2025, 7, 1))
+                .endDate(LocalDate.of(2025, 8, 1))
+                .build();
+        Schedule schedule2 = Schedule.builder()
+                .memberId(memberId)
+                .title("비교과2")
+                .scheduleType(ScheduleType.NORMAL)
+                .startDate(LocalDate.of(2025, 6, 1))
+                .endDate(LocalDate.of(2025, 7, 2))
+                .build();
+        when(scheduleRepository.findByMemberIdAndYearAndMonth(memberId, year, month))
+                .thenReturn(List.of(
+                        schedule1,
+                        schedule2
+                ));
+        //when
+        List<GetScheduleByYearAndMonthResponse> result = scheduleService.findByMemberIdAndYearAndMonth(memberId, year, month);
+        //then
+        verify(scheduleRepository).findByMemberIdAndYearAndMonth(memberId, year, month);
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting("scheduleId","title","scheduleType","startDate","endDate").containsExactlyInAnyOrder(
+                tuple(schedule1.getId(), schedule1.getTitle(), schedule1.getScheduleType(), schedule1.getStartDate(), schedule1.getEndDate()),
+                tuple(schedule2.getId(), schedule2.getTitle(), schedule2.getScheduleType(), schedule2.getStartDate(), schedule2.getEndDate())
+        );
+    }
+
+    @DisplayName("getScheduleDetail - 성공")
+    @Test
+    void getScheduleDetail_success() {
+        //given
+        when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
+                .thenReturn(Optional.of(schedule));
+        //when
+        GetScheduleDetailResponse result = scheduleService.getScheduleDetail(memberId, schedule.getId());
+        //then
+        verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
+        assertThat(result)
+                .extracting("title", "content", "scheduleType", "startDate", "endDate")
+                .containsExactly(
+                        schedule.getTitle(),
+                        schedule.getContent(),
+                        schedule.getScheduleType(),
+                        schedule.getStartDate(),
+                        schedule.getEndDate()
+                );
+    }
+
+    @DisplayName("getScheduleDetail - 실패(해당하는 스케쥴을 못찾았을 때)")
+    @Test
+    void getScheduleDetail_fail_not_found() {
+        //given
+        when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
+                .thenReturn(Optional.empty());
+        //when&then
+        CustomException exception = assertThrows(
+                CustomException.class,
+                () -> scheduleService.getScheduleDetail(memberId, schedule.getId())
+        );
+        ApiError error = exception.getError();
+        assertThat(error.element().code().value()).isEqualTo("capstone.schedule.not.found");
     }
 }

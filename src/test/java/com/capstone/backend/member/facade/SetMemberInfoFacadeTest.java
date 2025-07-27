@@ -5,6 +5,8 @@ import static com.capstone.backend.member.domain.value.AcademicStatus.ENROLLED;
 import static com.capstone.backend.member.domain.value.Day.MON;
 import static com.capstone.backend.member.domain.value.Day.TUE;
 import static com.capstone.backend.member.domain.value.Day.WED;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -19,7 +21,7 @@ import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.domain.value.Role;
 import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
-import com.capstone.backend.member.dto.request.CreateInterestRequest;
+import com.capstone.backend.member.dto.request.InterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import java.time.LocalTime;
 import java.util.List;
@@ -102,15 +104,15 @@ class SetMemberInfoFacadeTest {
     @Test
     void createInterestInfo(){
         //given
-        CreateInterestRequest createInterestRequest = new CreateInterestRequest(
+        InterestRequest interestRequest = new InterestRequest(
                 "AI, 프로그래밍, 경영"
         );
-        doNothing().when(interestService).saveAll(anyList());
+        doNothing().when(interestService).create(member.getId(), interestRequest);
         //when
-        setMemberInfoFacade.createInterestInfo(customUserDetails, createInterestRequest.interestContent());
+        setMemberInfoFacade.createInterestInfo(customUserDetails, interestRequest);
         //then
         verify(memberService).getByEmail(customUserDetails.getUsername());
-        verify(interestService).saveAll(anyList());
+        verify(interestService).create(member.getId(), interestRequest);
     }
 
     @DisplayName("학적 정보 입력받기 테스트")
@@ -151,5 +153,17 @@ class SetMemberInfoFacadeTest {
         setMemberInfoFacade.changeTimetable(customUserDetails, changeTimetableRequest);
         //then
         verify(timetableService).changeTimetable(timetable, changeTimetableRequest);
+    }
+
+    @DisplayName("관심사항 변경 테스트")
+    @Test
+    void changeInterest() {
+        //given
+        InterestRequest interestRequest = new InterestRequest("AI, 웹, 경제");
+        //when
+        setMemberInfoFacade.changeInterest(customUserDetails, interestRequest);
+        //then
+        verify(memberService).getByEmail(customUserDetails.getUsername());
+        verify(interestService).changeInterest(member.getId(), interestRequest);
     }
 }

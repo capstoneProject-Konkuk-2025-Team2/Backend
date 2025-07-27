@@ -20,6 +20,26 @@ public class InterestRepositoryTest {
     @Autowired
     private InterestRepository interestRepository;
 
+    @DisplayName("saveAll 테스트")
+    @Test
+    void saveAll_success() {
+        //given
+        List<Interest> interestList = List.of(
+                Interest.builder().content("AI").build(),
+                Interest.builder().content("웹").build(),
+                Interest.builder().content("경제").build()
+        );
+        //when
+        interestRepository.saveAll(interestList);
+        //then
+        List<Interest> interests = interestRepository.findAll();
+        assertEquals(interestList.size(), interests.size());
+        List<String> actualContents = interests.stream()
+                .map(Interest::getContent)
+                .toList();
+        assertThat(actualContents, containsInAnyOrder("AI", "웹", "경제"));
+    }
+
     @DisplayName("findAllByMemberId 테스트")
     @Test
     void findByMemberIdAndId_success() {
@@ -39,5 +59,22 @@ public class InterestRepositoryTest {
                 .map(Interest::getContent)
                 .toList();
         assertThat(actualContents, containsInAnyOrder("AI", "웹"));
+    }
+
+    @DisplayName("deleteAllByMemberId 테스트")
+    @Test
+    void deleteAllByMemberId_success() {
+        //given
+        List<Interest> interestList = List.of(
+                Interest.builder().memberId(4L).content("AI").build(),
+                Interest.builder().memberId(4L).content("웹").build(),
+                Interest.builder().memberId(4L).content("경제").build()
+        );
+        interestRepository.saveAll(interestList);
+        //when
+        interestRepository.deleteAllByMemberId(4L);
+        //then
+        List<Interest> actualInterestList = interestRepository.findAllByMemberId(4L);
+        assertEquals(0, actualInterestList.size());
     }
 }

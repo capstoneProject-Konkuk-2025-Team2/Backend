@@ -51,7 +51,7 @@ public class SetMemberInfoController {
     @Operation(summary = "학적정보 입력 받기(수정용으로 써도 무관)", description = "upsertAcademicInfo")
     public ApiResponse<Boolean> upsertAcademicInfo(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody AcademicInfoRequest academicInfoRequest
+            @RequestBody @Valid AcademicInfoRequest academicInfoRequest
     ) {
         return ApiResponse.success(setMemberInfoFacade.upsertAcademicInfo(customUserDetails, academicInfoRequest));
     }

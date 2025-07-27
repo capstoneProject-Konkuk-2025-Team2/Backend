@@ -9,6 +9,7 @@ import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
+import com.capstone.backend.member.dto.request.InterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import java.util.Arrays;
 import java.util.List;
@@ -34,15 +35,9 @@ public class SetMemberInfoFacade {
     }
 
     @Transactional
-    public Boolean createInterestInfo(CustomUserDetails customUserDetails, String createInterestInfoRequest) {
+    public Boolean createInterestInfo(CustomUserDetails customUserDetails, InterestRequest interestRequest) {
         Member member = memberService.getByEmail(customUserDetails.getUsername());
-        List<Interest> interestList = Arrays.stream(createInterestInfoRequest.split(","))
-                .map(String::trim)
-                .filter(interest -> !interest.isEmpty())
-                .distinct()
-                .map(req -> Interest.createInterest(member.getId(), req))
-                .toList();
-        interestService.saveAll(interestList);
+        interestService.create(member.getId(), interestRequest);
         return true;
     }
 
@@ -58,6 +53,13 @@ public class SetMemberInfoFacade {
         Member member = memberService.getByEmail(customUserDetails.getUsername());
         Timetable timetable = timetableService.findByMemberIdAndId(member.getId(), changeTimetableRequest.id());
         timetableService.changeTimetable(timetable, changeTimetableRequest);
+        return true;
+    }
+
+    @Transactional
+    public Boolean changeInterest(CustomUserDetails customUserDetails, InterestRequest interestRequest) {
+        Member member = memberService.getByEmail(customUserDetails.getUsername());
+        interestService.changeInterest(member.getId(), interestRequest);
         return true;
     }
 }

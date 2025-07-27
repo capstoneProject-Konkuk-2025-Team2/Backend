@@ -9,4 +9,5 @@ import org.springframework.data.repository.query.Param;
 public interface InterestRepository extends JpaRepository<Interest, Long> {
     @Query("SELECT i FROM Interest i WHERE i.memberId = :memberId")
     List<Interest> findAllByMemberId(@Param("memberId") Long memberId);
+    void deleteAllByMemberId(Long memberId);
 }

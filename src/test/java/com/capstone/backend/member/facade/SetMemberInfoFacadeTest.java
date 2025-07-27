@@ -5,8 +5,6 @@ import static com.capstone.backend.member.domain.value.AcademicStatus.ENROLLED;
 import static com.capstone.backend.member.domain.value.Day.MON;
 import static com.capstone.backend.member.domain.value.Day.TUE;
 import static com.capstone.backend.member.domain.value.Day.WED;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -20,7 +18,7 @@ import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.domain.value.Role;
 import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
-import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
+import com.capstone.backend.member.dto.request.AcademicInfoRequest;
 import com.capstone.backend.member.dto.request.InterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import java.time.LocalTime;
@@ -119,19 +117,19 @@ class SetMemberInfoFacadeTest {
     @Test
     void createAcademicInfo() {
         //given
-        CreateAcademicInfoRequest createAcademicInfoRequest = new CreateAcademicInfoRequest(
+        AcademicInfoRequest academicInfoRequest = new AcademicInfoRequest(
                 ENROLLED,
                 4L,
                 "공과대학",
                 "컴퓨터공학부",
                 "홍길동"
         );
-        doNothing().when(memberService).updateAcademicInfo(member.getId(), createAcademicInfoRequest);
+        doNothing().when(memberService).updateAcademicInfo(member.getId(), academicInfoRequest);
         //when
-        setMemberInfoFacade.createAcademicInfo(customUserDetails, createAcademicInfoRequest);
+        setMemberInfoFacade.upsertAcademicInfo(customUserDetails, academicInfoRequest);
         //then
         verify(memberService).getByEmail(customUserDetails.getUsername());
-        verify(memberService).updateAcademicInfo(member.getId(), createAcademicInfoRequest);
+        verify(memberService).updateAcademicInfo(member.getId(), academicInfoRequest);
     }
 
     @DisplayName("시간표 변경 테스트")

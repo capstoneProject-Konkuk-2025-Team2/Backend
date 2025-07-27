@@ -4,7 +4,7 @@ import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.repository.MemberRepository;
 import com.capstone.backend.member.domain.value.Role;
-import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
+import com.capstone.backend.member.dto.request.AcademicInfoRequest;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -67,14 +67,14 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateAcademicInfo(Long memberId, CreateAcademicInfoRequest createAcademicInfoRequest) {
+    public void updateAcademicInfo(Long memberId, AcademicInfoRequest academicInfoRequest) {
         Member member = getById(memberId);
         member.updateAcademicInfo(
-                createAcademicInfoRequest.academicStatus(),
-                createAcademicInfoRequest.grade(),
-                createAcademicInfoRequest.college(),
-                createAcademicInfoRequest.department(),
-                createAcademicInfoRequest.name()
+                academicInfoRequest.academicStatus(),
+                academicInfoRequest.grade(),
+                academicInfoRequest.college(),
+                academicInfoRequest.department(),
+                academicInfoRequest.name()
         );
     }
 }

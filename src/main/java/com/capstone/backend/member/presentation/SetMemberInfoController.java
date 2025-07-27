@@ -3,7 +3,7 @@ package com.capstone.backend.member.presentation;
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.core.common.web.response.ApiResponse;
 import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
-import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
+import com.capstone.backend.member.dto.request.AcademicInfoRequest;
 import com.capstone.backend.member.dto.request.InterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import com.capstone.backend.member.facade.SetMemberInfoFacade;
@@ -48,12 +48,12 @@ public class SetMemberInfoController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(ApiPath.SETTING_ACADEMIC_INFO)
-    @Operation(summary = "학적정보 입력 받기", description = "createAcademicInfo")
-    public ApiResponse<Boolean> createAcademicInfo(
+    @Operation(summary = "학적정보 입력 받기(수정용으로 써도 무관)", description = "upsertAcademicInfo")
+    public ApiResponse<Boolean> upsertAcademicInfo(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody CreateAcademicInfoRequest createAcademicInfoRequest
+            @RequestBody AcademicInfoRequest academicInfoRequest
     ) {
-        return ApiResponse.success(setMemberInfoFacade.createAcademicInfo(customUserDetails, createAcademicInfoRequest));
+        return ApiResponse.success(setMemberInfoFacade.upsertAcademicInfo(customUserDetails, academicInfoRequest));
     }
 
     @ResponseStatus(HttpStatus.OK)

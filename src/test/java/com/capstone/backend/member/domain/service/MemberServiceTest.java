@@ -15,7 +15,7 @@ import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.repository.MemberRepository;
 import com.capstone.backend.member.domain.value.Role;
-import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
+import com.capstone.backend.member.dto.request.AcademicInfoRequest;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -210,7 +210,7 @@ class MemberServiceTest {
                 .id(memberId)
                 .email(email)
                 .build();
-        CreateAcademicInfoRequest createAcademicInfoRequest = new CreateAcademicInfoRequest(
+        AcademicInfoRequest academicInfoRequest = new AcademicInfoRequest(
                 ENROLLED,
                 4L,
                 "공과대학",
@@ -219,12 +219,12 @@ class MemberServiceTest {
         );
         when(memberRepository.findById(memberId)).thenReturn(Optional.ofNullable(member));
         //when
-        memberService.updateAcademicInfo(memberId, createAcademicInfoRequest);
+        memberService.updateAcademicInfo(memberId, academicInfoRequest);
         //then
-        assertEquals(createAcademicInfoRequest.academicStatus(), member.getAcademicStatus());
-        assertEquals(createAcademicInfoRequest.grade(), member.getGrade());
-        assertEquals(createAcademicInfoRequest.college(), member.getCollege());
-        assertEquals(createAcademicInfoRequest.department(), member.getDepartment());
-        assertEquals(createAcademicInfoRequest.name(), member.getName());
+        assertEquals(academicInfoRequest.academicStatus(), member.getAcademicStatus());
+        assertEquals(academicInfoRequest.grade(), member.getGrade());
+        assertEquals(academicInfoRequest.college(), member.getCollege());
+        assertEquals(academicInfoRequest.department(), member.getDepartment());
+        assertEquals(academicInfoRequest.name(), member.getName());
     }
 }

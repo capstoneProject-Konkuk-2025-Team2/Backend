@@ -1,17 +1,15 @@
 package com.capstone.backend.member.facade;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
-import com.capstone.backend.member.domain.entity.Interest;
 import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.entity.Timetable;
 import com.capstone.backend.member.domain.service.InterestService;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
-import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
+import com.capstone.backend.member.dto.request.AcademicInfoRequest;
 import com.capstone.backend.member.dto.request.InterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -42,9 +40,9 @@ public class SetMemberInfoFacade {
     }
 
     @Transactional
-    public Boolean createAcademicInfo(CustomUserDetails customUserDetails, CreateAcademicInfoRequest createAcademicInfoRequest) {
+    public Boolean upsertAcademicInfo(CustomUserDetails customUserDetails, AcademicInfoRequest academicInfoRequest) {
         Member member = memberService.getByEmail(customUserDetails.getUsername());
-        memberService.updateAcademicInfo(member.getId(), createAcademicInfoRequest);
+        memberService.updateAcademicInfo(member.getId(), academicInfoRequest);
         return true;
     }
 

@@ -4,7 +4,7 @@ import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.core.common.web.response.ApiResponse;
 import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import com.capstone.backend.member.dto.request.CreateAcademicInfoRequest;
-import com.capstone.backend.member.dto.request.CreateInterestRequest;
+import com.capstone.backend.member.dto.request.InterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import com.capstone.backend.member.facade.SetMemberInfoFacade;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,9 +41,9 @@ public class SetMemberInfoController {
     @Operation(summary = "관심사항 입력받기", description = "createInterestInfo")
     public ApiResponse<Boolean> createInterestInfo(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody @Valid CreateInterestRequest createInterestInfoRequest
+            @RequestBody @Valid InterestRequest createInterestInfoRequest
     ){
-        return ApiResponse.success(setMemberInfoFacade.createInterestInfo(customUserDetails, createInterestInfoRequest.interestContent()));
+        return ApiResponse.success(setMemberInfoFacade.createInterestInfo(customUserDetails, createInterestInfoRequest));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -64,5 +64,15 @@ public class SetMemberInfoController {
             @RequestBody ChangeTimetableRequest changeTimetableRequest
     ) {
         return ApiResponse.success(setMemberInfoFacade.changeTimetable(customUserDetails, changeTimetableRequest));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping(ApiPath.CHANGE_INTEREST)
+    @Operation(summary = "관심사항 변경", description = "changeInterest")
+    public ApiResponse<Boolean> changeInterest(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody InterestRequest interestRequest
+    ) {
+        return ApiResponse.success(setMemberInfoFacade.changeInterest(customUserDetails, interestRequest));
     }
 }

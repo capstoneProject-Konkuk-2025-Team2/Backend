@@ -20,10 +20,13 @@ public record GetScheduleDetailResponse(
     public static GetScheduleDetailResponse of(
             Schedule schedule
     ) {
+        ScheduleType type = (schedule.getExtracurricularId() == null)
+                ? ScheduleType.NORMAL
+                : ScheduleType.EXTRACURRICULAR;
         return new GetScheduleDetailResponse(
                 schedule.getTitle(),
                 schedule.getContent(),
-                schedule.getScheduleType(),
+                type,
                 schedule.getStartDate(),
                 schedule.getEndDate()
         );

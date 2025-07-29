@@ -33,15 +33,14 @@ public class Schedule {
     @Column(name = "MEMBER_ID")
     private Long memberId;
 
+    @Column(name = "EXTRACURRICULAR_ID")
+    private Long extracurricularId;
+
     @Column(name = "START_DATE")
     private LocalDate startDate;
 
     @Column(name = "END_DATE")
     private LocalDate endDate;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "SCHEDULE_TYPE")
-    private ScheduleType scheduleType;
 
     @Column(name = "TITLE")
     private String title;
@@ -54,7 +53,6 @@ public class Schedule {
                 .memberId(memberId)
                 .startDate(createScheduleRequest.startDate())
                 .endDate(createScheduleRequest.endDate())
-                .scheduleType(createScheduleRequest.scheduleType())
                 .title(createScheduleRequest.title())
                 .content(createScheduleRequest.content())
                 .build();
@@ -63,7 +61,6 @@ public class Schedule {
     public void changeSchedule(ChangeScheduleRequest changeScheduleRequest) {
         this.startDate = changeScheduleRequest.startDate();
         this.endDate = changeScheduleRequest.endDate();
-        this.scheduleType = changeScheduleRequest.scheduleType();
         this.title = changeScheduleRequest.title();
         this.content = changeScheduleRequest.content();
     }

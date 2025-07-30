@@ -23,7 +23,7 @@ public class ScheduleFacade {
     @Transactional
     public Boolean createSchedule(CustomUserDetails customUserDetails, CreateScheduleRequest createScheduleRequest) {
         Long memberId = memberService.getByEmail(customUserDetails.getUsername()).getId();
-        scheduleService.save(Schedule.createSchedule(memberId, createScheduleRequest));
+        scheduleService.putSchedule(memberId, createScheduleRequest);
         return true;
     }
 

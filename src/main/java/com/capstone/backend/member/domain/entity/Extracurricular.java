@@ -1,6 +1,7 @@
 package com.capstone.backend.member.domain.entity;
 
 import com.capstone.backend.global.entity.BaseEntity;
+import com.capstone.backend.member.dto.request.ExtracurricularField;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -43,4 +44,15 @@ public class Extracurricular extends BaseEntity {
 
     @Column(name = "ACTIVITY_END")
     private LocalDateTime activityEnd;
+
+    public static Extracurricular createExtraCurricular(ExtracurricularField extracurricularField) {
+        return Extracurricular.builder()
+                .title(extracurricularField.originTitle())
+                .url(extracurricularField.url())
+                .applicationStart(extracurricularField.applicationStart())
+                .applicationEnd(extracurricularField.applicationEnd())
+                .activityStart(extracurricularField.activityStart())
+                .activityEnd(extracurricularField.activityEnd())
+                .build();
+    }
 }

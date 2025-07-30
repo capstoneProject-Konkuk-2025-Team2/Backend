@@ -2,9 +2,12 @@ package com.capstone.backend.member.domain.service;
 
 import com.capstone.backend.core.common.web.response.ExtendedHttpStatus;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
+import com.capstone.backend.member.domain.entity.Extracurricular;
 import com.capstone.backend.member.domain.entity.Schedule;
+import com.capstone.backend.member.domain.repository.ExtraCurricularRepository;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
+import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
+    private final ExtraCurricularRepository extraCurricularRepository;
 
     @Transactional
     public void save(Schedule schedule) {
@@ -60,5 +64,13 @@ public class ScheduleService {
     public GetScheduleDetailResponse getScheduleDetail(Long memberId, Long scheduleId) {
         Schedule schedule = getByMemberIdAndId(memberId, scheduleId);
         return GetScheduleDetailResponse.of(schedule);
+    }
+
+    @Transactional
+    public void putSchedule(Long memberId, CreateScheduleRequest createScheduleRequest) {
+        save(Schedule.createSchedule(memberId, createScheduleRequest));
+        Optional.ofNullable(createScheduleRequest.extracurricularField())
+                .map(Extracurricular::createExtraCurricular)
+                .ifPresent(extraCurricularRepository::save);
     }
 }

@@ -4,11 +4,11 @@ import com.capstone.backend.core.common.web.response.ExtendedHttpStatus;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Extracurricular;
 import com.capstone.backend.member.domain.entity.Schedule;
-import com.capstone.backend.member.domain.repository.ExtraCurricularRepository;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
+import com.capstone.backend.member.dto.request.ExtracurricularField;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
 import java.util.List;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
-    private final ExtraCurricularRepository extraCurricularRepository;
+    private final ExtraCurricularService extraCurricularService;
 
     @Transactional
     public void save(Schedule schedule) {
@@ -44,6 +44,24 @@ public class ScheduleService {
     public void changeSchedule(Long memberId, ChangeScheduleRequest changeScheduleRequest) {
         Schedule schedule = getByMemberIdAndId(memberId, changeScheduleRequest.scheduleId());
         schedule.changeSchedule(changeScheduleRequest);
+        Optional<ExtracurricularField> newFieldOpt = Optional.ofNullable(changeScheduleRequest.extracurricularField());
+        Long currentExtraId = schedule.getExtracurricularId();
+        newFieldOpt.ifPresentOrElse(
+                newField -> {
+                    if (currentExtraId == null) {
+                        Long createdId = extraCurricularService.createExtraCurricular(newField).getId();
+                        schedule.connectExtracurricular(createdId);
+                    } else {
+                        extraCurricularService.changeExtraCurricular(currentExtraId, newField);
+                    }
+                },
+                () -> {
+                    if (currentExtraId != null) {
+                        extraCurricularService.deleteExtraCurricular(currentExtraId);
+                        schedule.disconnectExtracurricular();
+                    }
+                }
+        );
     }
 
     @Transactional
@@ -68,9 +86,11 @@ public class ScheduleService {
 
     @Transactional
     public void putSchedule(Long memberId, CreateScheduleRequest createScheduleRequest) {
-        save(Schedule.createSchedule(memberId, createScheduleRequest));
+        Schedule schedule = Schedule.createSchedule(memberId, createScheduleRequest);
+        save(schedule);
         Optional.ofNullable(createScheduleRequest.extracurricularField())
-                .map(Extracurricular::createExtraCurricular)
-                .ifPresent(extraCurricularRepository::save);
+                .map(extraCurricularService::createExtraCurricular)
+                .map(Extracurricular::getId)
+                .ifPresent(schedule::connectExtracurricular);
     }
 }

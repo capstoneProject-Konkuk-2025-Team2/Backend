@@ -55,4 +55,13 @@ public class Extracurricular extends BaseEntity {
                 .activityEnd(extracurricularField.activityEnd())
                 .build();
     }
+
+    public void changeExtracurricular(ExtracurricularField extracurricularField) {
+        this.title = extracurricularField.originTitle();
+        this.url = extracurricularField.url();
+        this.applicationStart = extracurricularField.applicationStart();
+        this.applicationEnd = extracurricularField.applicationEnd();
+        this.activityStart = extracurricularField.activityStart();
+        this.activityEnd = extracurricularField.activityEnd();
+    }
 }

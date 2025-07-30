@@ -18,14 +18,12 @@ import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Extracurricular;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
-import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import com.capstone.backend.member.dto.request.ExtracurricularField;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
-import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -446,22 +444,7 @@ public class ScheduleServiceTest {
     @Test
     void getScheduleDetail_extra_success() {
         //given
-        Extracurricular extracurricular = Extracurricular.builder()
-                .title("비교과A")
-                .url("https://abc.cdf")
-                .applicationStart(LocalDateTime.of(2025,8,1,9,0))
-                .applicationEnd(LocalDateTime.of(2025,8,2,9,0))
-                .activityStart(LocalDateTime.of(2025,8,6,9,0))
-                .activityEnd(LocalDateTime.of(2025,8,6,12,0))
-                .build();
-        Schedule schedule = Schedule.builder()
-                .memberId(memberId)
-                .title("비교과1")
-                .content("비교과 상세정보")
-                .startDate(LocalDate.of(2025, 7, 1))
-                .endDate(LocalDate.of(2025, 8, 1))
-                .extracurricularId(extracurricular.getId())
-                .build();
+        schedule.connectExtracurricular(extracurricular.getId());
         ExtracurricularField expectedField = new ExtracurricularField(
                 extracurricular.getTitle(),
                 extracurricular.getUrl(),
@@ -472,13 +455,13 @@ public class ScheduleServiceTest {
         );
         when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
                 .thenReturn(Optional.of(schedule));
-        when(extraCurricularService.findById(extracurricular.getId()))
-                .thenReturn(Optional.of(extracurricular));
+        when(extraCurricularService.getById(extracurricular.getId()))
+                .thenReturn(extracurricular);
         //when
         GetScheduleDetailResponse result = scheduleService.getScheduleDetail(memberId, schedule.getId());
         //then
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
-        verify(extraCurricularService).findById(extracurricular.getId());
+        verify(extraCurricularService).getById(extracurricular.getId());
         assertThat(result)
                 .usingRecursiveComparison()
                 .isEqualTo(new GetScheduleDetailResponse(
@@ -495,23 +478,12 @@ public class ScheduleServiceTest {
     @Test
     void getScheduleDetail_normal_success() {
         //given
-        Schedule schedule = Schedule.builder()
-                .memberId(memberId)
-                .title("비교과1")
-                .content("비교과 상세정보")
-                .startDate(LocalDate.of(2025, 7, 1))
-                .endDate(LocalDate.of(2025, 8, 1))
-                .extracurricularId(null)
-                .build();
         when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
                 .thenReturn(Optional.of(schedule));
-        when(extraCurricularService.findById(null))
-                .thenReturn(Optional.empty());
         //when
         GetScheduleDetailResponse result = scheduleService.getScheduleDetail(memberId, schedule.getId());
         //then
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
-        verify(extraCurricularService).findById(schedule.getExtracurricularId());
         assertThat(result)
                 .extracting("title", "content", "scheduleType", "startDate", "endDate", "extracurricularField")
                 .containsExactly(

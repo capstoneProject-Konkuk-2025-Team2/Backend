@@ -83,7 +83,8 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public GetScheduleDetailResponse getScheduleDetail(Long memberId, Long scheduleId) {
         Schedule schedule = getByMemberIdAndId(memberId, scheduleId);
-        Extracurricular extracurricular = extraCurricularService.findById(schedule.getExtracurricularId())
+        Extracurricular extracurricular = Optional.ofNullable(schedule.getExtracurricularId())
+                .map(extraCurricularService::getById)
                 .orElse(null);
         return GetScheduleDetailResponse.of(schedule, extracurricular);
     }

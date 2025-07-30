@@ -67,6 +67,8 @@ public class ScheduleService {
     @Transactional
     public void deleteSchedule(Long memberId, DeleteScheduleRequest deleteScheduleRequest) {
         Schedule schedule = getByMemberIdAndId(memberId, deleteScheduleRequest.deleteScheduleId());
+        Optional.ofNullable(schedule.getExtracurricularId())
+                .ifPresent(extraCurricularService::deleteExtraCurricular);
         scheduleRepository.delete(schedule);
     }
 

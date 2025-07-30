@@ -81,7 +81,9 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public GetScheduleDetailResponse getScheduleDetail(Long memberId, Long scheduleId) {
         Schedule schedule = getByMemberIdAndId(memberId, scheduleId);
-        return GetScheduleDetailResponse.of(schedule);
+        Extracurricular extracurricular = extraCurricularService.findById(schedule.getExtracurricularId())
+                .orElse(null);
+        return GetScheduleDetailResponse.of(schedule, extracurricular);
     }
 
     @Transactional

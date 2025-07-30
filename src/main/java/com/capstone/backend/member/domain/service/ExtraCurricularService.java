@@ -4,6 +4,7 @@ import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Extracurricular;
 import com.capstone.backend.member.domain.repository.ExtracurricularRepository;
 import com.capstone.backend.member.dto.request.ExtracurricularField;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +26,18 @@ public class ExtraCurricularService {
 
     @Transactional
     public void changeExtraCurricular(Long id, ExtracurricularField extracurricularField) {
-        Extracurricular extracurricular = findById(id);
+        Extracurricular extracurricular = getById(id);
         extracurricular.changeExtracurricular(extracurricularField);
     }
 
     @Transactional(readOnly = true)
-    public Extracurricular findById(Long id) {
-        return extraCurricularRepository.findById(id).orElseThrow(
+    public Optional<Extracurricular> findById(Long id) {
+        return extraCurricularRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Extracurricular getById(Long id) {
+        return findById(id).orElseThrow(
                 () -> new CustomException("capstone.schedule.extra.not.found")
         );
     }

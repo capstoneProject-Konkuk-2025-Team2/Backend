@@ -1,5 +1,7 @@
 package com.capstone.backend.member.facade;
 
+import static com.capstone.backend.member.domain.value.ScheduleType.EXTRACURRICULAR;
+import static com.capstone.backend.member.domain.value.ScheduleType.NORMAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.doNothing;
@@ -7,11 +9,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
+import com.capstone.backend.member.domain.entity.Extracurricular;
 import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.ScheduleService;
 import com.capstone.backend.member.domain.value.Role;
+import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
@@ -171,9 +175,56 @@ public class ScheduleFacadeTest {
         );
     }
 
-    @DisplayName("스케쥴 상세 조회")
+    @DisplayName("스케쥴 상세 조회 - 비교과 관련 일정인 경우")
     @Test
-    void getScheduleDetail() {
+    void getScheduleDetail_extra() {
+        //given
+        Extracurricular extracurricular = Extracurricular.builder()
+                .title("비교과A")
+                .url("https://abc.cdf")
+                .applicationStart(LocalDateTime.of(2025,8,1,9,0))
+                .applicationEnd(LocalDateTime.of(2025,8,2,9,0))
+                .activityStart(LocalDateTime.of(2025,8,6,9,0))
+                .activityEnd(LocalDateTime.of(2025,8,6,12,0))
+                .build();
+        Schedule schedule = Schedule.builder()
+                .memberId(member.getId())
+                .title("비교과1")
+                .content("비교과 상세정보")
+                .startDate(LocalDate.of(2025, 7, 1))
+                .endDate(LocalDate.of(2025, 8, 1))
+                .extracurricularId(extracurricular.getId())
+                .build();
+        GetScheduleDetailResponse response = GetScheduleDetailResponse.of(schedule, extracurricular);
+        ExtracurricularField expectedField = new ExtracurricularField(
+                extracurricular.getTitle(),
+                extracurricular.getUrl(),
+                extracurricular.getApplicationStart(),
+                extracurricular.getApplicationEnd(),
+                extracurricular.getActivityStart(),
+                extracurricular.getActivityEnd()
+        );
+        when(scheduleService.getScheduleDetail(member.getId(), schedule.getId()))
+                .thenReturn(response);
+        //when
+        GetScheduleDetailResponse result = scheduleFacade.getScheduleDetail(schedule.getId(), customUserDetails);
+        //then
+        verify(scheduleService).getScheduleDetail(member.getId(), schedule.getId());
+        assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(new GetScheduleDetailResponse(
+                        schedule.getTitle(),
+                        schedule.getContent(),
+                        EXTRACURRICULAR,
+                        schedule.getStartDate(),
+                        schedule.getEndDate(),
+                        expectedField
+                ));
+    }
+
+    @DisplayName("스케쥴 상세 조회 - 일반 일정인 경우")
+    @Test
+    void getScheduleDetail_normal() {
         //given
         Schedule schedule = Schedule.builder()
                 .memberId(member.getId())
@@ -182,7 +233,7 @@ public class ScheduleFacadeTest {
                 .startDate(LocalDate.of(2025, 7, 1))
                 .endDate(LocalDate.of(2025, 8, 1))
                 .build();
-        GetScheduleDetailResponse response = GetScheduleDetailResponse.of(schedule);
+        GetScheduleDetailResponse response = GetScheduleDetailResponse.of(schedule, null);
         when(scheduleService.getScheduleDetail(member.getId(), schedule.getId()))
                 .thenReturn(response);
         //when
@@ -190,12 +241,14 @@ public class ScheduleFacadeTest {
         //then
         verify(scheduleService).getScheduleDetail(member.getId(), schedule.getId());
         assertThat(result)
-                .extracting("title", "content", "scheduleType", "startDate", "endDate")
+                .extracting("title", "content", "scheduleType", "startDate", "endDate", "extracurricularField")
                 .containsExactly(
                         schedule.getTitle(),
                         schedule.getContent(),
+                        NORMAL,
                         schedule.getStartDate(),
-                        schedule.getEndDate()
+                        schedule.getEndDate(),
+                        null
                 );
     }
 }

@@ -1,5 +1,7 @@
 package com.capstone.backend.member.domain.service;
 
+import static com.capstone.backend.member.domain.value.ScheduleType.EXTRACURRICULAR;
+import static com.capstone.backend.member.domain.value.ScheduleType.NORMAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -16,12 +18,14 @@ import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Extracurricular;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
+import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import com.capstone.backend.member.dto.request.ExtracurricularField;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -420,23 +424,85 @@ public class ScheduleServiceTest {
         );
     }
 
-    @DisplayName("getScheduleDetail - 성공")
+    @DisplayName("getScheduleDetail - 성공(비교과 관련)")
     @Test
-    void getScheduleDetail_success() {
+    void getScheduleDetail_extra_success() {
         //given
+        Extracurricular extracurricular = Extracurricular.builder()
+                .title("비교과A")
+                .url("https://abc.cdf")
+                .applicationStart(LocalDateTime.of(2025,8,1,9,0))
+                .applicationEnd(LocalDateTime.of(2025,8,2,9,0))
+                .activityStart(LocalDateTime.of(2025,8,6,9,0))
+                .activityEnd(LocalDateTime.of(2025,8,6,12,0))
+                .build();
+        Schedule schedule = Schedule.builder()
+                .memberId(memberId)
+                .title("비교과1")
+                .content("비교과 상세정보")
+                .startDate(LocalDate.of(2025, 7, 1))
+                .endDate(LocalDate.of(2025, 8, 1))
+                .extracurricularId(extracurricular.getId())
+                .build();
+        ExtracurricularField expectedField = new ExtracurricularField(
+                extracurricular.getTitle(),
+                extracurricular.getUrl(),
+                extracurricular.getApplicationStart(),
+                extracurricular.getApplicationEnd(),
+                extracurricular.getActivityStart(),
+                extracurricular.getActivityEnd()
+        );
         when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
                 .thenReturn(Optional.of(schedule));
+        when(extraCurricularService.findById(extracurricular.getId()))
+                .thenReturn(Optional.of(extracurricular));
         //when
         GetScheduleDetailResponse result = scheduleService.getScheduleDetail(memberId, schedule.getId());
         //then
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
+        verify(extraCurricularService).findById(extracurricular.getId());
         assertThat(result)
-                .extracting("title", "content", "scheduleType", "startDate", "endDate")
+                .usingRecursiveComparison()
+                .isEqualTo(new GetScheduleDetailResponse(
+                        schedule.getTitle(),
+                        schedule.getContent(),
+                        EXTRACURRICULAR,
+                        schedule.getStartDate(),
+                        schedule.getEndDate(),
+                        expectedField
+                ));
+    }
+
+    @DisplayName("getScheduleDetail - 성공(일반 일정)")
+    @Test
+    void getScheduleDetail_normal_success() {
+        //given
+        Schedule schedule = Schedule.builder()
+                .memberId(memberId)
+                .title("비교과1")
+                .content("비교과 상세정보")
+                .startDate(LocalDate.of(2025, 7, 1))
+                .endDate(LocalDate.of(2025, 8, 1))
+                .extracurricularId(null)
+                .build();
+        when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
+                .thenReturn(Optional.of(schedule));
+        when(extraCurricularService.findById(extracurricular.getId()))
+                .thenReturn(Optional.empty());
+        //when
+        GetScheduleDetailResponse result = scheduleService.getScheduleDetail(memberId, schedule.getId());
+        //then
+        verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
+        verify(extraCurricularService).findById(extracurricular.getId());
+        assertThat(result)
+                .extracting("title", "content", "scheduleType", "startDate", "endDate", "extracurricularField")
                 .containsExactly(
                         schedule.getTitle(),
                         schedule.getContent(),
+                        NORMAL,
                         schedule.getStartDate(),
-                        schedule.getEndDate()
+                        schedule.getEndDate(),
+                        null
                 );
     }
 

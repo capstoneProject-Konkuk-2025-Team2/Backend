@@ -3,7 +3,6 @@ package com.capstone.backend.member.domain.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.capstone.backend.member.domain.entity.Extracurricular;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,7 @@ public class ExtracurricularRepositoryTest {
     @Autowired
     private ExtracurricularRepository extracurricularRepository;
 
-    @DisplayName("findById테스트")
+    @DisplayName("findById 테스트")
     @Test
     void findById_success() {
         //given
@@ -30,7 +29,7 @@ public class ExtracurricularRepositoryTest {
         assertThat(findExtracurricular.getTitle()).isEqualTo(extracurricular.getTitle());
     }
 
-    @DisplayName("deleteById테스트")
+    @DisplayName("deleteById 테스트")
     @Test
     void deleteById_success() {
         //given

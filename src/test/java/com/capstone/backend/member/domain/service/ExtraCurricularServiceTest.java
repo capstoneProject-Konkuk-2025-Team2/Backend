@@ -74,7 +74,19 @@ public class ExtraCurricularServiceTest {
         verify(extracurricularRepository).findById(extraCurricularId);
     }
 
-    @DisplayName("findById - 실패(못 찾았을 때)")
+    @DisplayName("getById - 성공")
+    @Test
+    void getById_success() {
+        //given
+        Long extraCurricularId = extracurricular.getId();
+        when(extracurricularRepository.findById(extraCurricularId)).thenReturn(Optional.of(extracurricular));
+        //when
+        extraCurricularService.getById(extraCurricularId);
+        //then
+        verify(extracurricularRepository).findById(extraCurricularId);
+    }
+
+    @DisplayName("getById - 실패(못 찾았을 때)")
     @Test
     void findById_fail_not_found() {
         //given
@@ -83,7 +95,7 @@ public class ExtraCurricularServiceTest {
         // when & then
         CustomException exception = assertThrows(
                 CustomException.class,
-                () -> extraCurricularService.findById(extraCurricularId)
+                () -> extraCurricularService.getById(extraCurricularId)
         );
         ApiError error = exception.getError();
         assertThat(error.element().code().value()).isEqualTo("capstone.schedule.extra.not.found");

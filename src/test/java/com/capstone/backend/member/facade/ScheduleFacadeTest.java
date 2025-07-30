@@ -2,7 +2,6 @@ package com.capstone.backend.member.facade;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,9 +16,11 @@ import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
+import com.capstone.backend.member.dto.request.ExtracurricularField;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,22 +56,46 @@ public class ScheduleFacadeTest {
         when(memberService.getByEmail(member.getEmail())).thenReturn(member);
     }
 
-    @DisplayName("스케쥴 생성")
+    @DisplayName("스케쥴 생성 - 일반 일정")
     @Test
-    void createSchedule() {
+    void createSchedule_normal() {
         //given
         CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
                 "테스트 스케쥴",
                 "테스트 상세정보",
-                ScheduleType.EXTRACURRICULAR,
                 LocalDate.of(2025,7,1),
-                LocalDate.of(2025,7,25)
+                LocalDate.of(2025,7,25),
+                null
         );
-        doNothing().when(scheduleService).save(any());
         //when
         scheduleFacade.createSchedule(customUserDetails, createScheduleRequest);
         //then
-        verify(scheduleService).save(any());
+        verify(scheduleService).putSchedule(member.getId(), createScheduleRequest);
+    }
+
+    @DisplayName("스케쥴 생성 - 비교과 일정")
+    @Test
+    void createSchedule_extra() {
+        //given
+        ExtracurricularField extracurricularField = new ExtracurricularField(
+                "비교과A",
+                "https://abc.def",
+                LocalDateTime.of(2025,8,1,9,0),
+                LocalDateTime.of(2025,8,2,9,0),
+                LocalDateTime.of(2025,8,6,9,0),
+                LocalDateTime.of(2025,8,6,12,0)
+        );
+        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
+                "테스트 스케쥴",
+                "테스트 상세정보",
+                LocalDate.of(2025,7,1),
+                LocalDate.of(2025,7,25),
+                extracurricularField
+        );
+        //when
+        scheduleFacade.createSchedule(customUserDetails, createScheduleRequest);
+        //then
+        verify(scheduleService).putSchedule(member.getId(), createScheduleRequest);
     }
 
     @DisplayName("스케쥴 수정")
@@ -117,14 +142,12 @@ public class ScheduleFacadeTest {
         Schedule schedule1 = Schedule.builder()
                 .memberId(member.getId())
                 .title("비교과1")
-                .scheduleType(ScheduleType.EXTRACURRICULAR)
                 .startDate(LocalDate.of(2025, 7, 1))
                 .endDate(LocalDate.of(2025, 8, 1))
                 .build();
         Schedule schedule2 = Schedule.builder()
                 .memberId(member.getId())
                 .title("비교과2")
-                .scheduleType(ScheduleType.NORMAL)
                 .startDate(LocalDate.of(2025, 6, 1))
                 .endDate(LocalDate.of(2025, 7, 2))
                 .build();
@@ -150,7 +173,6 @@ public class ScheduleFacadeTest {
                 .memberId(member.getId())
                 .title("비교과1")
                 .content("비교과 상세정보")
-                .scheduleType(ScheduleType.EXTRACURRICULAR)
                 .startDate(LocalDate.of(2025, 7, 1))
                 .endDate(LocalDate.of(2025, 8, 1))
                 .build();
@@ -166,7 +188,6 @@ public class ScheduleFacadeTest {
                 .containsExactly(
                         schedule.getTitle(),
                         schedule.getContent(),
-                        schedule.getScheduleType(),
                         schedule.getStartDate(),
                         schedule.getEndDate()
                 );

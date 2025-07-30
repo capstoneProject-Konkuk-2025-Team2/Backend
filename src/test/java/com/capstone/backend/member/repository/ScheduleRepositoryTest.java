@@ -47,7 +47,6 @@ public class ScheduleRepositoryTest {
         // given
         Schedule schedule = Schedule.builder()
                 .title("삭제 테스트")
-                .scheduleType(ScheduleType.EXTRACURRICULAR)
                 .startDate(LocalDate.of(2025, 7, 1))
                 .endDate(LocalDate.of(2025, 7, 31))
                 .memberId(1L)

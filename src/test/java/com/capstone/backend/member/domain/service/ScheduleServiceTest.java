@@ -75,6 +75,7 @@ public class ScheduleServiceTest {
                 .endDate(LocalDate.of(2025, 8, 1))
                 .build();
         extracurricular = Extracurricular.builder()
+                .id(1L)
                 .title("비교과A")
                 .url("https://abc.cdf")
                 .applicationStart(LocalDateTime.of(2025,8,1,9,0))
@@ -376,9 +377,9 @@ public class ScheduleServiceTest {
         verify(extraCurricularService).changeExtraCurricular(newExtra.getId(), request.extracurricularField());
     }
 
-    @DisplayName("deleteSchedule - 성공")
+    @DisplayName("deleteSchedule - 성공(일반 일정 일 때)")
     @Test
-    void deleteSchedule_success() {
+    void deleteSchedule_success_normal() {
         // given
         DeleteScheduleRequest request = new DeleteScheduleRequest(schedule.getId());
         when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
@@ -388,6 +389,23 @@ public class ScheduleServiceTest {
         //then
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
         verify(scheduleRepository).delete(schedule);
+        verify(extraCurricularService, never()).deleteExtraCurricular(schedule.getExtracurricularId());
+    }
+
+    @DisplayName("deleteSchedule - 성공(비교과 관련 일정 일 떄)")
+    @Test
+    void deleteSchedule_success_extra() {
+        // given
+        schedule.connectExtracurricular(extracurricular.getId());
+        DeleteScheduleRequest request = new DeleteScheduleRequest(schedule.getId());
+        when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
+                .thenReturn(Optional.of(schedule));
+        // when
+        scheduleService.deleteSchedule(memberId, request);
+        //then
+        verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
+        verify(scheduleRepository).delete(schedule);
+        verify(extraCurricularService).deleteExtraCurricular(schedule.getExtracurricularId());
     }
 
     @DisplayName("findByMemberIdAndYearAndMonth - 성공")
@@ -487,13 +505,13 @@ public class ScheduleServiceTest {
                 .build();
         when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
                 .thenReturn(Optional.of(schedule));
-        when(extraCurricularService.findById(extracurricular.getId()))
+        when(extraCurricularService.findById(null))
                 .thenReturn(Optional.empty());
         //when
         GetScheduleDetailResponse result = scheduleService.getScheduleDetail(memberId, schedule.getId());
         //then
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
-        verify(extraCurricularService).findById(extracurricular.getId());
+        verify(extraCurricularService).findById(schedule.getExtracurricularId());
         assertThat(result)
                 .extracting("title", "content", "scheduleType", "startDate", "endDate", "extracurricularField")
                 .containsExactly(

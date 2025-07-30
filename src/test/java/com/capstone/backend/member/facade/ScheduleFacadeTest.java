@@ -12,7 +12,6 @@ import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.ScheduleService;
 import com.capstone.backend.member.domain.value.Role;
-import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
@@ -102,15 +101,22 @@ public class ScheduleFacadeTest {
     @Test
     void changeSchedule() {
         //given
+        ExtracurricularField extracurricularField = new ExtracurricularField(
+                "비교과A",
+                "https://abc.def",
+                LocalDateTime.of(2025,8,1,9,0),
+                LocalDateTime.of(2025,8,2,9,0),
+                LocalDateTime.of(2025,8,6,9,0),
+                LocalDateTime.of(2025,8,6,12,0)
+        );
         ChangeScheduleRequest changeScheduleRequest = new ChangeScheduleRequest(
                 1L,
                 "스케쥴1",
                 "스케쥴 상세정보",
-                ScheduleType.EXTRACURRICULAR,
                 LocalDate.of(2025, 7, 1),
-                LocalDate.of(2025, 8, 1)
+                LocalDate.of(2025, 8, 1),
+                extracurricularField
         );
-        doNothing().when(scheduleService).changeSchedule(member.getId(), changeScheduleRequest);
         //when
         Boolean result = scheduleFacade.changeSchedule(customUserDetails, changeScheduleRequest);
         //then

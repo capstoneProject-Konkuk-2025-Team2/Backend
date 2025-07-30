@@ -1,4 +1,4 @@
-package com.capstone.backend.member.repository;
+package com.capstone.backend.member.domain.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;

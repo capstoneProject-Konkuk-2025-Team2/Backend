@@ -20,10 +20,13 @@ public record GetScheduleByYearAndMonthResponse(
         public static GetScheduleByYearAndMonthResponse of(
                 Schedule schedule
         ) {
+                ScheduleType type = (schedule.getExtracurricularId() == null)
+                        ? ScheduleType.NORMAL
+                        : ScheduleType.EXTRACURRICULAR;
                 return new GetScheduleByYearAndMonthResponse(
                         schedule.getId(),
                         schedule.getTitle(),
-                        schedule.getScheduleType(),
+                        type,
                         schedule.getStartDate(),
                         schedule.getEndDate()
                 );

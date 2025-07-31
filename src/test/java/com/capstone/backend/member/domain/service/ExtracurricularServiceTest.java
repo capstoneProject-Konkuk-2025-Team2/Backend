@@ -26,7 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
 @ExtendWith(MockitoExtension.class)
-public class ExtraCurricularServiceTest {
+public class ExtracurricularServiceTest {
     @Mock
     private ExtracurricularRepository extracurricularRepository;
     @Mock
@@ -35,7 +35,7 @@ public class ExtraCurricularServiceTest {
     private ApplicationContext mockApplicationContext;
 
     @InjectMocks
-    private ExtraCurricularService extraCurricularService;
+    private ExtracurricularService extraCurricularService;
 
     private Extracurricular extracurricular;
     @BeforeEach
@@ -114,7 +114,7 @@ public class ExtraCurricularServiceTest {
                 LocalDateTime.of(2025, 8, 6, 12, 0)
         );
         //when
-        extraCurricularService.createExtraCurricular(field);
+        extraCurricularService.createExtracurricular(field);
         //then
         ArgumentCaptor<Extracurricular> extracurricularCaptor = ArgumentCaptor.forClass(Extracurricular.class);
         verify(extracurricularRepository).save(extracurricularCaptor.capture());
@@ -142,7 +142,7 @@ public class ExtraCurricularServiceTest {
         Long extracurricularId = extracurricular.getId();
         when(extracurricularRepository.findById(extracurricularId)).thenReturn(Optional.of(extracurricular));
         //when
-        extraCurricularService.changeExtraCurricular(extracurricularId, field);
+        extraCurricularService.changeExtracurricular(extracurricularId, field);
         //then
         assertThat(extracurricular.getTitle()).isEqualTo(field.originTitle());
         assertThat(extracurricular.getUrl()).isEqualTo(field.url());
@@ -158,7 +158,7 @@ public class ExtraCurricularServiceTest {
         //given
         Long extracurricularId = extracurricular.getId();
         //when
-        extraCurricularService.deleteExtraCurricular(extracurricularId);
+        extraCurricularService.deleteExtracurricular(extracurricularId);
         //then
         verify(extracurricularRepository).deleteById(extracurricularId);
     }

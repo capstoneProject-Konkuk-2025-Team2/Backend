@@ -30,7 +30,7 @@ public class Extracurricular extends BaseEntity {
     @Column(name = "TITLE", length = 100)
     private String title;
 
-    @Column(name = "URL", length = 100)
+    @Column(name = "URL", length = 500)
     private String url;
 
     @Column(name = "APPLICATION_START")

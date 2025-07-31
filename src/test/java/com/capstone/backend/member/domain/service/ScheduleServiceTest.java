@@ -44,7 +44,7 @@ public class ScheduleServiceTest {
     private ScheduleRepository scheduleRepository;
 
     @Mock
-    private ExtraCurricularService extraCurricularService;
+    private ExtracurricularService extraCurricularService;
 
     @InjectMocks
     private ScheduleService scheduleService;
@@ -115,7 +115,7 @@ public class ScheduleServiceTest {
         assertThat(savedSchedule.getStartDate()).isEqualTo(createScheduleRequest.startDate());
         assertThat(savedSchedule.getEndDate()).isEqualTo(createScheduleRequest.endDate());
 
-        verify(extraCurricularService, never()).createExtraCurricular(any());
+        verify(extraCurricularService, never()).createExtracurricular(any());
     }
 
     @DisplayName("putSchedule - 비교과 스케쥴 저장 성공")
@@ -148,7 +148,7 @@ public class ScheduleServiceTest {
         assertThat(savedSchedule.getEndDate()).isEqualTo(createScheduleRequest.endDate());
 
         ArgumentCaptor<ExtracurricularField> extraCaptor = ArgumentCaptor.forClass(ExtracurricularField.class);
-        verify(extraCurricularService).createExtraCurricular(extraCaptor.capture());
+        verify(extraCurricularService).createExtracurricular(extraCaptor.capture());
         ExtracurricularField savedExtraCurricularField = extraCaptor.getValue();
         assertThat(savedExtraCurricularField.originTitle()).isEqualTo(extracurricularField.originTitle());
         assertThat(savedExtraCurricularField.url()).isEqualTo(extracurricularField.url());
@@ -164,10 +164,10 @@ public class ScheduleServiceTest {
         //given
         ExtracurricularField extracurricularField = new ExtracurricularField(
                 extracurricular.getTitle(),
-                extracurricular.getUrl(),
+                null,
                 extracurricular.getApplicationStart(),
                 extracurricular.getApplicationEnd(),
-                extracurricular.getActivityStart(),
+                null,
                 extracurricular.getActivityEnd()
         );
         CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
@@ -188,7 +188,7 @@ public class ScheduleServiceTest {
         assertThat(savedSchedule.getEndDate()).isEqualTo(createScheduleRequest.endDate());
 
         ArgumentCaptor<ExtracurricularField> extraCaptor = ArgumentCaptor.forClass(ExtracurricularField.class);
-        verify(extraCurricularService).createExtraCurricular(extraCaptor.capture());
+        verify(extraCurricularService).createExtracurricular(extraCaptor.capture());
         ExtracurricularField savedExtraCurricularField = extraCaptor.getValue();
         assertThat(savedExtraCurricularField.originTitle()).isEqualTo(extracurricularField.originTitle());
         assertThat(savedExtraCurricularField.url()).isEqualTo(extracurricularField.url());
@@ -295,7 +295,7 @@ public class ScheduleServiceTest {
                         .build();
         when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
                 .thenReturn(Optional.of(schedule));
-        when(extraCurricularService.createExtraCurricular(request.extracurricularField())).thenReturn(newExtra);
+        when(extraCurricularService.createExtracurricular(request.extracurricularField())).thenReturn(newExtra);
         //when
         scheduleService.changeSchedule(memberId, request);
         //then
@@ -304,7 +304,7 @@ public class ScheduleServiceTest {
         assertThat(schedule.getTitle()).isEqualTo(request.title());
         assertThat(schedule.getStartDate()).isEqualTo(request.startDate());
         assertThat(schedule.getEndDate()).isEqualTo(request.endDate());
-        verify(extraCurricularService).createExtraCurricular(request.extracurricularField());
+        verify(extraCurricularService).createExtracurricular(request.extracurricularField());
         assertThat(schedule.getExtracurricularId()).isEqualTo(newExtra.getId());
     }
 
@@ -335,7 +335,7 @@ public class ScheduleServiceTest {
         assertThat(schedule.getStartDate()).isEqualTo(request.startDate());
         assertThat(schedule.getEndDate()).isEqualTo(request.endDate());
         assertThat(schedule.getExtracurricularId()).isNull();
-        verify(extraCurricularService).deleteExtraCurricular(newExtra.getId());
+        verify(extraCurricularService).deleteExtracurricular(newExtra.getId());
     }
 
     @DisplayName("changeSchedule - (비교과 일정) -> (비교과 일정)")
@@ -372,7 +372,7 @@ public class ScheduleServiceTest {
         assertThat(schedule.getTitle()).isEqualTo(request.title());
         assertThat(schedule.getStartDate()).isEqualTo(request.startDate());
         assertThat(schedule.getEndDate()).isEqualTo(request.endDate());
-        verify(extraCurricularService).changeExtraCurricular(newExtra.getId(), request.extracurricularField());
+        verify(extraCurricularService).changeExtracurricular(newExtra.getId(), request.extracurricularField());
     }
 
     @DisplayName("deleteSchedule - 성공(일반 일정 일 때)")
@@ -387,7 +387,7 @@ public class ScheduleServiceTest {
         //then
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
         verify(scheduleRepository).delete(schedule);
-        verify(extraCurricularService, never()).deleteExtraCurricular(schedule.getExtracurricularId());
+        verify(extraCurricularService, never()).deleteExtracurricular(schedule.getExtracurricularId());
     }
 
     @DisplayName("deleteSchedule - 성공(비교과 관련 일정 일 떄)")
@@ -403,7 +403,7 @@ public class ScheduleServiceTest {
         //then
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
         verify(scheduleRepository).delete(schedule);
-        verify(extraCurricularService).deleteExtraCurricular(schedule.getExtracurricularId());
+        verify(extraCurricularService).deleteExtracurricular(schedule.getExtracurricularId());
     }
 
     @DisplayName("findByMemberIdAndYearAndMonth - 성공")

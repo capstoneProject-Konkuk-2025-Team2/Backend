@@ -11,28 +11,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class ExtraCurricularService {
-    private final ExtracurricularRepository extraCurricularRepository;
+public class ExtracurricularService {
+    private final ExtracurricularRepository extracurricularRepository;
     @Transactional
     public Extracurricular save(Extracurricular extracurricular) {
-        return extraCurricularRepository.save(extracurricular);
+        return extracurricularRepository.save(extracurricular);
     }
 
     @Transactional
-    public Extracurricular createExtraCurricular(ExtracurricularField extracurricularField) {
+    public Extracurricular createExtracurricular(ExtracurricularField extracurricularField) {
         Extracurricular extracurricular = Extracurricular.createExtraCurricular(extracurricularField);
         return save(extracurricular);
     }
 
     @Transactional
-    public void changeExtraCurricular(Long id, ExtracurricularField extracurricularField) {
+    public void changeExtracurricular(Long id, ExtracurricularField extracurricularField) {
         Extracurricular extracurricular = getById(id);
         extracurricular.changeExtracurricular(extracurricularField);
     }
 
     @Transactional(readOnly = true)
     public Optional<Extracurricular> findById(Long id) {
-        return extraCurricularRepository.findById(id);
+        return extracurricularRepository.findById(id);
     }
 
     @Transactional(readOnly = true)
@@ -43,7 +43,7 @@ public class ExtraCurricularService {
     }
 
     @Transactional
-    public void deleteExtraCurricular(Long id) {
-        extraCurricularRepository.deleteById(id);
+    public void deleteExtracurricular(Long id) {
+        extracurricularRepository.deleteById(id);
     }
 }

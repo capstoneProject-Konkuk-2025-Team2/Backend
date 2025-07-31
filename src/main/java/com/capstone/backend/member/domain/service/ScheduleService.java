@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
-    private final ExtraCurricularService extraCurricularService;
+    private final ExtracurricularService extracurricularService;
 
     @Transactional
     public void save(Schedule schedule) {
@@ -49,15 +49,15 @@ public class ScheduleService {
         newFieldOpt.ifPresentOrElse(
                 newField -> {
                     if (currentExtraId == null) {
-                        Long createdId = extraCurricularService.createExtraCurricular(newField).getId();
+                        Long createdId = extracurricularService.createExtracurricular(newField).getId();
                         schedule.connectExtracurricular(createdId);
                     } else {
-                        extraCurricularService.changeExtraCurricular(currentExtraId, newField);
+                        extracurricularService.changeExtracurricular(currentExtraId, newField);
                     }
                 },
                 () -> {
                     if (currentExtraId != null) {
-                        extraCurricularService.deleteExtraCurricular(currentExtraId);
+                        extracurricularService.deleteExtracurricular(currentExtraId);
                         schedule.disconnectExtracurricular();
                     }
                 }
@@ -68,7 +68,7 @@ public class ScheduleService {
     public void deleteSchedule(Long memberId, DeleteScheduleRequest deleteScheduleRequest) {
         Schedule schedule = getByMemberIdAndId(memberId, deleteScheduleRequest.deleteScheduleId());
         Optional.ofNullable(schedule.getExtracurricularId())
-                .ifPresent(extraCurricularService::deleteExtraCurricular);
+                .ifPresent(extracurricularService::deleteExtracurricular);
         scheduleRepository.delete(schedule);
     }
 
@@ -84,7 +84,7 @@ public class ScheduleService {
     public GetScheduleDetailResponse getScheduleDetail(Long memberId, Long scheduleId) {
         Schedule schedule = getByMemberIdAndId(memberId, scheduleId);
         Extracurricular extracurricular = Optional.ofNullable(schedule.getExtracurricularId())
-                .map(extraCurricularService::getById)
+                .map(extracurricularService::getById)
                 .orElse(null);
         return GetScheduleDetailResponse.of(schedule, extracurricular);
     }
@@ -94,7 +94,7 @@ public class ScheduleService {
         Schedule schedule = Schedule.createSchedule(memberId, createScheduleRequest);
         save(schedule);
         Optional.ofNullable(createScheduleRequest.extracurricularField())
-                .map(extraCurricularService::createExtraCurricular)
+                .map(extracurricularService::createExtracurricular)
                 .map(Extracurricular::getId)
                 .ifPresent(schedule::connectExtracurricular);
     }

@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,11 +33,11 @@ public class Schedule {
     @Column(name = "EXTRACURRICULAR_ID")
     private Long extracurricularId;
 
-    @Column(name = "START_DATE")
-    private LocalDate startDate;
+    @Column(name = "START_DATE_TIME")
+    private LocalDateTime startDateTime;
 
-    @Column(name = "END_DATE")
-    private LocalDate endDate;
+    @Column(name = "END_DATE_TIME")
+    private LocalDateTime endDateTime;
 
     @Column(name = "TITLE")
     private String title;
@@ -48,25 +48,24 @@ public class Schedule {
     public static Schedule createSchedule(Long memberId, CreateScheduleRequest createScheduleRequest) {
         return Schedule.builder()
                 .memberId(memberId)
-                .startDate(createScheduleRequest.startDate())
-                .endDate(createScheduleRequest.endDate())
+                .startDateTime(createScheduleRequest.startDateTime())
+                .endDateTime(createScheduleRequest.endDateTime())
                 .title(createScheduleRequest.title())
                 .content(createScheduleRequest.content())
+                .extracurricularId(createScheduleRequest.extracurricularId())
                 .build();
     }
 
     public void changeSchedule(ChangeScheduleRequest changeScheduleRequest) {
-        this.startDate = changeScheduleRequest.startDate();
-        this.endDate = changeScheduleRequest.endDate();
+        this.startDateTime = changeScheduleRequest.startDateTime();
+        this.endDateTime = changeScheduleRequest.endDateTime();
         this.title = changeScheduleRequest.title();
         this.content = changeScheduleRequest.content();
+        this.extracurricularId = changeScheduleRequest.extracurricularId();
     }
 
-    public void connectExtracurricular(Long extracurricularId) {
-        this.extracurricularId = extracurricularId;
-    }
-
-    public void disconnectExtracurricular() {
-        this.extracurricularId = null;
+    public void setScheduleDateTime(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
     }
 }

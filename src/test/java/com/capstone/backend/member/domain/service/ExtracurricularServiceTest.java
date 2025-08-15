@@ -11,15 +11,14 @@ import com.capstone.backend.core.common.web.response.exception.ApiError;
 import com.capstone.backend.core.configuration.env.AppEnv;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Extracurricular;
+import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ExtracurricularRepository;
-import com.capstone.backend.member.dto.request.ExtracurricularField;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -35,7 +34,7 @@ public class ExtracurricularServiceTest {
     private ApplicationContext mockApplicationContext;
 
     @InjectMocks
-    private ExtracurricularService extraCurricularService;
+    private ExtracurricularService extracurricularService;
 
     private Extracurricular extracurricular;
     @BeforeEach
@@ -57,109 +56,131 @@ public class ExtracurricularServiceTest {
     @Test
     void save_success() {
         //when
-        extraCurricularService.save(extracurricular);
+        extracurricularService.save(extracurricular);
         //then
         verify(extracurricularRepository).save(extracurricular);
     }
 
-    @DisplayName("findById - 성공")
+    @DisplayName("findByExtracurricularId - 성공")
     @Test
     void findById_success() {
         //given
-        Long extraCurricularId = extracurricular.getId();
-        when(extracurricularRepository.findById(extraCurricularId)).thenReturn(Optional.of(extracurricular));
+        Long extraCurricularId = extracurricular.getExtracurricularId();
+        when(extracurricularRepository.findByExtracurricularId(extraCurricularId)).thenReturn(Optional.of(extracurricular));
         //when
-        extraCurricularService.findById(extraCurricularId);
+        extracurricularService.findByExtracurricularId(extraCurricularId);
         //then
-        verify(extracurricularRepository).findById(extraCurricularId);
+        verify(extracurricularRepository).findByExtracurricularId(extraCurricularId);
     }
 
-    @DisplayName("getById - 성공")
+    @DisplayName("getByExtracurricularId - 성공")
     @Test
     void getById_success() {
         //given
-        Long extraCurricularId = extracurricular.getId();
-        when(extracurricularRepository.findById(extraCurricularId)).thenReturn(Optional.of(extracurricular));
+        Long extraCurricularId = extracurricular.getExtracurricularId();
+        when(extracurricularRepository.findByExtracurricularId(extraCurricularId)).thenReturn(Optional.of(extracurricular));
         //when
-        extraCurricularService.getById(extraCurricularId);
+        extracurricularService.getByExtracurricularId(extraCurricularId);
         //then
-        verify(extracurricularRepository).findById(extraCurricularId);
+        verify(extracurricularRepository).findByExtracurricularId(extraCurricularId);
     }
 
-    @DisplayName("getById - 실패(못 찾았을 때)")
+    @DisplayName("getByExtracurricularId - 실패(못 찾았을 때)")
     @Test
     void findById_fail_not_found() {
         //given
-        Long extraCurricularId = extracurricular.getId();
-        when(extracurricularRepository.findById(extraCurricularId)).thenReturn(Optional.empty());
+        Long extraCurricularId = extracurricular.getExtracurricularId();
+        when(extracurricularRepository.findByExtracurricularId(extraCurricularId)).thenReturn(Optional.empty());
         // when & then
         CustomException exception = assertThrows(
                 CustomException.class,
-                () -> extraCurricularService.getById(extraCurricularId)
+                () -> extracurricularService.getByExtracurricularId(extraCurricularId)
         );
         ApiError error = exception.getError();
-        assertThat(error.element().code().value()).isEqualTo("capstone.schedule.extra.not.found");
+        assertThat(error.element().code().value()).isEqualTo("capstone.extra.not.found");
     }
 
-    @DisplayName("createExtraCurricular - 성공")
     @Test
-    void createExtraCurricular_success() {
-        //given
-        ExtracurricularField field = new ExtracurricularField(
-                "비교과A",
-                "https://abc.com",
-                LocalDateTime.of(2025, 8, 1, 9, 0),
-                LocalDateTime.of(2025, 8, 2, 9, 0),
-                LocalDateTime.of(2025, 8, 6, 9, 0),
-                LocalDateTime.of(2025, 8, 6, 12, 0)
-        );
-        //when
-        extraCurricularService.createExtracurricular(field);
-        //then
-        ArgumentCaptor<Extracurricular> extracurricularCaptor = ArgumentCaptor.forClass(Extracurricular.class);
-        verify(extracurricularRepository).save(extracurricularCaptor.capture());
-        Extracurricular savedExtracurricular = extracurricularCaptor.getValue();
-        assertThat(savedExtracurricular.getTitle()).isEqualTo(field.originTitle());
-        assertThat(savedExtracurricular.getUrl()).isEqualTo(field.url());
-        assertThat(savedExtracurricular.getApplicationStart()).isEqualTo(field.applicationStart());
-        assertThat(savedExtracurricular.getApplicationEnd()).isEqualTo(field.applicationEnd());
-        assertThat(savedExtracurricular.getActivityStart()).isEqualTo(field.activityStart());
-        assertThat(savedExtracurricular.getActivityEnd()).isEqualTo(field.activityEnd());
+    @DisplayName("setScheduleDate - 활동기간이 있으면 활동기간으로 스케줄 세팅")
+    void setScheduleDate_useActivityRange() {
+        // given
+        Long extraId = 1L;
+        LocalDateTime start = LocalDateTime.of(2025, 7, 1, 9, 0);
+        LocalDateTime end   = LocalDateTime.of(2025, 7, 2, 9, 0);
+
+        Extracurricular ext = Extracurricular.builder()
+                .extracurricularId(extraId)
+                .activityStart(start)
+                .activityEnd(end)
+                .applicationStart(LocalDateTime.of(2025, 6, 1, 9, 0))
+                .applicationEnd(LocalDateTime.of(2025, 6, 2, 9, 0))
+                .build();
+
+        when(extracurricularRepository.findByExtracurricularId(extraId))
+                .thenReturn(Optional.of(ext));
+
+        Schedule schedule = Schedule.builder().build();
+
+        // when
+        extracurricularService.setScheduleDate(extraId, schedule);
+
+        // then
+        assertThat(schedule.getStartDateTime()).isEqualTo(start);
+        assertThat(schedule.getEndDateTime()).isEqualTo(end);
     }
 
-    @DisplayName("changeExtraCurricular - 성공")
     @Test
-    void changeExtraCurricular_success() {
-        //given
-        ExtracurricularField field = new ExtracurricularField(
-                "비교과A",
-                "https://abc.com",
-                LocalDateTime.of(2025, 8, 1, 9, 0),
-                LocalDateTime.of(2025, 8, 2, 9, 0),
-                LocalDateTime.of(2025, 8, 6, 9, 0),
-                LocalDateTime.of(2025, 8, 6, 12, 0)
-        );
-        Long extracurricularId = extracurricular.getId();
-        when(extracurricularRepository.findById(extracurricularId)).thenReturn(Optional.of(extracurricular));
-        //when
-        extraCurricularService.changeExtracurricular(extracurricularId, field);
-        //then
-        assertThat(extracurricular.getTitle()).isEqualTo(field.originTitle());
-        assertThat(extracurricular.getUrl()).isEqualTo(field.url());
-        assertThat(extracurricular.getApplicationStart()).isEqualTo(field.applicationStart());
-        assertThat(extracurricular.getApplicationEnd()).isEqualTo(field.applicationEnd());
-        assertThat(extracurricular.getActivityStart()).isEqualTo(field.activityStart());
-        assertThat(extracurricular.getActivityEnd()).isEqualTo(field.activityEnd());
+    @DisplayName("활동기간이 null이면 신청기간으로 스케줄 세팅")
+    void setScheduleDate_useApplicationRangeWhenActivityNull() {
+        // given
+        Long extraId = 2L;
+        LocalDateTime start = LocalDateTime.of(2025, 8, 1, 9, 0);
+        LocalDateTime end   = LocalDateTime.of(2025, 8, 2, 9, 0);
+
+        Extracurricular ext = Extracurricular.builder()
+                .extracurricularId(extraId)
+                .activityStart(null)
+                .activityEnd(null)
+                .applicationStart(start)
+                .applicationEnd(end)
+                .build();
+
+        when(extracurricularRepository.findByExtracurricularId(extraId))
+                .thenReturn(Optional.of(ext));
+
+        Schedule schedule = Schedule.builder().build();
+
+        // when
+        extracurricularService.setScheduleDate(extraId, schedule);
+
+        // then
+        assertThat(schedule.getStartDateTime()).isEqualTo(start);
+        assertThat(schedule.getEndDateTime()).isEqualTo(end);
     }
 
-    @DisplayName("deleteExtraCurricular - 성공")
     @Test
-    void deleteExtraCurricular_success() {
-        //given
-        Long extracurricularId = extracurricular.getId();
-        //when
-        extraCurricularService.deleteExtracurricular(extracurricularId);
-        //then
-        verify(extracurricularRepository).deleteById(extracurricularId);
+    @DisplayName("활동/신청기간이 모두 없으면 now로 세팅")
+    void setScheduleDate_useNowWhenNoDates() {
+        // given
+        Long extraId = 3L;
+        Extracurricular ext = Extracurricular.builder()
+                .extracurricularId(extraId)
+                .activityStart(null).activityEnd(null)
+                .applicationStart(null).applicationEnd(null)
+                .build();
+
+        when(extracurricularRepository.findByExtracurricularId(extraId))
+                .thenReturn(Optional.of(ext));
+
+        Schedule schedule = Schedule.builder().build();
+
+        // when
+        LocalDateTime before = LocalDateTime.now();
+        extracurricularService.setScheduleDate(extraId, schedule);
+        LocalDateTime after  = LocalDateTime.now();
+
+        // then (now는 호출 시점 차이가 있어 범위로 검증)
+        assertThat(schedule.getStartDateTime()).isBetween(before.minusSeconds(1), after.plusSeconds(1));
+        assertThat(schedule.getEndDateTime()).isBetween(before.minusSeconds(1), after.plusSeconds(1));
     }
 }

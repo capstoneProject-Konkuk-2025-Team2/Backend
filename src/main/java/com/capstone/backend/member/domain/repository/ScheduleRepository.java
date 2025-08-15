@@ -14,12 +14,13 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             SELECT s
             FROM Schedule s
             WHERE s.memberId = :memberId
-            AND (
-                (function('YEAR', s.startDate) = :year AND function('MONTH', s.startDate) = :month)
-                OR
-                (function('YEAR', s.endDate) = :year AND function('MONTH', s.endDate) = :month)
-            )
-        """
+             AND s.startDateTime < :endExclusive
+             AND s.endDateTime >= :startInclusive
+           """
     )
-    List<Schedule> findByMemberIdAndYearAndMonth(@Param("memberId") Long memberId, @Param("year") Long year, @Param("month") Long month);
+    List<Schedule> findByMemberIdAndOverlappingRange(
+            @Param("memberId") Long memberId,
+            @Param("startInclusive") java.time.LocalDateTime startInclusive,
+            @Param("endExclusive") java.time.LocalDateTime endExclusive
+    );
 }

@@ -38,7 +38,8 @@ public class ExtracurricularRepositoryTest {
         //when
         extracurricularRepository.deleteById(extracurricular.getId());
         //then
-        Optional<Extracurricular> findExtracurricular = extracurricularRepository.findById(extracurricular.getId());
+        Optional<Extracurricular> findExtracurricular = extracurricularRepository.findById(
+                extracurricular.getId());
         assertThat(findExtracurricular).isEqualTo(Optional.empty());
     }
 }

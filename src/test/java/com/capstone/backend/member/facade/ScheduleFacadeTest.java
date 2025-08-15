@@ -15,14 +15,12 @@ import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.ScheduleService;
 import com.capstone.backend.member.domain.value.Role;
-import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import com.capstone.backend.member.dto.request.ExtracurricularField;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,8 +64,8 @@ public class ScheduleFacadeTest {
         CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
                 "테스트 스케쥴",
                 "테스트 상세정보",
-                LocalDate.of(2025,7,1),
-                LocalDate.of(2025,7,25),
+                LocalDateTime.of(2025,7,1,0,0,0),
+                LocalDateTime.of(2025,7,25,0,0,0),
                 null
         );
         //when
@@ -80,20 +78,12 @@ public class ScheduleFacadeTest {
     @Test
     void createSchedule_extra() {
         //given
-        ExtracurricularField extracurricularField = new ExtracurricularField(
-                "비교과A",
-                "https://abc.def",
-                LocalDateTime.of(2025,8,1,9,0),
-                LocalDateTime.of(2025,8,2,9,0),
-                LocalDateTime.of(2025,8,6,9,0),
-                LocalDateTime.of(2025,8,6,12,0)
-        );
         CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
                 "테스트 스케쥴",
                 "테스트 상세정보",
-                LocalDate.of(2025,7,1),
-                LocalDate.of(2025,7,25),
-                extracurricularField
+                LocalDateTime.of(2025,7,1,0,0,0),
+                LocalDateTime.of(2025,7,25,0,0,0),
+                1L
         );
         //when
         scheduleFacade.createSchedule(customUserDetails, createScheduleRequest);
@@ -105,21 +95,13 @@ public class ScheduleFacadeTest {
     @Test
     void changeSchedule() {
         //given
-        ExtracurricularField extracurricularField = new ExtracurricularField(
-                "비교과A",
-                "https://abc.def",
-                LocalDateTime.of(2025,8,1,9,0),
-                LocalDateTime.of(2025,8,2,9,0),
-                LocalDateTime.of(2025,8,6,9,0),
-                LocalDateTime.of(2025,8,6,12,0)
-        );
         ChangeScheduleRequest changeScheduleRequest = new ChangeScheduleRequest(
                 1L,
                 "스케쥴1",
                 "스케쥴 상세정보",
-                LocalDate.of(2025, 7, 1),
-                LocalDate.of(2025, 8, 1),
-                extracurricularField
+                LocalDateTime.of(2025, 7, 1,0,0,0),
+                LocalDateTime.of(2025, 8, 1,0,0,0),
+                2L
         );
         //when
         Boolean result = scheduleFacade.changeSchedule(customUserDetails, changeScheduleRequest);
@@ -152,14 +134,14 @@ public class ScheduleFacadeTest {
         Schedule schedule1 = Schedule.builder()
                 .memberId(member.getId())
                 .title("비교과1")
-                .startDate(LocalDate.of(2025, 7, 1))
-                .endDate(LocalDate.of(2025, 8, 1))
+                .startDateTime(LocalDateTime.of(2025, 7, 1,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 8, 1,0,0,0))
                 .build();
         Schedule schedule2 = Schedule.builder()
                 .memberId(member.getId())
                 .title("비교과2")
-                .startDate(LocalDate.of(2025, 6, 1))
-                .endDate(LocalDate.of(2025, 7, 2))
+                .startDateTime(LocalDateTime.of(2025, 6, 1,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 7, 2,0,0,0))
                 .build();
         GetScheduleByYearAndMonthResponse response1 = GetScheduleByYearAndMonthResponse.of(schedule1);
         GetScheduleByYearAndMonthResponse response2 = GetScheduleByYearAndMonthResponse.of(schedule2);
@@ -169,9 +151,9 @@ public class ScheduleFacadeTest {
         List<GetScheduleByYearAndMonthResponse> result = scheduleFacade.getScheduleByYearAndMonth(year, month, customUserDetails);
         //then
         assertThat(result).hasSize(2);
-        assertThat(result).extracting("scheduleId","title","scheduleType","startDate","endDate").containsExactlyInAnyOrder(
-                tuple(response1.scheduleId(), response1.title(), response1.scheduleType(), response1.startDate(), response1.endDate()),
-                tuple(response2.scheduleId(), response2.title(), response2.scheduleType(), response2.startDate(), response2.endDate())
+        assertThat(result).extracting("scheduleId","title","scheduleType","startDateTime","endDateTime").containsExactlyInAnyOrder(
+                tuple(response1.scheduleId(), response1.title(), response1.scheduleType(), response1.startDateTime(), response1.endDateTime()),
+                tuple(response2.scheduleId(), response2.title(), response2.scheduleType(), response2.startDateTime(), response2.endDateTime())
         );
     }
 
@@ -180,6 +162,7 @@ public class ScheduleFacadeTest {
     void getScheduleDetail_extra() {
         //given
         Extracurricular extracurricular = Extracurricular.builder()
+                .extracurricularId(1L)
                 .title("비교과A")
                 .url("https://abc.cdf")
                 .applicationStart(LocalDateTime.of(2025,8,1,9,0))
@@ -191,9 +174,9 @@ public class ScheduleFacadeTest {
                 .memberId(member.getId())
                 .title("비교과1")
                 .content("비교과 상세정보")
-                .startDate(LocalDate.of(2025, 7, 1))
-                .endDate(LocalDate.of(2025, 8, 1))
-                .extracurricularId(extracurricular.getId())
+                .startDateTime(LocalDateTime.of(2025, 7, 1,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 8, 1,0,0,0))
+                .extracurricularId(extracurricular.getExtracurricularId())
                 .build();
         GetScheduleDetailResponse response = GetScheduleDetailResponse.of(schedule, extracurricular);
         ExtracurricularField expectedField = new ExtracurricularField(
@@ -216,8 +199,8 @@ public class ScheduleFacadeTest {
                         schedule.getTitle(),
                         schedule.getContent(),
                         EXTRACURRICULAR,
-                        schedule.getStartDate(),
-                        schedule.getEndDate(),
+                        schedule.getStartDateTime(),
+                        schedule.getEndDateTime(),
                         expectedField
                 ));
     }
@@ -230,8 +213,8 @@ public class ScheduleFacadeTest {
                 .memberId(member.getId())
                 .title("비교과1")
                 .content("비교과 상세정보")
-                .startDate(LocalDate.of(2025, 7, 1))
-                .endDate(LocalDate.of(2025, 8, 1))
+                .startDateTime(LocalDateTime.of(2025, 7, 1,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 8, 1,0,0,0))
                 .build();
         GetScheduleDetailResponse response = GetScheduleDetailResponse.of(schedule, null);
         when(scheduleService.getScheduleDetail(member.getId(), schedule.getId()))
@@ -241,13 +224,13 @@ public class ScheduleFacadeTest {
         //then
         verify(scheduleService).getScheduleDetail(member.getId(), schedule.getId());
         assertThat(result)
-                .extracting("title", "content", "scheduleType", "startDate", "endDate", "extracurricularField")
+                .extracting("title", "content", "scheduleType", "startDateTime", "endDateTime", "extracurricularField")
                 .containsExactly(
                         schedule.getTitle(),
                         schedule.getContent(),
                         NORMAL,
-                        schedule.getStartDate(),
-                        schedule.getEndDate(),
+                        schedule.getStartDateTime(),
+                        schedule.getEndDateTime(),
                         null
                 );
     }

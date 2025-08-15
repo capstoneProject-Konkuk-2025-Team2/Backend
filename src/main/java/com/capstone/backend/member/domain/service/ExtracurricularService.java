@@ -2,8 +2,9 @@ package com.capstone.backend.member.domain.service;
 
 import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Extracurricular;
+import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ExtracurricularRepository;
-import com.capstone.backend.member.dto.request.ExtracurricularField;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,32 +19,42 @@ public class ExtracurricularService {
         return extracurricularRepository.save(extracurricular);
     }
 
-    @Transactional
-    public Extracurricular createExtracurricular(ExtracurricularField extracurricularField) {
-        Extracurricular extracurricular = Extracurricular.createExtraCurricular(extracurricularField);
-        return save(extracurricular);
-    }
-
-    @Transactional
-    public void changeExtracurricular(Long id, ExtracurricularField extracurricularField) {
-        Extracurricular extracurricular = getById(id);
-        extracurricular.changeExtracurricular(extracurricularField);
+    @Transactional(readOnly = true)
+    public Optional<Extracurricular> findByExtracurricularId(Long extracurricularId) {
+        return extracurricularRepository.findByExtracurricularId(extracurricularId);
     }
 
     @Transactional(readOnly = true)
-    public Optional<Extracurricular> findById(Long id) {
-        return extracurricularRepository.findById(id);
-    }
-
-    @Transactional(readOnly = true)
-    public Extracurricular getById(Long id) {
-        return findById(id).orElseThrow(
-                () -> new CustomException("capstone.schedule.extra.not.found")
+    public Extracurricular getByExtracurricularId(Long extracurricularId) {
+        return findByExtracurricularId(extracurricularId).orElseThrow(
+                () -> new CustomException("capstone.extra.not.found")
         );
     }
 
     @Transactional
-    public void deleteExtracurricular(Long id) {
-        extracurricularRepository.deleteById(id);
+    public void isPresent(Long extracurricularId) {
+        findByExtracurricularId(extracurricularId).orElseThrow(
+                () -> new CustomException("capstone.extra.not.found")
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public void setScheduleDate(Long extracurricularId, Schedule schedule) {
+        Extracurricular extracurricular = getByExtracurricularId(extracurricularId);
+        LocalDateTime startDateTime;
+        LocalDateTime endDateTime;
+        if(extracurricular.getActivityStart() != null && extracurricular.getActivityEnd() != null) {
+            startDateTime = extracurricular.getActivityStart();
+            endDateTime = extracurricular.getActivityEnd();
+        }
+        else if(extracurricular.getApplicationStart() != null && extracurricular.getApplicationEnd() != null) {
+            startDateTime = extracurricular.getApplicationStart();
+            endDateTime = extracurricular.getApplicationEnd();
+        }
+        else {
+            startDateTime = LocalDateTime.now();
+            endDateTime = LocalDateTime.now();
+        }
+        schedule.setScheduleDateTime(startDateTime, endDateTime);
     }
 }

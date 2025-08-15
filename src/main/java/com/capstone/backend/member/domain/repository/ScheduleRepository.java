@@ -15,9 +15,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             FROM Schedule s
             WHERE s.memberId = :memberId
             AND (
-                (function('YEAR', s.startDate) = :year AND function('MONTH', s.startDate) = :month)
+                (function('YEAR', s.startDateTime) = :year AND function('MONTH', s.startDateTime) = :month)
                 OR
-                (function('YEAR', s.endDate) = :year AND function('MONTH', s.endDate) = :month)
+                (function('YEAR', s.endDateTime) = :year AND function('MONTH', s.endDateTime) = :month)
             )
         """
     )

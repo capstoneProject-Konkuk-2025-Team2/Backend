@@ -3,7 +3,7 @@ package com.capstone.backend.member.dto.response;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.value.ScheduleType;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record GetScheduleByYearAndMonthResponse(
         @Schema(description = "스케쥴 id", example = "1")
@@ -12,10 +12,10 @@ public record GetScheduleByYearAndMonthResponse(
         String title,
         @Schema(description = "스케쥴 타입", example = "EXTRACURRICULAR(비교과 관련), NORMAL(일반 일정)")
         ScheduleType scheduleType,
-        @Schema(description = "시작 날짜", example = "2025-07-19")
-        LocalDate startDate,
-        @Schema(description = "끝 날짜", example = "2025-07-20")
-        LocalDate endDate
+        @Schema(description = "시작 날짜", example = "2025-07-19T14:30:45")
+        LocalDateTime startDateTime,
+        @Schema(description = "끝 날짜", example = "2025-07-20T14:30:45")
+        LocalDateTime endDateTime
 ) {
         public static GetScheduleByYearAndMonthResponse of(
                 Schedule schedule
@@ -27,8 +27,8 @@ public record GetScheduleByYearAndMonthResponse(
                         schedule.getId(),
                         schedule.getTitle(),
                         type,
-                        schedule.getStartDate(),
-                        schedule.getEndDate()
+                        schedule.getStartDateTime(),
+                        schedule.getEndDateTime()
                 );
         }
 }

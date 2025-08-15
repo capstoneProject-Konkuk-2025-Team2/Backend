@@ -5,9 +5,7 @@ import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.capstone.backend.member.domain.entity.Schedule;
-import com.capstone.backend.member.domain.repository.ScheduleRepository;
-import com.capstone.backend.member.domain.value.ScheduleType;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -47,8 +45,8 @@ public class ScheduleRepositoryTest {
         // given
         Schedule schedule = Schedule.builder()
                 .title("삭제 테스트")
-                .startDate(LocalDate.of(2025, 7, 1))
-                .endDate(LocalDate.of(2025, 7, 31))
+                .startDateTime(LocalDateTime.of(2025, 7, 1, 0, 0, 0))
+                .endDateTime(LocalDateTime.of(2025, 7, 31,0,0,0))
                 .memberId(1L)
                 .build();
         Schedule saved = scheduleRepository.save(schedule);
@@ -66,16 +64,16 @@ public class ScheduleRepositoryTest {
         //given
         Long memberId = 1L;
         Schedule scheduleStartJuly = Schedule.builder().memberId(memberId)
-                .startDate(LocalDate.of(2025, 7, 24))
-                .endDate(LocalDate.of(2025, 7, 30))
+                .startDateTime(LocalDateTime.of(2025, 7, 24, 0, 0,0))
+                .endDateTime(LocalDateTime.of(2025, 7, 30, 0, 0,0))
                 .build();
         Schedule scheduleEndJuly = Schedule.builder().memberId(memberId)
-                .startDate(LocalDate.of(2025, 6, 24))
-                .endDate(LocalDate.of(2025, 7, 30))
+                .startDateTime(LocalDateTime.of(2025, 6, 24,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 7, 30,0,0,0))
                 .build();
         Schedule scheduleStartAndEndAugust = Schedule.builder().memberId(memberId)
-                .startDate(LocalDate.of(2025, 8, 24))
-                .endDate(LocalDate.of(2025, 8, 30))
+                .startDateTime(LocalDateTime.of(2025, 8, 24,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 8, 30,0,0,0))
                 .build();
         List<Schedule> scheduleList = List.of(
                 scheduleStartJuly,
@@ -87,9 +85,9 @@ public class ScheduleRepositoryTest {
         List<Schedule> result = scheduleRepository.findByMemberIdAndYearAndMonth(1L, 2025L, 7L);
         //then
         assertThat(result).hasSize(2);
-        assertThat(result).extracting("startDate", "endDate").containsExactlyInAnyOrder(
-                tuple(scheduleStartJuly.getStartDate(), scheduleStartJuly.getEndDate()),
-                tuple(scheduleEndJuly.getStartDate(), scheduleEndJuly.getEndDate())
+        assertThat(result).extracting("startDateTime", "endDateTime").containsExactlyInAnyOrder(
+                tuple(scheduleStartJuly.getStartDateTime(), scheduleStartJuly.getEndDateTime()),
+                tuple(scheduleEndJuly.getStartDateTime(), scheduleEndJuly.getEndDateTime())
         );
     }
 }

@@ -12,14 +12,12 @@ import com.capstone.backend.core.configuration.env.AppEnv;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Extracurricular;
 import com.capstone.backend.member.domain.repository.ExtracurricularRepository;
-import com.capstone.backend.member.dto.request.ExtracurricularField;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -62,104 +60,42 @@ public class ExtracurricularServiceTest {
         verify(extracurricularRepository).save(extracurricular);
     }
 
-    @DisplayName("findById - 성공")
+    @DisplayName("findByExtracurricularId - 성공")
     @Test
     void findById_success() {
         //given
-        Long extraCurricularId = extracurricular.getId();
-        when(extracurricularRepository.findById(extraCurricularId)).thenReturn(Optional.of(extracurricular));
+        Long extraCurricularId = extracurricular.getExtracurricularId();
+        when(extracurricularRepository.findByExtracurricularId(extraCurricularId)).thenReturn(Optional.of(extracurricular));
         //when
-        extraCurricularService.findById(extraCurricularId);
+        extraCurricularService.findByExtracurricularId(extraCurricularId);
         //then
-        verify(extracurricularRepository).findById(extraCurricularId);
+        verify(extracurricularRepository).findByExtracurricularId(extraCurricularId);
     }
 
-    @DisplayName("getById - 성공")
+    @DisplayName("getByExtracurricularId - 성공")
     @Test
     void getById_success() {
         //given
-        Long extraCurricularId = extracurricular.getId();
-        when(extracurricularRepository.findById(extraCurricularId)).thenReturn(Optional.of(extracurricular));
+        Long extraCurricularId = extracurricular.getExtracurricularId();
+        when(extracurricularRepository.findByExtracurricularId(extraCurricularId)).thenReturn(Optional.of(extracurricular));
         //when
-        extraCurricularService.getById(extraCurricularId);
+        extraCurricularService.getByExtracurricularId(extraCurricularId);
         //then
-        verify(extracurricularRepository).findById(extraCurricularId);
+        verify(extracurricularRepository).findByExtracurricularId(extraCurricularId);
     }
 
-    @DisplayName("getById - 실패(못 찾았을 때)")
+    @DisplayName("getByExtracurricularId - 실패(못 찾았을 때)")
     @Test
     void findById_fail_not_found() {
         //given
-        Long extraCurricularId = extracurricular.getId();
-        when(extracurricularRepository.findById(extraCurricularId)).thenReturn(Optional.empty());
+        Long extraCurricularId = extracurricular.getExtracurricularId();
+        when(extracurricularRepository.findByExtracurricularId(extraCurricularId)).thenReturn(Optional.empty());
         // when & then
         CustomException exception = assertThrows(
                 CustomException.class,
-                () -> extraCurricularService.getById(extraCurricularId)
+                () -> extraCurricularService.getByExtracurricularId(extraCurricularId)
         );
         ApiError error = exception.getError();
-        assertThat(error.element().code().value()).isEqualTo("capstone.schedule.extra.not.found");
-    }
-
-    @DisplayName("createExtraCurricular - 성공")
-    @Test
-    void createExtraCurricular_success() {
-        //given
-        ExtracurricularField field = new ExtracurricularField(
-                "비교과A",
-                "https://abc.com",
-                LocalDateTime.of(2025, 8, 1, 9, 0),
-                LocalDateTime.of(2025, 8, 2, 9, 0),
-                LocalDateTime.of(2025, 8, 6, 9, 0),
-                LocalDateTime.of(2025, 8, 6, 12, 0)
-        );
-        //when
-        extraCurricularService.createExtracurricular(field);
-        //then
-        ArgumentCaptor<Extracurricular> extracurricularCaptor = ArgumentCaptor.forClass(Extracurricular.class);
-        verify(extracurricularRepository).save(extracurricularCaptor.capture());
-        Extracurricular savedExtracurricular = extracurricularCaptor.getValue();
-        assertThat(savedExtracurricular.getTitle()).isEqualTo(field.originTitle());
-        assertThat(savedExtracurricular.getUrl()).isEqualTo(field.url());
-        assertThat(savedExtracurricular.getApplicationStart()).isEqualTo(field.applicationStart());
-        assertThat(savedExtracurricular.getApplicationEnd()).isEqualTo(field.applicationEnd());
-        assertThat(savedExtracurricular.getActivityStart()).isEqualTo(field.activityStart());
-        assertThat(savedExtracurricular.getActivityEnd()).isEqualTo(field.activityEnd());
-    }
-
-    @DisplayName("changeExtraCurricular - 성공")
-    @Test
-    void changeExtraCurricular_success() {
-        //given
-        ExtracurricularField field = new ExtracurricularField(
-                "비교과A",
-                "https://abc.com",
-                LocalDateTime.of(2025, 8, 1, 9, 0),
-                LocalDateTime.of(2025, 8, 2, 9, 0),
-                LocalDateTime.of(2025, 8, 6, 9, 0),
-                LocalDateTime.of(2025, 8, 6, 12, 0)
-        );
-        Long extracurricularId = extracurricular.getId();
-        when(extracurricularRepository.findById(extracurricularId)).thenReturn(Optional.of(extracurricular));
-        //when
-        extraCurricularService.changeExtracurricular(extracurricularId, field);
-        //then
-        assertThat(extracurricular.getTitle()).isEqualTo(field.originTitle());
-        assertThat(extracurricular.getUrl()).isEqualTo(field.url());
-        assertThat(extracurricular.getApplicationStart()).isEqualTo(field.applicationStart());
-        assertThat(extracurricular.getApplicationEnd()).isEqualTo(field.applicationEnd());
-        assertThat(extracurricular.getActivityStart()).isEqualTo(field.activityStart());
-        assertThat(extracurricular.getActivityEnd()).isEqualTo(field.activityEnd());
-    }
-
-    @DisplayName("deleteExtraCurricular - 성공")
-    @Test
-    void deleteExtraCurricular_success() {
-        //given
-        Long extracurricularId = extracurricular.getId();
-        //when
-        extraCurricularService.deleteExtracurricular(extracurricularId);
-        //then
-        verify(extracurricularRepository).deleteById(extracurricularId);
+        assertThat(error.element().code().value()).isEqualTo("capstone.extra.not.found");
     }
 }

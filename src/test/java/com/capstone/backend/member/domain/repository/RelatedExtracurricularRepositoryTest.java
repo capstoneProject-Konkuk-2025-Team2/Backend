@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
 @Transactional
-public class ExtracurricularRepositoryTest {
+public class RelatedExtracurricularRepositoryTest {
     @Autowired
     private ExtracurricularRepository extracurricularRepository;
 
@@ -38,7 +38,8 @@ public class ExtracurricularRepositoryTest {
         //when
         extracurricularRepository.deleteById(extracurricular.getId());
         //then
-        Optional<Extracurricular> findExtracurricular = extracurricularRepository.findById(extracurricular.getId());
+        Optional<Extracurricular> findExtracurricular = extracurricularRepository.findById(
+                extracurricular.getId());
         assertThat(findExtracurricular).isEqualTo(Optional.empty());
     }
 }

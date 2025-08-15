@@ -6,6 +6,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -18,6 +21,7 @@ import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Extracurricular;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
+import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
@@ -69,11 +73,12 @@ public class ScheduleServiceTest {
         schedule = Schedule.builder()
                 .title("스케쥴1")
                 .content("세부사항")
-                .startDate(LocalDate.of(2025, 7, 1))
-                .endDate(LocalDate.of(2025, 8, 1))
+                .startDateTime(LocalDateTime.of(2025, 7, 1,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 8, 1,0,0,0))
                 .build();
         extracurricular = Extracurricular.builder()
                 .id(1L)
+                .extracurricularId(1L)
                 .title("비교과A")
                 .url("https://abc.cdf")
                 .applicationStart(LocalDateTime.of(2025,8,1,9,0))
@@ -100,8 +105,8 @@ public class ScheduleServiceTest {
         CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
                 schedule.getTitle(),
                 schedule.getContent(),
-                schedule.getStartDate(),
-                schedule.getEndDate(),
+                schedule.getStartDateTime(),
+                schedule.getEndDateTime(),
                 null
         );
         //when
@@ -112,71 +117,91 @@ public class ScheduleServiceTest {
         Schedule savedSchedule = scheduleCaptor.getValue();
         assertThat(savedSchedule.getTitle()).isEqualTo(createScheduleRequest.title());
         assertThat(savedSchedule.getContent()).isEqualTo(createScheduleRequest.content());
-        assertThat(savedSchedule.getStartDate()).isEqualTo(createScheduleRequest.startDate());
-        assertThat(savedSchedule.getEndDate()).isEqualTo(createScheduleRequest.endDate());
-
-        verify(extraCurricularService, never()).createExtracurricular(any());
+        assertThat(savedSchedule.getStartDateTime()).isEqualTo(createScheduleRequest.startDate());
+        assertThat(savedSchedule.getEndDateTime()).isEqualTo(createScheduleRequest.endDate());
+        assertThat(savedSchedule.getExtracurricularId()).isEqualTo(createScheduleRequest.extracurricularId());
     }
 
     @DisplayName("putSchedule - 비교과 스케쥴 저장 성공")
     @Test
     void putSchedule_extra_success() {
         //given
-        ExtracurricularField extracurricularField = new ExtracurricularField(
-                extracurricular.getTitle(),
-                extracurricular.getUrl(),
-                extracurricular.getApplicationStart(),
-                extracurricular.getApplicationEnd(),
-                extracurricular.getActivityStart(),
-                extracurricular.getActivityEnd()
-        );
         CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
                 schedule.getTitle(),
                 schedule.getContent(),
-                schedule.getStartDate(),
-                schedule.getEndDate(),
-                extracurricularField
+                null,
+                null,
+                extracurricular.getExtracurricularId()
         );
+        doAnswer(invocation -> {
+            Long id = invocation.getArgument(0);
+            Schedule s = invocation.getArgument(1);
+            s.setScheduleDateTime(extracurricular.getActivityStart(), extracurricular.getActivityEnd());
+            return null;
+        }).when(extraCurricularService).setScheduleDate(eq(extracurricular.getExtracurricularId()), any(Schedule.class));
         //when
         scheduleService.putSchedule(memberId, createScheduleRequest);
+        //then
         ArgumentCaptor<Schedule> scheduleCaptor = ArgumentCaptor.forClass(Schedule.class);
         verify(scheduleRepository).save(scheduleCaptor.capture());
         Schedule savedSchedule = scheduleCaptor.getValue();
         assertThat(savedSchedule.getTitle()).isEqualTo(createScheduleRequest.title());
         assertThat(savedSchedule.getContent()).isEqualTo(createScheduleRequest.content());
-        assertThat(savedSchedule.getStartDate()).isEqualTo(createScheduleRequest.startDate());
-        assertThat(savedSchedule.getEndDate()).isEqualTo(createScheduleRequest.endDate());
-
-        ArgumentCaptor<ExtracurricularField> extraCaptor = ArgumentCaptor.forClass(ExtracurricularField.class);
-        verify(extraCurricularService).createExtracurricular(extraCaptor.capture());
-        ExtracurricularField savedExtraCurricularField = extraCaptor.getValue();
-        assertThat(savedExtraCurricularField.originTitle()).isEqualTo(extracurricularField.originTitle());
-        assertThat(savedExtraCurricularField.url()).isEqualTo(extracurricularField.url());
-        assertThat(savedExtraCurricularField.applicationStart()).isEqualTo(extracurricularField.applicationStart());
-        assertThat(savedExtraCurricularField.applicationEnd()).isEqualTo(extracurricularField.applicationEnd());
-        assertThat(savedExtraCurricularField.activityStart()).isEqualTo(extracurricularField.activityStart());
-        assertThat(savedExtraCurricularField.activityEnd()).isEqualTo(extracurricularField.activityEnd());
+        assertThat(savedSchedule.getStartDateTime()).isEqualTo(extracurricular.getActivityStart());
+        assertThat(savedSchedule.getEndDateTime()).isEqualTo(extracurricular.getActivityEnd());
+        assertThat(savedSchedule.getExtracurricularId()).isEqualTo(createScheduleRequest.extracurricularId());
     }
 
-    @DisplayName("putSchedule - 비교과 스케쥴(몇몇 필드는 null) 성공")
+    @DisplayName("putSchedule - 존재하지 않는 비교과 저장시 오류 발생")
     @Test
-    void putSchedule_not_perfect_extra_success() {
+    void putSchedule_fail_extra_not_found() {
         //given
-        ExtracurricularField extracurricularField = new ExtracurricularField(
-                extracurricular.getTitle(),
-                null,
-                extracurricular.getApplicationStart(),
-                extracurricular.getApplicationEnd(),
-                null,
-                extracurricular.getActivityEnd()
-        );
         CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
                 schedule.getTitle(),
                 schedule.getContent(),
-                schedule.getStartDate(),
-                schedule.getEndDate(),
-                extracurricularField
+                null,
+                null,
+                3L
         );
+        doThrow(new CustomException("capstone.extra.not.found"))
+                .when(extraCurricularService)
+                .setScheduleDate(eq(createScheduleRequest.extracurricularId()), any(Schedule.class));
+        //when & then
+        CustomException exception = assertThrows(
+                CustomException.class,
+                () -> scheduleService.putSchedule(memberId, createScheduleRequest)
+        );
+        ApiError error = exception.getError();
+        assertThat(error.element().code().value()).isEqualTo("capstone.extra.not.found");
+    }
+
+    @DisplayName("putSchedule - 비교과 활동기간이 null일때 비교과 신청기간이 스케쥴 date에 들어가야함")
+    @Test
+    void putSchedule_extra_activity_date_null() {
+        //given
+        Extracurricular extracurricular_activity_null = Extracurricular.builder()
+                .id(1L)
+                .extracurricularId(2L)
+                .title("비교과A")
+                .url("https://abc.cdf")
+                .applicationStart(LocalDateTime.of(2025,8,1,9,0))
+                .applicationEnd(LocalDateTime.of(2025,8,2,9,0))
+                .activityStart(null)
+                .activityEnd(null)
+                .build();
+        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
+                schedule.getTitle(),
+                schedule.getContent(),
+                null,
+                null,
+                extracurricular_activity_null.getExtracurricularId()
+        );
+        doAnswer(inv -> {
+            Long id = inv.getArgument(0);
+            Schedule s = inv.getArgument(1);
+            s.setScheduleDateTime(extracurricular_activity_null.getApplicationStart(), extracurricular_activity_null.getApplicationEnd());
+            return null;
+        }).when(extraCurricularService).setScheduleDate(eq(extracurricular_activity_null.getExtracurricularId()), any(Schedule.class));
         //when
         scheduleService.putSchedule(memberId, createScheduleRequest);
         ArgumentCaptor<Schedule> scheduleCaptor = ArgumentCaptor.forClass(Schedule.class);
@@ -184,18 +209,50 @@ public class ScheduleServiceTest {
         Schedule savedSchedule = scheduleCaptor.getValue();
         assertThat(savedSchedule.getTitle()).isEqualTo(createScheduleRequest.title());
         assertThat(savedSchedule.getContent()).isEqualTo(createScheduleRequest.content());
-        assertThat(savedSchedule.getStartDate()).isEqualTo(createScheduleRequest.startDate());
-        assertThat(savedSchedule.getEndDate()).isEqualTo(createScheduleRequest.endDate());
+        assertThat(savedSchedule.getStartDateTime()).isEqualTo(extracurricular_activity_null.getApplicationStart());
+        assertThat(savedSchedule.getEndDateTime()).isEqualTo(extracurricular_activity_null.getApplicationEnd());
+        assertThat(savedSchedule.getExtracurricularId()).isEqualTo(createScheduleRequest.extracurricularId());
+    }
 
-        ArgumentCaptor<ExtracurricularField> extraCaptor = ArgumentCaptor.forClass(ExtracurricularField.class);
-        verify(extraCurricularService).createExtracurricular(extraCaptor.capture());
-        ExtracurricularField savedExtraCurricularField = extraCaptor.getValue();
-        assertThat(savedExtraCurricularField.originTitle()).isEqualTo(extracurricularField.originTitle());
-        assertThat(savedExtraCurricularField.url()).isEqualTo(extracurricularField.url());
-        assertThat(savedExtraCurricularField.applicationStart()).isEqualTo(extracurricularField.applicationStart());
-        assertThat(savedExtraCurricularField.applicationEnd()).isEqualTo(extracurricularField.applicationEnd());
-        assertThat(savedExtraCurricularField.activityStart()).isEqualTo(extracurricularField.activityStart());
-        assertThat(savedExtraCurricularField.activityEnd()).isEqualTo(extracurricularField.activityEnd());
+    @DisplayName("putSchedule - 비교과 신청기간이 null일때 비교과 오늘날짜가 스케쥴 date에 들어가야함")
+    @Test
+    void putSchedule_extra_application_date_null() {
+        //given
+        Extracurricular extracurricular_activity_null = Extracurricular.builder()
+                .id(1L)
+                .extracurricularId(2L)
+                .title("비교과A")
+                .url("https://abc.cdf")
+                .applicationStart(null)
+                .applicationEnd(null)
+                .activityStart(null)
+                .activityEnd(null)
+                .build();
+        CreateScheduleRequest createScheduleRequest = new CreateScheduleRequest(
+                schedule.getTitle(),
+                schedule.getContent(),
+                null,
+                null,
+                extracurricular_activity_null.getExtracurricularId()
+        );
+        LocalDateTime startDateTimeStub = LocalDateTime.now();
+        LocalDateTime endDateTimeStub = LocalDateTime.now();
+        doAnswer(inv -> {
+            Long id = inv.getArgument(0);
+            Schedule s = inv.getArgument(1);
+            s.setScheduleDateTime(startDateTimeStub, endDateTimeStub);
+            return null;
+        }).when(extraCurricularService).setScheduleDate(eq(extracurricular_activity_null.getExtracurricularId()), any(Schedule.class));
+        //when
+        scheduleService.putSchedule(memberId, createScheduleRequest);
+        ArgumentCaptor<Schedule> scheduleCaptor = ArgumentCaptor.forClass(Schedule.class);
+        verify(scheduleRepository).save(scheduleCaptor.capture());
+        Schedule savedSchedule = scheduleCaptor.getValue();
+        assertThat(savedSchedule.getTitle()).isEqualTo(createScheduleRequest.title());
+        assertThat(savedSchedule.getContent()).isEqualTo(createScheduleRequest.content());
+        assertThat(savedSchedule.getStartDateTime()).isEqualTo(startDateTimeStub);
+        assertThat(savedSchedule.getEndDateTime()).isEqualTo(endDateTimeStub);
+        assertThat(savedSchedule.getExtracurricularId()).isEqualTo(createScheduleRequest.extracurricularId());
     }
 
     @DisplayName("findByMemberIdAndId - 성공")
@@ -250,8 +307,8 @@ public class ScheduleServiceTest {
                 schedule.getId(),
                 "변경된 제목",
                 "변경된 세부사항",
-                LocalDate.of(2025, 9, 1),
-                LocalDate.of(2025, 10, 1),
+                LocalDateTime.of(2025, 9, 1,0,0,0),
+                LocalDateTime.of(2025, 10, 1,0,0,0),
                 null
         );
 
@@ -265,8 +322,8 @@ public class ScheduleServiceTest {
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
         assertThat(schedule.getId()).isEqualTo(request.scheduleId());
         assertThat(schedule.getTitle()).isEqualTo(request.title());
-        assertThat(schedule.getStartDate()).isEqualTo(request.startDate());
-        assertThat(schedule.getEndDate()).isEqualTo(request.endDate());
+        assertThat(schedule.getStartDateTime()).isEqualTo(request.startDate());
+        assertThat(schedule.getEndDateTime()).isEqualTo(request.endDate());
         assertThat(schedule.getExtracurricularId()).isNull();
     }
 
@@ -274,110 +331,119 @@ public class ScheduleServiceTest {
     @Test
     void changeSchedule_notExtra_to_extra_success() {
         // given
-        ExtracurricularField extracurricularField = new ExtracurricularField(
-                extracurricular.getTitle(),
-                extracurricular.getUrl(),
-                extracurricular.getApplicationStart(),
-                extracurricular.getApplicationEnd(),
-                extracurricular.getActivityStart(),
-                extracurricular.getActivityEnd()
-        );
         ChangeScheduleRequest request = new ChangeScheduleRequest(
                 schedule.getId(),
                 "변경된 제목",
                 "변경된 세부사항",
-                LocalDate.of(2025, 9, 1),
-                LocalDate.of(2025, 10, 1),
-                extracurricularField
+                LocalDateTime.of(2025, 9, 1,0,0,0),
+                LocalDateTime.of(2025, 10, 1,0,0,0),
+                3L
         );
-        Extracurricular newExtra = Extracurricular.builder()
-                        .id(1L)
-                        .build();
         when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
                 .thenReturn(Optional.of(schedule));
-        when(extraCurricularService.createExtracurricular(request.extracurricularField())).thenReturn(newExtra);
         //when
         scheduleService.changeSchedule(memberId, request);
         //then
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
         assertThat(schedule.getId()).isEqualTo(request.scheduleId());
         assertThat(schedule.getTitle()).isEqualTo(request.title());
-        assertThat(schedule.getStartDate()).isEqualTo(request.startDate());
-        assertThat(schedule.getEndDate()).isEqualTo(request.endDate());
-        verify(extraCurricularService).createExtracurricular(request.extracurricularField());
-        assertThat(schedule.getExtracurricularId()).isEqualTo(newExtra.getId());
+        assertThat(schedule.getStartDateTime()).isEqualTo(request.startDate());
+        assertThat(schedule.getEndDateTime()).isEqualTo(request.endDate());
+        assertThat(schedule.getExtracurricularId()).isEqualTo(request.extracurricularId());
     }
 
     @DisplayName("changeSchedule - (비교과 일정) -> (비교과 일정 아님)")
     @Test
     void changeSchedule_extra_to_notExtra_success() {
         // given
+        Schedule extraSchedule = Schedule.builder()
+                .title("스케쥴1")
+                .content("세부사항")
+                .startDateTime(LocalDateTime.of(2025, 7, 1,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 8, 1,0,0,0))
+                .extracurricularId(3L)
+                .build();
         ChangeScheduleRequest request = new ChangeScheduleRequest(
                 schedule.getId(),
                 "변경된 제목",
                 "변경된 세부사항",
-                LocalDate.of(2025, 9, 1),
-                LocalDate.of(2025, 10, 1),
+                LocalDateTime.of(2025, 9, 1,0,0,0),
+                LocalDateTime.of(2025, 10, 1,0,0,0),
                 null
         );
-        Extracurricular newExtra = Extracurricular.builder()
-                .id(1L)
-                .build();
-        schedule.connectExtracurricular(newExtra.getId());
-        when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
-                .thenReturn(Optional.of(schedule));
+        when(scheduleRepository.findScheduleByMemberIdAndId(memberId, extraSchedule.getId()))
+                .thenReturn(Optional.of(extraSchedule));
         //when
         scheduleService.changeSchedule(memberId, request);
         //then
-        verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
-        assertThat(schedule.getId()).isEqualTo(request.scheduleId());
-        assertThat(schedule.getTitle()).isEqualTo(request.title());
-        assertThat(schedule.getStartDate()).isEqualTo(request.startDate());
-        assertThat(schedule.getEndDate()).isEqualTo(request.endDate());
-        assertThat(schedule.getExtracurricularId()).isNull();
-        verify(extraCurricularService).deleteExtracurricular(newExtra.getId());
+        verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, extraSchedule.getId());
+        assertThat(extraSchedule.getId()).isEqualTo(request.scheduleId());
+        assertThat(extraSchedule.getTitle()).isEqualTo(request.title());
+        assertThat(extraSchedule.getStartDateTime()).isEqualTo(request.startDate());
+        assertThat(extraSchedule.getEndDateTime()).isEqualTo(request.endDate());
+        assertThat(extraSchedule.getExtracurricularId()).isNull();
     }
 
     @DisplayName("changeSchedule - (비교과 일정) -> (비교과 일정)")
     @Test
     void changeSchedule_extra_to_extra_success() {
         // given
-        ExtracurricularField extracurricularField = new ExtracurricularField(
-                "비교과A",
-                null,
-                LocalDateTime.of(2025,8,1,9,0),
-                null,
-                LocalDateTime.of(2025,8,6,9,0),
-                LocalDateTime.of(2025,8,6,12,0)
-        );
+        Schedule extraSchedule = Schedule.builder()
+                .title("스케쥴1")
+                .content("세부사항")
+                .startDateTime(LocalDateTime.of(2025, 7, 1,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 8, 1,0,0,0))
+                .extracurricularId(3L)
+                .build();
         ChangeScheduleRequest request = new ChangeScheduleRequest(
                 schedule.getId(),
                 "변경된 제목",
                 "변경된 세부사항",
-                LocalDate.of(2025, 9, 1),
-                LocalDate.of(2025, 10, 1),
-                extracurricularField
+                LocalDateTime.of(2025, 9, 1,0,0,0),
+                LocalDateTime.of(2025, 10, 1,0,0,0),
+                extracurricular.getId()
         );
-        Extracurricular newExtra = Extracurricular.builder()
-                .id(1L)
-                .build();
-        schedule.connectExtracurricular(newExtra.getId());
-        when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
-                .thenReturn(Optional.of(schedule));
+        when(scheduleRepository.findScheduleByMemberIdAndId(memberId, extraSchedule.getId()))
+                .thenReturn(Optional.of(extraSchedule));
         //when
         scheduleService.changeSchedule(memberId, request);
         //then
-        verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
-        assertThat(schedule.getId()).isEqualTo(request.scheduleId());
-        assertThat(schedule.getTitle()).isEqualTo(request.title());
-        assertThat(schedule.getStartDate()).isEqualTo(request.startDate());
-        assertThat(schedule.getEndDate()).isEqualTo(request.endDate());
-        verify(extraCurricularService).changeExtracurricular(newExtra.getId(), request.extracurricularField());
+        verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, extraSchedule.getId());
+        assertThat(extraSchedule.getId()).isEqualTo(request.scheduleId());
+        assertThat(extraSchedule.getTitle()).isEqualTo(request.title());
+        assertThat(extraSchedule.getStartDateTime()).isEqualTo(request.startDate());
+        assertThat(extraSchedule.getEndDateTime()).isEqualTo(request.endDate());
+        assertThat(extraSchedule.getExtracurricularId()).isEqualTo(request.extracurricularId());
     }
 
-    @DisplayName("deleteSchedule - 성공(일반 일정 일 때)")
+    @DisplayName("changeSchedule - 변경할 비교과가 존재하지 않을 때 오류 발생")
     @Test
-    void deleteSchedule_success_normal() {
+    void changeSchedule_fail_not_found_extra() {
+        //given
+        ChangeScheduleRequest request = new ChangeScheduleRequest(
+                schedule.getId(),
+                "변경된 제목",
+                "변경된 세부사항",
+                LocalDateTime.of(2025, 9, 1,0,0,0),
+                LocalDateTime.of(2025, 10, 1,0,0,0),
+                3L
+        );
+        doThrow(new CustomException("capstone.extra.not.found"))
+                .when(extraCurricularService)
+                .isPresent(request.extracurricularId());
+        //when & then
+        when(scheduleRepository.findScheduleByMemberIdAndId(memberId, request.scheduleId())).thenReturn(Optional.of(schedule));
+        CustomException exception = assertThrows(
+                CustomException.class,
+                () -> scheduleService.changeSchedule(memberId, request)
+        );
+        ApiError error = exception.getError();
+        assertThat(error.element().code().value()).isEqualTo("capstone.extra.not.found");
+    }
+
+    @DisplayName("deleteSchedule - 성공")
+    @Test
+    void deleteSchedule_success() {
         // given
         DeleteScheduleRequest request = new DeleteScheduleRequest(schedule.getId());
         when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
@@ -387,23 +453,6 @@ public class ScheduleServiceTest {
         //then
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
         verify(scheduleRepository).delete(schedule);
-        verify(extraCurricularService, never()).deleteExtracurricular(schedule.getExtracurricularId());
-    }
-
-    @DisplayName("deleteSchedule - 성공(비교과 관련 일정 일 떄)")
-    @Test
-    void deleteSchedule_success_extra() {
-        // given
-        schedule.connectExtracurricular(extracurricular.getId());
-        DeleteScheduleRequest request = new DeleteScheduleRequest(schedule.getId());
-        when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
-                .thenReturn(Optional.of(schedule));
-        // when
-        scheduleService.deleteSchedule(memberId, request);
-        //then
-        verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
-        verify(scheduleRepository).delete(schedule);
-        verify(extraCurricularService).deleteExtracurricular(schedule.getExtracurricularId());
     }
 
     @DisplayName("findByMemberIdAndYearAndMonth - 성공")
@@ -415,14 +464,14 @@ public class ScheduleServiceTest {
         Schedule schedule1 = Schedule.builder()
                 .memberId(memberId)
                 .title("비교과1")
-                .startDate(LocalDate.of(2025, 7, 1))
-                .endDate(LocalDate.of(2025, 8, 1))
+                .startDateTime(LocalDateTime.of(2025, 7, 1,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 8, 1,0,0,0))
                 .build();
         Schedule schedule2 = Schedule.builder()
                 .memberId(memberId)
                 .title("비교과2")
-                .startDate(LocalDate.of(2025, 6, 1))
-                .endDate(LocalDate.of(2025, 7, 2))
+                .startDateTime(LocalDateTime.of(2025, 6, 1,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 7, 2,0,0,0))
                 .build();
         when(scheduleRepository.findByMemberIdAndYearAndMonth(memberId, year, month))
                 .thenReturn(List.of(
@@ -434,9 +483,9 @@ public class ScheduleServiceTest {
         //then
         verify(scheduleRepository).findByMemberIdAndYearAndMonth(memberId, year, month);
         assertThat(result).hasSize(2);
-        assertThat(result).extracting("scheduleId","title","startDate","endDate").containsExactlyInAnyOrder(
-                tuple(schedule1.getId(), schedule1.getTitle(), schedule1.getStartDate(), schedule1.getEndDate()),
-                tuple(schedule2.getId(), schedule2.getTitle(), schedule2.getStartDate(), schedule2.getEndDate())
+        assertThat(result).extracting("scheduleId","title","startDateTime","endDateTime").containsExactlyInAnyOrder(
+                tuple(schedule1.getId(), schedule1.getTitle(), schedule1.getStartDateTime(), schedule1.getEndDateTime()),
+                tuple(schedule2.getId(), schedule2.getTitle(), schedule2.getStartDateTime(), schedule2.getEndDateTime())
         );
     }
 
@@ -444,34 +493,41 @@ public class ScheduleServiceTest {
     @Test
     void getScheduleDetail_extra_success() {
         //given
-        schedule.connectExtracurricular(extracurricular.getId());
-        ExtracurricularField expectedField = new ExtracurricularField(
-                extracurricular.getTitle(),
-                extracurricular.getUrl(),
-                extracurricular.getApplicationStart(),
-                extracurricular.getApplicationEnd(),
-                extracurricular.getActivityStart(),
-                extracurricular.getActivityEnd()
-        );
-        when(scheduleRepository.findScheduleByMemberIdAndId(memberId, schedule.getId()))
-                .thenReturn(Optional.of(schedule));
-        when(extraCurricularService.getById(extracurricular.getId()))
-                .thenReturn(extracurricular);
+        Schedule extraSchedule = Schedule.builder()
+                .title("스케쥴1")
+                .content("세부사항")
+                .startDateTime(LocalDateTime.of(2025, 7, 1,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 8, 1,0,0,0))
+                .extracurricularId(extracurricular.getExtracurricularId())
+                .build();
+        when(scheduleRepository.findScheduleByMemberIdAndId(memberId, extraSchedule.getId()))
+                .thenReturn(Optional.of(extraSchedule));
+        when(extraCurricularService.findByExtracurricularId(extracurricular.getExtracurricularId()))
+                .thenReturn(Optional.of(extracurricular));
         //when
-        GetScheduleDetailResponse result = scheduleService.getScheduleDetail(memberId, schedule.getId());
+        GetScheduleDetailResponse result = scheduleService.getScheduleDetail(memberId, extraSchedule.getId());
         //then
-        verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
-        verify(extraCurricularService).getById(extracurricular.getId());
+        verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, extraSchedule.getId());
+        verify(extraCurricularService).findByExtracurricularId(extracurricular.getExtracurricularId());
+        GetScheduleDetailResponse expected = new GetScheduleDetailResponse(
+                extraSchedule.getTitle(),
+                extraSchedule.getContent(),
+                ScheduleType.EXTRACURRICULAR,
+                extraSchedule.getStartDateTime(),
+                extraSchedule.getEndDateTime(),
+                new ExtracurricularField(
+                        extracurricular.getTitle(),
+                        extracurricular.getUrl(),
+                        extracurricular.getApplicationStart(),
+                        extracurricular.getApplicationEnd(),
+                        extracurricular.getActivityStart(),
+                        extracurricular.getActivityEnd()
+                )
+        );
+
         assertThat(result)
                 .usingRecursiveComparison()
-                .isEqualTo(new GetScheduleDetailResponse(
-                        schedule.getTitle(),
-                        schedule.getContent(),
-                        EXTRACURRICULAR,
-                        schedule.getStartDate(),
-                        schedule.getEndDate(),
-                        expectedField
-                ));
+                .isEqualTo(expected);
     }
 
     @DisplayName("getScheduleDetail - 성공(일반 일정)")
@@ -485,13 +541,13 @@ public class ScheduleServiceTest {
         //then
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
         assertThat(result)
-                .extracting("title", "content", "scheduleType", "startDate", "endDate", "extracurricularField")
+                .extracting("title", "content", "scheduleType", "startDateTime", "endDateTime", "extracurricularField")
                 .containsExactly(
                         schedule.getTitle(),
                         schedule.getContent(),
                         NORMAL,
-                        schedule.getStartDate(),
-                        schedule.getEndDate(),
+                        schedule.getStartDateTime(),
+                        schedule.getEndDateTime(),
                         null
                 );
     }

@@ -13,9 +13,9 @@ public class EndDateAfterDateValidator implements ConstraintValidator<ValidDateR
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
         if (value instanceof CreateScheduleRequest request) {
-            return isValidDate(request.startDateTime(), request.endDateTime(), request.extracurricularId(), context, "endDate");
+            return isValidDate(request.startDateTime(), request.endDateTime(), request.extracurricularId(), context, "endDateTime");
         } else if (value instanceof ChangeScheduleRequest request) {
-            return isValidDate(request.startDateTime(), request.endDateTime(), request.extracurricularId(), context, "endDate");
+            return isValidDate(request.startDateTime(), request.endDateTime(), request.extracurricularId(), context, "endDateTime");
         } else if (value instanceof ExtracurricularField request) {
             return isValidDate(request.applicationStart(), request.applicationEnd(), context, "applicationEnd")
                     &&

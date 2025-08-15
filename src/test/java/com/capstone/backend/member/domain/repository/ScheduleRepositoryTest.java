@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.capstone.backend.member.domain.entity.Schedule;
 import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -58,9 +60,9 @@ public class ScheduleRepositoryTest {
         assertThat(result).isEmpty();
     }
 
-    @DisplayName("findByMemberIdAndYearAndMonth 테스트")
+    @DisplayName("findByMemberIdAndOverlappingRange 테스트")
     @Test
-    void findByMemberIdAndYearAndMonth_success() {
+    void findByMemberIdAndOverlappingRange_success() {
         //given
         Long memberId = 1L;
         Schedule scheduleStartJuly = Schedule.builder().memberId(memberId)
@@ -81,8 +83,11 @@ public class ScheduleRepositoryTest {
                 scheduleStartAndEndAugust
         );
         scheduleRepository.saveAll(scheduleList);
+        YearMonth ym = YearMonth.of(2025,7);
+        LocalDateTime startInclusive = ym.atDay(1).atStartOfDay();
+        LocalDateTime endExclusive = ym.plusMonths(1).atDay(1).atStartOfDay();
         // when
-        List<Schedule> result = scheduleRepository.findByMemberIdAndYearAndMonth(1L, 2025L, 7L);
+        List<Schedule> result = scheduleRepository.findByMemberIdAndOverlappingRange(1L, startInclusive, endExclusive);
         //then
         assertThat(result).hasSize(2);
         assertThat(result).extracting("startDateTime", "endDateTime").containsExactlyInAnyOrder(

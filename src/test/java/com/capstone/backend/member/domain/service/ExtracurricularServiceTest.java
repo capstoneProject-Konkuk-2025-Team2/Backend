@@ -34,7 +34,7 @@ public class ExtracurricularServiceTest {
     private ApplicationContext mockApplicationContext;
 
     @InjectMocks
-    private ExtracurricularService extraCurricularService;
+    private ExtracurricularService extracurricularService;
 
     private Extracurricular extracurricular;
     @BeforeEach
@@ -56,7 +56,7 @@ public class ExtracurricularServiceTest {
     @Test
     void save_success() {
         //when
-        extraCurricularService.save(extracurricular);
+        extracurricularService.save(extracurricular);
         //then
         verify(extracurricularRepository).save(extracurricular);
     }
@@ -68,7 +68,7 @@ public class ExtracurricularServiceTest {
         Long extraCurricularId = extracurricular.getExtracurricularId();
         when(extracurricularRepository.findByExtracurricularId(extraCurricularId)).thenReturn(Optional.of(extracurricular));
         //when
-        extraCurricularService.findByExtracurricularId(extraCurricularId);
+        extracurricularService.findByExtracurricularId(extraCurricularId);
         //then
         verify(extracurricularRepository).findByExtracurricularId(extraCurricularId);
     }
@@ -80,7 +80,7 @@ public class ExtracurricularServiceTest {
         Long extraCurricularId = extracurricular.getExtracurricularId();
         when(extracurricularRepository.findByExtracurricularId(extraCurricularId)).thenReturn(Optional.of(extracurricular));
         //when
-        extraCurricularService.getByExtracurricularId(extraCurricularId);
+        extracurricularService.getByExtracurricularId(extraCurricularId);
         //then
         verify(extracurricularRepository).findByExtracurricularId(extraCurricularId);
     }
@@ -94,7 +94,7 @@ public class ExtracurricularServiceTest {
         // when & then
         CustomException exception = assertThrows(
                 CustomException.class,
-                () -> extraCurricularService.getByExtracurricularId(extraCurricularId)
+                () -> extracurricularService.getByExtracurricularId(extraCurricularId)
         );
         ApiError error = exception.getError();
         assertThat(error.element().code().value()).isEqualTo("capstone.extra.not.found");
@@ -122,7 +122,7 @@ public class ExtracurricularServiceTest {
         Schedule schedule = Schedule.builder().build();
 
         // when
-        extraCurricularService.setScheduleDate(extraId, schedule);
+        extracurricularService.setScheduleDate(extraId, schedule);
 
         // then
         assertThat(schedule.getStartDateTime()).isEqualTo(start);
@@ -151,7 +151,7 @@ public class ExtracurricularServiceTest {
         Schedule schedule = Schedule.builder().build();
 
         // when
-        extraCurricularService.setScheduleDate(extraId, schedule);
+        extracurricularService.setScheduleDate(extraId, schedule);
 
         // then
         assertThat(schedule.getStartDateTime()).isEqualTo(start);
@@ -176,7 +176,7 @@ public class ExtracurricularServiceTest {
 
         // when
         LocalDateTime before = LocalDateTime.now();
-        extraCurricularService.setScheduleDate(extraId, schedule);
+        extracurricularService.setScheduleDate(extraId, schedule);
         LocalDateTime after  = LocalDateTime.now();
 
         // then (now는 호출 시점 차이가 있어 범위로 검증)

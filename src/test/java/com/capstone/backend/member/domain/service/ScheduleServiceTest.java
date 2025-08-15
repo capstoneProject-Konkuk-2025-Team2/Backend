@@ -1,5 +1,6 @@
 package com.capstone.backend.member.domain.service;
 
+import static com.capstone.backend.member.domain.value.ScheduleType.EXTRACURRICULAR;
 import static com.capstone.backend.member.domain.value.ScheduleType.NORMAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -19,7 +20,6 @@ import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Extracurricular;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
-import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
@@ -27,6 +27,7 @@ import com.capstone.backend.member.dto.request.ExtracurricularField;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +46,7 @@ public class ScheduleServiceTest {
     private ScheduleRepository scheduleRepository;
 
     @Mock
-    private ExtracurricularService extraCurricularService;
+    private ExtracurricularService extracurricularService;
 
     @InjectMocks
     private ScheduleService scheduleService;
@@ -135,7 +136,7 @@ public class ScheduleServiceTest {
             Schedule s = invocation.getArgument(1);
             s.setScheduleDateTime(extracurricular.getActivityStart(), extracurricular.getActivityEnd());
             return null;
-        }).when(extraCurricularService).setScheduleDate(eq(extracurricular.getExtracurricularId()), any(Schedule.class));
+        }).when(extracurricularService).setScheduleDate(eq(extracurricular.getExtracurricularId()), any(Schedule.class));
         //when
         scheduleService.putSchedule(memberId, createScheduleRequest);
         //then
@@ -161,7 +162,7 @@ public class ScheduleServiceTest {
                 3L
         );
         doThrow(new CustomException("capstone.extra.not.found"))
-                .when(extraCurricularService)
+                .when(extracurricularService)
                 .setScheduleDate(eq(createScheduleRequest.extracurricularId()), any(Schedule.class));
         //when & then
         CustomException exception = assertThrows(
@@ -198,7 +199,7 @@ public class ScheduleServiceTest {
             Schedule s = inv.getArgument(1);
             s.setScheduleDateTime(extracurricular_activity_null.getApplicationStart(), extracurricular_activity_null.getApplicationEnd());
             return null;
-        }).when(extraCurricularService).setScheduleDate(eq(extracurricular_activity_null.getExtracurricularId()), any(Schedule.class));
+        }).when(extracurricularService).setScheduleDate(eq(extracurricular_activity_null.getExtracurricularId()), any(Schedule.class));
         //when
         scheduleService.putSchedule(memberId, createScheduleRequest);
         ArgumentCaptor<Schedule> scheduleCaptor = ArgumentCaptor.forClass(Schedule.class);
@@ -239,7 +240,7 @@ public class ScheduleServiceTest {
             Schedule s = inv.getArgument(1);
             s.setScheduleDateTime(startDateTimeStub, endDateTimeStub);
             return null;
-        }).when(extraCurricularService).setScheduleDate(eq(extracurricular_activity_null.getExtracurricularId()), any(Schedule.class));
+        }).when(extracurricularService).setScheduleDate(eq(extracurricular_activity_null.getExtracurricularId()), any(Schedule.class));
         //when
         scheduleService.putSchedule(memberId, createScheduleRequest);
         ArgumentCaptor<Schedule> scheduleCaptor = ArgumentCaptor.forClass(Schedule.class);
@@ -398,7 +399,7 @@ public class ScheduleServiceTest {
                 "변경된 세부사항",
                 LocalDateTime.of(2025, 9, 1,0,0,0),
                 LocalDateTime.of(2025, 10, 1,0,0,0),
-                extracurricular.getId()
+                extracurricular.getExtracurricularId()
         );
         when(scheduleRepository.findScheduleByMemberIdAndId(memberId, extraSchedule.getId()))
                 .thenReturn(Optional.of(extraSchedule));
@@ -426,7 +427,7 @@ public class ScheduleServiceTest {
                 3L
         );
         doThrow(new CustomException("capstone.extra.not.found"))
-                .when(extraCurricularService)
+                .when(extracurricularService)
                 .setScheduleDate(eq(request.extracurricularId()), any(Schedule.class));
         //when & then
         when(scheduleRepository.findScheduleByMemberIdAndId(memberId, request.scheduleId())).thenReturn(Optional.of(schedule));
@@ -470,7 +471,10 @@ public class ScheduleServiceTest {
                 .startDateTime(LocalDateTime.of(2025, 6, 1,0,0,0))
                 .endDateTime(LocalDateTime.of(2025, 7, 2,0,0,0))
                 .build();
-        when(scheduleRepository.findByMemberIdAndYearAndMonth(memberId, year, month))
+        YearMonth ym = YearMonth.of(year.intValue(), month.intValue());
+        LocalDateTime startInclusive = ym.atDay(1).atStartOfDay();
+        LocalDateTime endExclusive = ym.plusMonths(1).atDay(1).atStartOfDay();
+        when(scheduleRepository.findByMemberIdAndOverlappingRange(memberId, startInclusive, endExclusive))
                 .thenReturn(List.of(
                         schedule1,
                         schedule2
@@ -478,7 +482,7 @@ public class ScheduleServiceTest {
         //when
         List<GetScheduleByYearAndMonthResponse> result = scheduleService.findByMemberIdAndYearAndMonth(memberId, year, month);
         //then
-        verify(scheduleRepository).findByMemberIdAndYearAndMonth(memberId, year, month);
+        verify(scheduleRepository).findByMemberIdAndOverlappingRange(memberId, startInclusive, endExclusive);
         assertThat(result).hasSize(2);
         assertThat(result).extracting("scheduleId","title","startDateTime","endDateTime").containsExactlyInAnyOrder(
                 tuple(schedule1.getId(), schedule1.getTitle(), schedule1.getStartDateTime(), schedule1.getEndDateTime()),
@@ -499,17 +503,17 @@ public class ScheduleServiceTest {
                 .build();
         when(scheduleRepository.findScheduleByMemberIdAndId(memberId, extraSchedule.getId()))
                 .thenReturn(Optional.of(extraSchedule));
-        when(extraCurricularService.findByExtracurricularId(extracurricular.getExtracurricularId()))
+        when(extracurricularService.findByExtracurricularId(extracurricular.getExtracurricularId()))
                 .thenReturn(Optional.of(extracurricular));
         //when
         GetScheduleDetailResponse result = scheduleService.getScheduleDetail(memberId, extraSchedule.getId());
         //then
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, extraSchedule.getId());
-        verify(extraCurricularService).findByExtracurricularId(extracurricular.getExtracurricularId());
+        verify(extracurricularService).findByExtracurricularId(extracurricular.getExtracurricularId());
         GetScheduleDetailResponse expected = new GetScheduleDetailResponse(
                 extraSchedule.getTitle(),
                 extraSchedule.getContent(),
-                ScheduleType.EXTRACURRICULAR,
+                EXTRACURRICULAR,
                 extraSchedule.getStartDateTime(),
                 extraSchedule.getEndDateTime(),
                 new ExtracurricularField(

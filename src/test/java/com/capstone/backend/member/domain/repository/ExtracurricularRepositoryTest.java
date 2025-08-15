@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
 @Transactional
-public class RelatedExtracurricularRepositoryTest {
+public class ExtracurricularRepositoryTest {
     @Autowired
     private ExtracurricularRepository extracurricularRepository;
 

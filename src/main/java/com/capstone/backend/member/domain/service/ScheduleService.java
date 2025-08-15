@@ -10,6 +10,8 @@ import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +58,11 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public List<GetScheduleByYearAndMonthResponse> findByMemberIdAndYearAndMonth(Long memberId, Long year, Long month) {
-        return scheduleRepository.findByMemberIdAndYearAndMonth(memberId, year, month)
+        YearMonth ym = YearMonth.of(year.intValue(), month.intValue());
+        LocalDateTime startInclusive = ym.atDay(1).atStartOfDay();
+        LocalDateTime endExclusive = ym.plusMonths(1).atDay(1).atStartOfDay();
+        return scheduleRepository
+                .findByMemberIdAndOverlappingRange(memberId, startInclusive, endExclusive)
                 .stream()
                 .map(GetScheduleByYearAndMonthResponse::of)
                 .toList();

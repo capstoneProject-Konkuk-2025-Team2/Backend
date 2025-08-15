@@ -32,13 +32,6 @@ public class ExtracurricularService {
     }
 
     @Transactional
-    public void isPresent(Long extracurricularId) {
-        findByExtracurricularId(extracurricularId).orElseThrow(
-                () -> new CustomException("capstone.extra.not.found")
-        );
-    }
-
-    @Transactional(readOnly = true)
     public void setScheduleDate(Long extracurricularId, Schedule schedule) {
         Extracurricular extracurricular = getByExtracurricularId(extracurricularId);
         LocalDateTime startDateTime;

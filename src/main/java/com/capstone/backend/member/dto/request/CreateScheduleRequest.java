@@ -16,10 +16,10 @@ public record CreateScheduleRequest(
         String content,
 
         @Schema(description = "시작 일자(비교과 관련 일정이면 null로)", example = "2025-07-19T14:30:45")
-        LocalDateTime startDate,
+        LocalDateTime startDateTime,
 
         @Schema(description = "끝 일자(비교과 관련 일정이면 null로)", example = "2025-07-21T14:30:45")
-        LocalDateTime endDate,
+        LocalDateTime endDateTime,
 
         @Schema(description = "관련된 비교과 id", example = "1")
         Long extracurricularId

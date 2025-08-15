@@ -1,6 +1,5 @@
 package com.capstone.backend.member.domain.service;
 
-import static com.capstone.backend.member.domain.value.ScheduleType.EXTRACURRICULAR;
 import static com.capstone.backend.member.domain.value.ScheduleType.NORMAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -10,7 +9,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +26,6 @@ import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import com.capstone.backend.member.dto.request.ExtracurricularField;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -117,8 +114,8 @@ public class ScheduleServiceTest {
         Schedule savedSchedule = scheduleCaptor.getValue();
         assertThat(savedSchedule.getTitle()).isEqualTo(createScheduleRequest.title());
         assertThat(savedSchedule.getContent()).isEqualTo(createScheduleRequest.content());
-        assertThat(savedSchedule.getStartDateTime()).isEqualTo(createScheduleRequest.startDate());
-        assertThat(savedSchedule.getEndDateTime()).isEqualTo(createScheduleRequest.endDate());
+        assertThat(savedSchedule.getStartDateTime()).isEqualTo(createScheduleRequest.startDateTime());
+        assertThat(savedSchedule.getEndDateTime()).isEqualTo(createScheduleRequest.endDateTime());
         assertThat(savedSchedule.getExtracurricularId()).isEqualTo(createScheduleRequest.extracurricularId());
     }
 
@@ -322,8 +319,8 @@ public class ScheduleServiceTest {
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
         assertThat(schedule.getId()).isEqualTo(request.scheduleId());
         assertThat(schedule.getTitle()).isEqualTo(request.title());
-        assertThat(schedule.getStartDateTime()).isEqualTo(request.startDate());
-        assertThat(schedule.getEndDateTime()).isEqualTo(request.endDate());
+        assertThat(schedule.getStartDateTime()).isEqualTo(request.startDateTime());
+        assertThat(schedule.getEndDateTime()).isEqualTo(request.endDateTime());
         assertThat(schedule.getExtracurricularId()).isNull();
     }
 
@@ -347,8 +344,8 @@ public class ScheduleServiceTest {
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, schedule.getId());
         assertThat(schedule.getId()).isEqualTo(request.scheduleId());
         assertThat(schedule.getTitle()).isEqualTo(request.title());
-        assertThat(schedule.getStartDateTime()).isEqualTo(request.startDate());
-        assertThat(schedule.getEndDateTime()).isEqualTo(request.endDate());
+        assertThat(schedule.getStartDateTime()).isEqualTo(request.startDateTime());
+        assertThat(schedule.getEndDateTime()).isEqualTo(request.endDateTime());
         assertThat(schedule.getExtracurricularId()).isEqualTo(request.extracurricularId());
     }
 
@@ -379,8 +376,8 @@ public class ScheduleServiceTest {
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, extraSchedule.getId());
         assertThat(extraSchedule.getId()).isEqualTo(request.scheduleId());
         assertThat(extraSchedule.getTitle()).isEqualTo(request.title());
-        assertThat(extraSchedule.getStartDateTime()).isEqualTo(request.startDate());
-        assertThat(extraSchedule.getEndDateTime()).isEqualTo(request.endDate());
+        assertThat(extraSchedule.getStartDateTime()).isEqualTo(request.startDateTime());
+        assertThat(extraSchedule.getEndDateTime()).isEqualTo(request.endDateTime());
         assertThat(extraSchedule.getExtracurricularId()).isNull();
     }
 
@@ -411,8 +408,8 @@ public class ScheduleServiceTest {
         verify(scheduleRepository).findScheduleByMemberIdAndId(memberId, extraSchedule.getId());
         assertThat(extraSchedule.getId()).isEqualTo(request.scheduleId());
         assertThat(extraSchedule.getTitle()).isEqualTo(request.title());
-        assertThat(extraSchedule.getStartDateTime()).isEqualTo(request.startDate());
-        assertThat(extraSchedule.getEndDateTime()).isEqualTo(request.endDate());
+        assertThat(extraSchedule.getStartDateTime()).isEqualTo(request.startDateTime());
+        assertThat(extraSchedule.getEndDateTime()).isEqualTo(request.endDateTime());
         assertThat(extraSchedule.getExtracurricularId()).isEqualTo(request.extracurricularId());
     }
 
@@ -424,13 +421,13 @@ public class ScheduleServiceTest {
                 schedule.getId(),
                 "변경된 제목",
                 "변경된 세부사항",
-                LocalDateTime.of(2025, 9, 1,0,0,0),
-                LocalDateTime.of(2025, 10, 1,0,0,0),
+                null,
+                null,
                 3L
         );
         doThrow(new CustomException("capstone.extra.not.found"))
                 .when(extraCurricularService)
-                .isPresent(request.extracurricularId());
+                .setScheduleDate(eq(request.extracurricularId()), any(Schedule.class));
         //when & then
         when(scheduleRepository.findScheduleByMemberIdAndId(memberId, request.scheduleId())).thenReturn(Optional.of(schedule));
         CustomException exception = assertThrows(

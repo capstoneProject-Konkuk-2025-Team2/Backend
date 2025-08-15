@@ -42,8 +42,10 @@ public class ScheduleService {
     @Transactional
     public void changeSchedule(Long memberId, ChangeScheduleRequest changeScheduleRequest) {
         Schedule schedule = getByMemberIdAndId(memberId, changeScheduleRequest.scheduleId());
-        extracurricularService.isPresent(changeScheduleRequest.extracurricularId());
         schedule.changeSchedule(changeScheduleRequest);
+        if((schedule.getStartDateTime() == null && schedule.getEndDateTime() == null) && changeScheduleRequest.extracurricularId() != null) {
+            extracurricularService.setScheduleDate(changeScheduleRequest.extracurricularId(), schedule);
+        }
     }
 
     @Transactional
@@ -72,7 +74,7 @@ public class ScheduleService {
     @Transactional
     public void putSchedule(Long memberId, CreateScheduleRequest createScheduleRequest) {
         Schedule schedule = Schedule.createSchedule(memberId, createScheduleRequest);
-        if((schedule.getStartDateTime() == null && schedule.getEndDateTime() == null) || createScheduleRequest.extracurricularId() != null) {
+        if((schedule.getStartDateTime() == null && schedule.getEndDateTime() == null) && createScheduleRequest.extracurricularId() != null) {
             extracurricularService.setScheduleDate(createScheduleRequest.extracurricularId(), schedule);
         }
         save(schedule);

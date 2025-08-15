@@ -48,8 +48,8 @@ public class Schedule {
     public static Schedule createSchedule(Long memberId, CreateScheduleRequest createScheduleRequest) {
         return Schedule.builder()
                 .memberId(memberId)
-                .startDateTime(createScheduleRequest.startDate())
-                .endDateTime(createScheduleRequest.endDate())
+                .startDateTime(createScheduleRequest.startDateTime())
+                .endDateTime(createScheduleRequest.endDateTime())
                 .title(createScheduleRequest.title())
                 .content(createScheduleRequest.content())
                 .extracurricularId(createScheduleRequest.extracurricularId())
@@ -57,8 +57,8 @@ public class Schedule {
     }
 
     public void changeSchedule(ChangeScheduleRequest changeScheduleRequest) {
-        this.startDateTime = changeScheduleRequest.startDate();
-        this.endDateTime = changeScheduleRequest.endDate();
+        this.startDateTime = changeScheduleRequest.startDateTime();
+        this.endDateTime = changeScheduleRequest.endDateTime();
         this.title = changeScheduleRequest.title();
         this.content = changeScheduleRequest.content();
         this.extracurricularId = changeScheduleRequest.extracurricularId();

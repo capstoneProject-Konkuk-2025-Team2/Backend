@@ -17,13 +17,11 @@ public record ChangeScheduleRequest(
         @NotBlank(message = "capstone.schedule.type.blank")
         @Schema(description = "스케쥴 상세정보", example = "공C487에서 열릴 예정, 시간은 17시 ~ 19시")
         String content,
-        @NotNull(message = "capstone.schedule.start.date.blank")
         @Schema(description = "시작 일자", example = "2025-07-19T14:30:45")
-        LocalDateTime startDate,
+        LocalDateTime startDateTime,
 
-        @NotNull(message = "capstone.schedule.end.date.blank")
         @Schema(description = "끝 일자", example = "2025-07-21T14:30:45")
-        LocalDateTime endDate,
+        LocalDateTime endDateTime,
 
         @Schema(description = "수정할 비교과 id")
         Long extracurricularId

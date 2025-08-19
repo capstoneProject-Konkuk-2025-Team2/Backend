@@ -1,6 +1,6 @@
 package com.capstone.backend.member.dto.response;
 
-import com.capstone.backend.member.domain.entity.Extracurricular;
+import com.capstone.backend.extracurricular.entity.Extracurricular;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ExtracurricularField;

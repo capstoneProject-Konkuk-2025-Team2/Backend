@@ -1,4 +1,4 @@
-package com.capstone.backend.member.facade;
+package com.capstone.backend.domain.member.facade;
 
 import static com.capstone.backend.member.domain.value.ScheduleType.EXTRACURRICULAR;
 import static com.capstone.backend.member.domain.value.ScheduleType.NORMAL;
@@ -9,7 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
-import com.capstone.backend.member.domain.entity.Extracurricular;
+import com.capstone.backend.extracurricular.entity.Extracurricular;
 import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.service.MemberService;
@@ -21,6 +21,7 @@ import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
 import com.capstone.backend.member.dto.request.ExtracurricularField;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
+import com.capstone.backend.member.facade.ScheduleFacade;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

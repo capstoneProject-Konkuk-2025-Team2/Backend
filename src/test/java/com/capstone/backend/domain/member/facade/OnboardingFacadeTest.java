@@ -1,4 +1,4 @@
-package com.capstone.backend.member.facade;
+package com.capstone.backend.domain.member.facade;
 
 import static com.capstone.backend.core.auth.jwt.value.TokenInfo.ACCESS_TOKEN;
 import static com.capstone.backend.member.domain.value.Role.ROLE_MEMBER;
@@ -19,6 +19,7 @@ import com.capstone.backend.member.domain.value.Role;
 import com.capstone.backend.member.dto.request.SendAuthMailRequest;
 import com.capstone.backend.member.dto.request.SetPasswordRequest;
 import com.capstone.backend.member.dto.request.VerifyAuthCodeRequest;
+import com.capstone.backend.member.facade.OnboardingFacade;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

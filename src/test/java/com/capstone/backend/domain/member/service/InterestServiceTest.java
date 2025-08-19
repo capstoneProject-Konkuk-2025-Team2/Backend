@@ -1,4 +1,4 @@
-package com.capstone.backend.member.domain.service;
+package com.capstone.backend.domain.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,6 +9,7 @@ import com.capstone.backend.member.domain.entity.Interest;
 import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.repository.InterestRepository;
 
+import com.capstone.backend.member.domain.service.InterestService;
 import com.capstone.backend.member.dto.request.InterestRequest;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

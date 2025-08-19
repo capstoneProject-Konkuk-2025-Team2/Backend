@@ -1,4 +1,4 @@
-package com.capstone.backend.member.domain.service;
+package com.capstone.backend.domain.member.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.capstone.backend.member.domain.entity.Timetable;
 import com.capstone.backend.member.domain.repository.TimetableRepository;
+import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.domain.value.Day;
 import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import java.time.LocalTime;

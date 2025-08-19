@@ -1,9 +1,9 @@
-package com.capstone.backend.member.domain.service;
+package com.capstone.backend.extracurricular.service;
 
 import com.capstone.backend.core.infrastructure.exception.CustomException;
-import com.capstone.backend.member.domain.entity.Extracurricular;
+import com.capstone.backend.extracurricular.entity.Extracurricular;
 import com.capstone.backend.member.domain.entity.Schedule;
-import com.capstone.backend.member.domain.repository.ExtracurricularRepository;
+import com.capstone.backend.extracurricular.repository.ExtracurricularRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -29,25 +29,5 @@ public class ExtracurricularService {
         return findByExtracurricularId(extracurricularId).orElseThrow(
                 () -> new CustomException("capstone.extra.not.found")
         );
-    }
-
-    @Transactional
-    public void setScheduleDate(Long extracurricularId, Schedule schedule) {
-        Extracurricular extracurricular = getByExtracurricularId(extracurricularId);
-        LocalDateTime startDateTime;
-        LocalDateTime endDateTime;
-        if(extracurricular.getActivityStart() != null && extracurricular.getActivityEnd() != null) {
-            startDateTime = extracurricular.getActivityStart();
-            endDateTime = extracurricular.getActivityEnd();
-        }
-        else if(extracurricular.getApplicationStart() != null && extracurricular.getApplicationEnd() != null) {
-            startDateTime = extracurricular.getApplicationStart();
-            endDateTime = extracurricular.getApplicationEnd();
-        }
-        else {
-            startDateTime = LocalDateTime.now();
-            endDateTime = LocalDateTime.now();
-        }
-        schedule.setScheduleDateTime(startDateTime, endDateTime);
     }
 }

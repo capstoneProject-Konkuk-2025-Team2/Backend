@@ -1,4 +1,4 @@
-package com.capstone.backend.member.facade;
+package com.capstone.backend.domain.member.facade;
 
 
 import static com.capstone.backend.member.domain.value.AcademicStatus.ENROLLED;
@@ -21,6 +21,7 @@ import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import com.capstone.backend.member.dto.request.AcademicInfoRequest;
 import com.capstone.backend.member.dto.request.InterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
+import com.capstone.backend.member.facade.SetMemberInfoFacade;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

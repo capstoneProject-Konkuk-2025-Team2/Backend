@@ -1,4 +1,4 @@
-package com.capstone.backend.member.domain.repository;
+package com.capstone.backend.domain.member.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

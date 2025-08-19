@@ -1,4 +1,4 @@
-package com.capstone.backend.member.facade;
+package com.capstone.backend.domain.member.facade;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -19,6 +19,7 @@ import com.capstone.backend.member.domain.value.Role;
 import com.capstone.backend.member.dto.response.LookupInterestResponse;
 import com.capstone.backend.member.dto.response.LookupMemberInfoResponse;
 import com.capstone.backend.member.dto.response.LookupTimetableResponse;
+import com.capstone.backend.member.facade.LookupFacade;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;

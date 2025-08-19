@@ -1,8 +1,9 @@
-package com.capstone.backend.member.domain.repository;
+package com.capstone.backend.domain.extracurricular.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.capstone.backend.member.domain.entity.Extracurricular;
+import com.capstone.backend.extracurricular.entity.Extracurricular;
+import com.capstone.backend.extracurricular.repository.ExtracurricularRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
-package com.capstone.backend.member.domain.repository;
+package com.capstone.backend.extracurricular.repository;
 
-import com.capstone.backend.member.domain.entity.Extracurricular;
+import com.capstone.backend.extracurricular.entity.Extracurricular;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

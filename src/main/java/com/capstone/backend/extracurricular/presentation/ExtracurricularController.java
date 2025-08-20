@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ExtracurricularController {
     private final ExtracurricularFacade extracurricularFacade;
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping(ApiPath.SEARCH_EXTRACURRICULAR)
+    @GetMapping(ApiPath.SEARCH_EXTRACURRICULAR)
     @Operation(summary = "비교과 검색", description = "searchExtracurricular")
     public ApiResponse<PageResponse<SearchExtracurricularResponse>> searchExtracurricular(
             @RequestParam(name = "key") String key,

@@ -2,8 +2,8 @@ package com.capstone.backend.member.domain.service;
 
 import com.capstone.backend.core.common.web.response.ExtendedHttpStatus;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
-import com.capstone.backend.extracurricular.entity.Extracurricular;
-import com.capstone.backend.extracurricular.service.ExtracurricularService;
+import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
+import com.capstone.backend.extracurricular.domain.service.ExtracurricularService;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;

@@ -1,0 +1,99 @@
+package com.capstone.backend.member.domain.repository;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.capstone.backend.member.domain.entity.Schedule;
+import com.capstone.backend.member.domain.repository.ScheduleRepository;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.transaction.annotation.Transactional;
+
+@DataJpaTest
+@Transactional
+public class ScheduleRepositoryTest {
+    @Autowired
+    private ScheduleRepository scheduleRepository;
+
+    @DisplayName("findScheduleByMemberIdAndId 테스트")
+    @Test
+    void findScheduleByMemberIdAndId_success() {
+        //given
+        List<Schedule> scheduleList = List.of(
+                Schedule.builder().memberId(4L).title("AI 비교과").build(),
+                Schedule.builder().memberId(4L).title("웹 비교과").build(),
+                Schedule.builder().memberId(6L).title("경제 비교과").build()
+        );
+        scheduleRepository.saveAll(scheduleList);
+        Long memberId = 4L;
+        Long scheduleId = scheduleList.get(0).getId();
+        //when
+        Schedule schedule = scheduleRepository.findScheduleByMemberIdAndId(memberId, scheduleId).get();
+        //then
+        assertEquals(memberId, schedule.getMemberId());
+        assertEquals(scheduleId, schedule.getId());
+    }
+
+    @DisplayName("delete 테스트")
+    @Test
+    void delete_success() {
+        // given
+        Schedule schedule = Schedule.builder()
+                .title("삭제 테스트")
+                .startDateTime(LocalDateTime.of(2025, 7, 1, 0, 0, 0))
+                .endDateTime(LocalDateTime.of(2025, 7, 31,0,0,0))
+                .memberId(1L)
+                .build();
+        Schedule saved = scheduleRepository.save(schedule);
+        Long id = saved.getId();
+        // when
+        scheduleRepository.delete(saved);
+        //then
+        Optional<Schedule> result = scheduleRepository.findById(id);
+        assertThat(result).isEmpty();
+    }
+
+    @DisplayName("findByMemberIdAndOverlappingRange 테스트")
+    @Test
+    void findByMemberIdAndOverlappingRange_success() {
+        //given
+        Long memberId = 1L;
+        Schedule scheduleStartJuly = Schedule.builder().memberId(memberId)
+                .startDateTime(LocalDateTime.of(2025, 7, 24, 0, 0,0))
+                .endDateTime(LocalDateTime.of(2025, 7, 30, 0, 0,0))
+                .build();
+        Schedule scheduleEndJuly = Schedule.builder().memberId(memberId)
+                .startDateTime(LocalDateTime.of(2025, 6, 24,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 7, 30,0,0,0))
+                .build();
+        Schedule scheduleStartAndEndAugust = Schedule.builder().memberId(memberId)
+                .startDateTime(LocalDateTime.of(2025, 8, 24,0,0,0))
+                .endDateTime(LocalDateTime.of(2025, 8, 30,0,0,0))
+                .build();
+        List<Schedule> scheduleList = List.of(
+                scheduleStartJuly,
+                scheduleEndJuly,
+                scheduleStartAndEndAugust
+        );
+        scheduleRepository.saveAll(scheduleList);
+        YearMonth ym = YearMonth.of(2025,7);
+        LocalDateTime startInclusive = ym.atDay(1).atStartOfDay();
+        LocalDateTime endExclusive = ym.plusMonths(1).atDay(1).atStartOfDay();
+        // when
+        List<Schedule> result = scheduleRepository.findByMemberIdAndOverlappingRange(1L, startInclusive, endExclusive);
+        //then
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting("startDateTime", "endDateTime").containsExactlyInAnyOrder(
+                tuple(scheduleStartJuly.getStartDateTime(), scheduleStartJuly.getEndDateTime()),
+                tuple(scheduleEndJuly.getStartDateTime(), scheduleEndJuly.getEndDateTime())
+        );
+    }
+}

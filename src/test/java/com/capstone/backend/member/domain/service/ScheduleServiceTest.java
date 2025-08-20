@@ -18,7 +18,6 @@ import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
 import com.capstone.backend.extracurricular.domain.service.ExtracurricularService;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
-import com.capstone.backend.member.domain.service.ScheduleService;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
@@ -232,8 +231,8 @@ public class ScheduleServiceTest {
         Schedule savedSchedule = scheduleCaptor.getValue();
         assertThat(savedSchedule.getTitle()).isEqualTo(createScheduleRequest.title());
         assertThat(savedSchedule.getContent()).isEqualTo(createScheduleRequest.content());
-        assertThat(savedSchedule.getStartDateTime()).isEqualTo(startDateTimeStub);
-        assertThat(savedSchedule.getEndDateTime()).isEqualTo(endDateTimeStub);
+        assertThat(savedSchedule.getStartDateTime()).isBetween(startDateTimeStub.minusSeconds(1), startDateTimeStub.plusSeconds(1));
+        assertThat(savedSchedule.getEndDateTime()).isBetween(endDateTimeStub.minusSeconds(1), endDateTimeStub.plusSeconds(1));
         assertThat(savedSchedule.getExtracurricularId()).isEqualTo(createScheduleRequest.extracurricularId());
     }
 

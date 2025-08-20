@@ -1,4 +1,4 @@
-package com.capstone.backend.member.domain.entity;
+package com.capstone.backend.extracurricular.domain.entity;
 
 import com.capstone.backend.global.entity.BaseEntity;
 import jakarta.persistence.Column;

@@ -14,6 +14,7 @@ import com.capstone.backend.core.configuration.env.AppEnv;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.repository.MemberRepository;
+import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.value.Role;
 import com.capstone.backend.member.dto.request.AcademicInfoRequest;
 import java.util.Optional;

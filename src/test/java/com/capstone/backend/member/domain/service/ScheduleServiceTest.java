@@ -5,9 +5,6 @@ import static com.capstone.backend.member.domain.value.ScheduleType.NORMAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
@@ -17,9 +14,11 @@ import com.capstone.backend.core.common.support.SpringContextHolder;
 import com.capstone.backend.core.common.web.response.exception.ApiError;
 import com.capstone.backend.core.configuration.env.AppEnv;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
-import com.capstone.backend.member.domain.entity.Extracurricular;
+import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
+import com.capstone.backend.extracurricular.domain.service.ExtracurricularService;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
+import com.capstone.backend.member.domain.service.ScheduleService;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
@@ -131,12 +130,7 @@ public class ScheduleServiceTest {
                 null,
                 extracurricular.getExtracurricularId()
         );
-        doAnswer(invocation -> {
-            Long id = invocation.getArgument(0);
-            Schedule s = invocation.getArgument(1);
-            s.setScheduleDateTime(extracurricular.getActivityStart(), extracurricular.getActivityEnd());
-            return null;
-        }).when(extracurricularService).setScheduleDate(eq(extracurricular.getExtracurricularId()), any(Schedule.class));
+        when(extracurricularService.getByExtracurricularId(createScheduleRequest.extracurricularId())).thenReturn(extracurricular);
         //when
         scheduleService.putSchedule(memberId, createScheduleRequest);
         //then
@@ -163,7 +157,7 @@ public class ScheduleServiceTest {
         );
         doThrow(new CustomException("capstone.extra.not.found"))
                 .when(extracurricularService)
-                .setScheduleDate(eq(createScheduleRequest.extracurricularId()), any(Schedule.class));
+                .getByExtracurricularId(createScheduleRequest.extracurricularId());
         //when & then
         CustomException exception = assertThrows(
                 CustomException.class,
@@ -194,12 +188,7 @@ public class ScheduleServiceTest {
                 null,
                 extracurricular_activity_null.getExtracurricularId()
         );
-        doAnswer(inv -> {
-            Long id = inv.getArgument(0);
-            Schedule s = inv.getArgument(1);
-            s.setScheduleDateTime(extracurricular_activity_null.getApplicationStart(), extracurricular_activity_null.getApplicationEnd());
-            return null;
-        }).when(extracurricularService).setScheduleDate(eq(extracurricular_activity_null.getExtracurricularId()), any(Schedule.class));
+        when(extracurricularService.getByExtracurricularId(createScheduleRequest.extracurricularId())).thenReturn(extracurricular_activity_null);
         //when
         scheduleService.putSchedule(memberId, createScheduleRequest);
         ArgumentCaptor<Schedule> scheduleCaptor = ArgumentCaptor.forClass(Schedule.class);
@@ -235,12 +224,7 @@ public class ScheduleServiceTest {
         );
         LocalDateTime startDateTimeStub = LocalDateTime.now();
         LocalDateTime endDateTimeStub = LocalDateTime.now();
-        doAnswer(inv -> {
-            Long id = inv.getArgument(0);
-            Schedule s = inv.getArgument(1);
-            s.setScheduleDateTime(startDateTimeStub, endDateTimeStub);
-            return null;
-        }).when(extracurricularService).setScheduleDate(eq(extracurricular_activity_null.getExtracurricularId()), any(Schedule.class));
+        when(extracurricularService.getByExtracurricularId(createScheduleRequest.extracurricularId())).thenReturn(extracurricular_activity_null);
         //when
         scheduleService.putSchedule(memberId, createScheduleRequest);
         ArgumentCaptor<Schedule> scheduleCaptor = ArgumentCaptor.forClass(Schedule.class);
@@ -428,7 +412,7 @@ public class ScheduleServiceTest {
         );
         doThrow(new CustomException("capstone.extra.not.found"))
                 .when(extracurricularService)
-                .setScheduleDate(eq(request.extracurricularId()), any(Schedule.class));
+                .getByExtracurricularId(request.extracurricularId());
         //when & then
         when(scheduleRepository.findScheduleByMemberIdAndId(memberId, request.scheduleId())).thenReturn(Optional.of(schedule));
         CustomException exception = assertThrows(
@@ -566,5 +550,89 @@ public class ScheduleServiceTest {
         );
         ApiError error = exception.getError();
         assertThat(error.element().code().value()).isEqualTo("capstone.schedule.not.found");
+    }
+
+    @Test
+    @DisplayName("setScheduleDate - 활동기간이 있으면 활동기간으로 스케줄 세팅")
+    void setScheduleDate_useActivityRange() {
+        // given
+        Long extraId = 1L;
+        LocalDateTime start = LocalDateTime.of(2025, 7, 1, 9, 0);
+        LocalDateTime end   = LocalDateTime.of(2025, 7, 2, 9, 0);
+
+        Extracurricular ext = Extracurricular.builder()
+                .extracurricularId(extraId)
+                .activityStart(start)
+                .activityEnd(end)
+                .applicationStart(LocalDateTime.of(2025, 6, 1, 9, 0))
+                .applicationEnd(LocalDateTime.of(2025, 6, 2, 9, 0))
+                .build();
+
+        when(extracurricularService.getByExtracurricularId(extraId))
+                .thenReturn(ext);
+
+        Schedule schedule = Schedule.builder().build();
+
+        // when
+        scheduleService.setScheduleDate(extraId, schedule);
+
+        // then
+        assertThat(schedule.getStartDateTime()).isEqualTo(start);
+        assertThat(schedule.getEndDateTime()).isEqualTo(end);
+    }
+
+    @Test
+    @DisplayName("활동기간이 null이면 신청기간으로 스케줄 세팅")
+    void setScheduleDate_useApplicationRangeWhenActivityNull() {
+        // given
+        Long extraId = 2L;
+        LocalDateTime start = LocalDateTime.of(2025, 8, 1, 9, 0);
+        LocalDateTime end   = LocalDateTime.of(2025, 8, 2, 9, 0);
+
+        Extracurricular ext = Extracurricular.builder()
+                .extracurricularId(extraId)
+                .activityStart(null)
+                .activityEnd(null)
+                .applicationStart(start)
+                .applicationEnd(end)
+                .build();
+
+        when(extracurricularService.getByExtracurricularId(extraId))
+                .thenReturn(ext);
+
+        Schedule schedule = Schedule.builder().build();
+
+        // when
+        scheduleService.setScheduleDate(extraId, schedule);
+
+        // then
+        assertThat(schedule.getStartDateTime()).isEqualTo(start);
+        assertThat(schedule.getEndDateTime()).isEqualTo(end);
+    }
+
+    @Test
+    @DisplayName("활동/신청기간이 모두 없으면 now로 세팅")
+    void setScheduleDate_useNowWhenNoDates() {
+        // given
+        Long extraId = 3L;
+        Extracurricular ext = Extracurricular.builder()
+                .extracurricularId(extraId)
+                .activityStart(null).activityEnd(null)
+                .applicationStart(null).applicationEnd(null)
+                .build();
+
+        when(extracurricularService.getByExtracurricularId(extraId))
+                .thenReturn(ext);
+
+        Schedule schedule = Schedule.builder().build();
+
+        // when
+        LocalDateTime before = LocalDateTime.now();
+        scheduleService.setScheduleDate(extraId, schedule);
+        LocalDateTime after  = LocalDateTime.now();
+
+        // then (now는 호출 시점 차이가 있어 범위로 검증)
+        assertThat(schedule.getStartDateTime()).isBetween(before.minusSeconds(1), after.plusSeconds(1));
+        assertThat(schedule.getEndDateTime()).isBetween(before.minusSeconds(1), after.plusSeconds(1));
     }
 }

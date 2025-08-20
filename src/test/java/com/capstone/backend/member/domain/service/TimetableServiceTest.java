@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.capstone.backend.member.domain.entity.Timetable;
 import com.capstone.backend.member.domain.repository.TimetableRepository;
+import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.domain.value.Day;
 import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import java.time.LocalTime;

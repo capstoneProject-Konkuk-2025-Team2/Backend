@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.capstone.backend.member.domain.entity.Schedule;
+import com.capstone.backend.member.domain.repository.ScheduleRepository;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.YearMonth;

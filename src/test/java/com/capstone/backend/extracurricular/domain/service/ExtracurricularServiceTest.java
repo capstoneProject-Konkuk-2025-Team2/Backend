@@ -1,8 +1,9 @@
-package com.capstone.backend.member.domain.service;
+package com.capstone.backend.extracurricular.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -10,10 +11,10 @@ import com.capstone.backend.core.common.support.SpringContextHolder;
 import com.capstone.backend.core.common.web.response.exception.ApiError;
 import com.capstone.backend.core.configuration.env.AppEnv;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
-import com.capstone.backend.member.domain.entity.Extracurricular;
-import com.capstone.backend.member.domain.entity.Schedule;
-import com.capstone.backend.member.domain.repository.ExtracurricularRepository;
+import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
+import com.capstone.backend.extracurricular.domain.repository.ExtracurricularRepository;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +24,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class ExtracurricularServiceTest {
@@ -100,87 +105,22 @@ public class ExtracurricularServiceTest {
         assertThat(error.element().code().value()).isEqualTo("capstone.extra.not.found");
     }
 
+    @DisplayName("findAllByTitle - 성공")
     @Test
-    @DisplayName("setScheduleDate - 활동기간이 있으면 활동기간으로 스케줄 세팅")
-    void setScheduleDate_useActivityRange() {
+    void findAllByTitle_success() {
         // given
-        Long extraId = 1L;
-        LocalDateTime start = LocalDateTime.of(2025, 7, 1, 9, 0);
-        LocalDateTime end   = LocalDateTime.of(2025, 7, 2, 9, 0);
-
-        Extracurricular ext = Extracurricular.builder()
-                .extracurricularId(extraId)
-                .activityStart(start)
-                .activityEnd(end)
-                .applicationStart(LocalDateTime.of(2025, 6, 1, 9, 0))
-                .applicationEnd(LocalDateTime.of(2025, 6, 2, 9, 0))
-                .build();
-
-        when(extracurricularRepository.findByExtracurricularId(extraId))
-                .thenReturn(Optional.of(ext));
-
-        Schedule schedule = Schedule.builder().build();
+        Pageable pageable = PageRequest.of(0, 2);
+        List<Extracurricular> content = List.of(Extracurricular.builder().title("A비교과").build());
+        Page<Extracurricular> stubPage = new PageImpl<>(content, pageable, 1);
+        String key = "비교과";
+        when(extracurricularRepository.findAllByTitle(key, pageable)).thenReturn(stubPage);
 
         // when
-        extracurricularService.setScheduleDate(extraId, schedule);
+        Page<Extracurricular> result = extracurricularService.findAllByTitle(key, pageable);
 
         // then
-        assertThat(schedule.getStartDateTime()).isEqualTo(start);
-        assertThat(schedule.getEndDateTime()).isEqualTo(end);
-    }
-
-    @Test
-    @DisplayName("활동기간이 null이면 신청기간으로 스케줄 세팅")
-    void setScheduleDate_useApplicationRangeWhenActivityNull() {
-        // given
-        Long extraId = 2L;
-        LocalDateTime start = LocalDateTime.of(2025, 8, 1, 9, 0);
-        LocalDateTime end   = LocalDateTime.of(2025, 8, 2, 9, 0);
-
-        Extracurricular ext = Extracurricular.builder()
-                .extracurricularId(extraId)
-                .activityStart(null)
-                .activityEnd(null)
-                .applicationStart(start)
-                .applicationEnd(end)
-                .build();
-
-        when(extracurricularRepository.findByExtracurricularId(extraId))
-                .thenReturn(Optional.of(ext));
-
-        Schedule schedule = Schedule.builder().build();
-
-        // when
-        extracurricularService.setScheduleDate(extraId, schedule);
-
-        // then
-        assertThat(schedule.getStartDateTime()).isEqualTo(start);
-        assertThat(schedule.getEndDateTime()).isEqualTo(end);
-    }
-
-    @Test
-    @DisplayName("활동/신청기간이 모두 없으면 now로 세팅")
-    void setScheduleDate_useNowWhenNoDates() {
-        // given
-        Long extraId = 3L;
-        Extracurricular ext = Extracurricular.builder()
-                .extracurricularId(extraId)
-                .activityStart(null).activityEnd(null)
-                .applicationStart(null).applicationEnd(null)
-                .build();
-
-        when(extracurricularRepository.findByExtracurricularId(extraId))
-                .thenReturn(Optional.of(ext));
-
-        Schedule schedule = Schedule.builder().build();
-
-        // when
-        LocalDateTime before = LocalDateTime.now();
-        extracurricularService.setScheduleDate(extraId, schedule);
-        LocalDateTime after  = LocalDateTime.now();
-
-        // then (now는 호출 시점 차이가 있어 범위로 검증)
-        assertThat(schedule.getStartDateTime()).isBetween(before.minusSeconds(1), after.plusSeconds(1));
-        assertThat(schedule.getEndDateTime()).isBetween(before.minusSeconds(1), after.plusSeconds(1));
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        verify(extracurricularRepository, times(1)).findAllByTitle(key, pageable);
     }
 }

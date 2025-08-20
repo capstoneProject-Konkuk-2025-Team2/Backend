@@ -2,7 +2,8 @@ package com.capstone.backend.member.domain.service;
 
 import com.capstone.backend.core.common.web.response.ExtendedHttpStatus;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
-import com.capstone.backend.member.domain.entity.Extracurricular;
+import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
+import com.capstone.backend.extracurricular.domain.service.ExtracurricularService;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
@@ -46,7 +47,7 @@ public class ScheduleService {
         Schedule schedule = getByMemberIdAndId(memberId, changeScheduleRequest.scheduleId());
         schedule.changeSchedule(changeScheduleRequest);
         if((schedule.getStartDateTime() == null && schedule.getEndDateTime() == null) && changeScheduleRequest.extracurricularId() != null) {
-            extracurricularService.setScheduleDate(changeScheduleRequest.extracurricularId(), schedule);
+            setScheduleDate(changeScheduleRequest.extracurricularId(), schedule);
         }
     }
 
@@ -81,8 +82,28 @@ public class ScheduleService {
     public void putSchedule(Long memberId, CreateScheduleRequest createScheduleRequest) {
         Schedule schedule = Schedule.createSchedule(memberId, createScheduleRequest);
         if((schedule.getStartDateTime() == null && schedule.getEndDateTime() == null) && createScheduleRequest.extracurricularId() != null) {
-            extracurricularService.setScheduleDate(createScheduleRequest.extracurricularId(), schedule);
+            setScheduleDate(createScheduleRequest.extracurricularId(), schedule);
         }
         save(schedule);
+    }
+
+    @Transactional
+    public void setScheduleDate(Long extracurricularId, Schedule schedule) {
+        Extracurricular extracurricular = extracurricularService.getByExtracurricularId(extracurricularId);
+        LocalDateTime startDateTime;
+        LocalDateTime endDateTime;
+        if(extracurricular.getActivityStart() != null && extracurricular.getActivityEnd() != null) {
+            startDateTime = extracurricular.getActivityStart();
+            endDateTime = extracurricular.getActivityEnd();
+        }
+        else if(extracurricular.getApplicationStart() != null && extracurricular.getApplicationEnd() != null) {
+            startDateTime = extracurricular.getApplicationStart();
+            endDateTime = extracurricular.getApplicationEnd();
+        }
+        else {
+            startDateTime = LocalDateTime.now();
+            endDateTime = LocalDateTime.now();
+        }
+        schedule.setScheduleDateTime(startDateTime, endDateTime);
     }
 }

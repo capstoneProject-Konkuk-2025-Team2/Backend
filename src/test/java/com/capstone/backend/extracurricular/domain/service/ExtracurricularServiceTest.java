@@ -3,6 +3,7 @@ package com.capstone.backend.extracurricular.domain.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -13,6 +14,7 @@ import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
 import com.capstone.backend.extracurricular.domain.repository.ExtracurricularRepository;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +24,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class ExtracurricularServiceTest {
@@ -97,5 +103,24 @@ public class ExtracurricularServiceTest {
         );
         ApiError error = exception.getError();
         assertThat(error.element().code().value()).isEqualTo("capstone.extra.not.found");
+    }
+
+    @DisplayName("findAllByTitle - 성공")
+    @Test
+    void findAllByTitle_success() {
+        // given
+        Pageable pageable = PageRequest.of(0, 2);
+        List<Extracurricular> content = List.of(Extracurricular.builder().title("A비교과").build());
+        Page<Extracurricular> stubPage = new PageImpl<>(content, pageable, 1);
+        String key = "비교과";
+        when(extracurricularRepository.findAllByTitle(key, pageable)).thenReturn(stubPage);
+
+        // when
+        Page<Extracurricular> result = extracurricularService.findAllByTitle(key, pageable);
+
+        // then
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        verify(extracurricularRepository, times(1)).findAllByTitle(key, pageable);
     }
 }

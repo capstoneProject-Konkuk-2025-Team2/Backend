@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
+import com.capstone.backend.extracurricular.domain.repository.ExtracurricularRepository;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.repository.ScheduleRepository;
 import java.time.LocalDateTime;
@@ -15,6 +17,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
@@ -22,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleRepositoryTest {
     @Autowired
     private ScheduleRepository scheduleRepository;
+    @Autowired
+    private ExtracurricularRepository extracurricularRepository;
 
     @DisplayName("findScheduleByMemberIdAndId 테스트")
     @Test
@@ -95,5 +102,59 @@ public class ScheduleRepositoryTest {
                 tuple(scheduleStartJuly.getStartDateTime(), scheduleStartJuly.getEndDateTime()),
                 tuple(scheduleEndJuly.getStartDateTime(), scheduleEndJuly.getEndDateTime())
         );
+    }
+
+    @DisplayName("findAllByMyExtracurricular 테스트")
+    @Test
+    void findAllByMyExtracurricular_success() {
+        // given
+        Long memberId = 1L;
+
+        Extracurricular e1 = extracurricularRepository.save(
+                Extracurricular.builder().title("비교과A").extracurricularId(1L).build()
+        );
+        Extracurricular e2 = extracurricularRepository.save(
+                Extracurricular.builder().title("비교과B").extracurricularId(2L).build()
+        );
+
+        Schedule s1 = Schedule.builder()
+                .memberId(memberId)
+                .extracurricularId(e1.getExtracurricularId())
+                .title("스터디 일정")
+                .startDateTime(LocalDateTime.now())
+                .endDateTime(LocalDateTime.now().plusHours(2))
+                .build();
+
+        Schedule s2 = Schedule.builder()
+                .memberId(memberId)
+                .extracurricularId(e2.getExtracurricularId())
+                .title("세미나 일정")
+                .startDateTime(LocalDateTime.now())
+                .endDateTime(LocalDateTime.now().plusHours(2))
+                .build();
+
+        Schedule s3 = Schedule.builder()
+                .memberId(memberId)
+                .extracurricularId(null) // 제외 대상
+                .title("개인 일정")
+                .startDateTime(LocalDateTime.now())
+                .endDateTime(LocalDateTime.now().plusHours(1))
+                .build();
+
+        scheduleRepository.save(s1);
+        scheduleRepository.save(s2);
+        scheduleRepository.save(s3);
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // when
+        Page<Extracurricular> page =
+                scheduleRepository.findAllByMyExtracurricular(memberId, pageable);
+
+        // then
+        assertThat(page.getTotalElements()).isEqualTo(2);
+        assertThat(page.getContent())
+                .extracting(Extracurricular::getTitle)
+                .containsExactlyInAnyOrder("비교과A", "비교과B");
     }
 }

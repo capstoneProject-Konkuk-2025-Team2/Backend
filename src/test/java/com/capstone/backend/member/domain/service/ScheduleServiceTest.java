@@ -5,8 +5,10 @@ import static com.capstone.backend.member.domain.value.ScheduleType.NORMAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,6 +39,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class ScheduleServiceTest {
@@ -633,5 +639,25 @@ public class ScheduleServiceTest {
         // then (now는 호출 시점 차이가 있어 범위로 검증)
         assertThat(schedule.getStartDateTime()).isBetween(before.minusSeconds(1), after.plusSeconds(1));
         assertThat(schedule.getEndDateTime()).isBetween(before.minusSeconds(1), after.plusSeconds(1));
+    }
+
+    @Test
+    @DisplayName("findAllByMyExtracurricular 메서드를 호출하는가")
+    void getMyExtracurricular_shouldCallRepository() {
+        // given
+        Long memberId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<Extracurricular> mockPage = new PageImpl<>(List.of());
+        when(scheduleRepository.findAllByMyExtracurricular(memberId, pageable))
+                .thenReturn(mockPage);
+
+        // when
+        Page<Extracurricular> result = scheduleService.getMyExtracurricular(memberId, pageable);
+
+        // then
+        assertThat(result).isSameAs(mockPage);
+        verify(scheduleRepository, times(1))
+                .findAllByMyExtracurricular(memberId, pageable);
     }
 }

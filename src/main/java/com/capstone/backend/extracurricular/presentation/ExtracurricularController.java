@@ -2,7 +2,7 @@ package com.capstone.backend.extracurricular.presentation;
 
 import com.capstone.backend.core.common.page.response.PageResponse;
 import com.capstone.backend.core.common.web.response.ApiResponse;
-import com.capstone.backend.extracurricular.dto.response.SearchExtracurricularResponse;
+import com.capstone.backend.extracurricular.dto.response.ExtracurricularResponse;
 import com.capstone.backend.extracurricular.facade.ExtracurricularFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +21,7 @@ public class ExtracurricularController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(ApiPath.SEARCH_EXTRACURRICULAR)
     @Operation(summary = "비교과 검색", description = "searchExtracurricular")
-    public ApiResponse<PageResponse<SearchExtracurricularResponse>> searchExtracurricular(
+    public ApiResponse<PageResponse<ExtracurricularResponse>> searchExtracurricular(
             @RequestParam(name = "key") String key,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "10") int size

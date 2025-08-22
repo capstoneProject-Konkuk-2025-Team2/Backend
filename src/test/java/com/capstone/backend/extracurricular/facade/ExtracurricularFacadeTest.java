@@ -1,6 +1,7 @@
 package com.capstone.backend.extracurricular.facade;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -8,7 +9,7 @@ import static org.mockito.Mockito.when;
 import com.capstone.backend.core.common.page.response.PageResponse;
 import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
 import com.capstone.backend.extracurricular.domain.service.ExtracurricularService;
-import com.capstone.backend.extracurricular.dto.response.SearchExtracurricularResponse;
+import com.capstone.backend.extracurricular.dto.response.ExtracurricularResponse;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +47,7 @@ public class ExtracurricularFacadeTest {
         when(extracurricularService.findAllByTitle(key, pageable)).thenReturn(stubPage);
 
         // when
-        PageResponse<SearchExtracurricularResponse> resp =
+        PageResponse<ExtracurricularResponse> resp =
                 extracurricularFacade.searchExtracurricular(page, size, key);
 
         // then
@@ -72,7 +73,7 @@ public class ExtracurricularFacadeTest {
         when(extracurricularService.findAllByTitle(key, pageable)).thenReturn(empty);
 
         // when
-        PageResponse<SearchExtracurricularResponse> resp =
+        PageResponse<ExtracurricularResponse> resp =
                 extracurricularFacade.searchExtracurricular(page, size, key);
 
         // then

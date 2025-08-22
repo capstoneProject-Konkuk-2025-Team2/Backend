@@ -4,7 +4,7 @@ import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-public record SearchExtracurricularResponse(
+public record ExtracurricularResponse(
         @Schema(description = "비교과 id", example = "1")
         Long id,
         @Schema(description = "비교과 제목", example = "온라인 학습법 특강(AI)")
@@ -20,10 +20,10 @@ public record SearchExtracurricularResponse(
         @Schema(description = "비교과 활동 마감일", example = "2025-07-20T17:00:00")
         LocalDateTime activityEnd
 ) {
-    public static SearchExtracurricularResponse of(
+    public static ExtracurricularResponse of(
             Extracurricular extracurricular
     ) {
-        return new SearchExtracurricularResponse(
+        return new ExtracurricularResponse(
                 extracurricular.getExtracurricularId(),
                 extracurricular.getTitle(),
                 extracurricular.getUrl(),

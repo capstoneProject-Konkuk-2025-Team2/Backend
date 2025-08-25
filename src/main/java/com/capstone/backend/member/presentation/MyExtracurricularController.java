@@ -28,7 +28,8 @@ public class MyExtracurricularController {
             @RequestParam(name = "size", defaultValue = "10") int size,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
-        return ApiResponse.success(myExtracurricularFacade.lookupMyExtracurricular(customUserDetails, page, size));
+        int safePage = (page < 1) ? 0 : page - 1;
+        return ApiResponse.success(myExtracurricularFacade.lookupMyExtracurricular(customUserDetails, safePage, size));
     }
 
     @ResponseStatus(HttpStatus.OK)

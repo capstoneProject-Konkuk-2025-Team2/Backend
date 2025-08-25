@@ -21,8 +21,17 @@ public class MyExtracurricularFacade {
         Long memberId = memberService.getByEmail(customUserDetails.getUsername()).getId();
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Extracurricular> extracurricularPage = scheduleService.getMyExtracurricular(memberId, pageRequest);
-        Page<ExtracurricularResponse> searchExtracurricularResponsePage
+        Page<ExtracurricularResponse> extracurricularResponsePage
                 = extracurricularPage.map(ExtracurricularResponse::of);
-        return PageResponse.from(searchExtracurricularResponsePage);
+        return PageResponse.from(extracurricularResponsePage);
+    }
+
+    public PageResponse<ExtracurricularResponse> searchMyExtracurricular(String key, int page, int size, CustomUserDetails customUserDetails) {
+        Long memberId = memberService.getByEmail(customUserDetails.getUsername()).getId();
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Extracurricular> extracurricularPage = scheduleService.searchMyExtracurricular(memberId, key, pageRequest);
+        Page<ExtracurricularResponse> extracurricularResponsePage
+                = extracurricularPage.map(ExtracurricularResponse::of);
+        return PageResponse.from(extracurricularResponsePage);
     }
 }

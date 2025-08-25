@@ -37,4 +37,16 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             """
     )
     Page<Extracurricular> findAllByMyExtracurricular(@Param("memberId") Long memberId, Pageable pageable);
+
+    @Query(
+            """
+            SELECT e
+            FROM Schedule s
+            JOIN Extracurricular e ON s.extracurricularId = e.extracurricularId
+            WHERE s.memberId = :memberId
+            AND s.extracurricularId IS NOT NULL
+            AND e.title LIKE %:key%
+            """
+    )
+    Page<Extracurricular> findAllByMyExtracurricularAndTitle(@Param("memberId") Long memberId,@Param("key") String key, Pageable pageable);
 }

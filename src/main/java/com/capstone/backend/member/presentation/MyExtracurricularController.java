@@ -28,6 +28,20 @@ public class MyExtracurricularController {
             @RequestParam(name = "size", defaultValue = "10") int size,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
-        return ApiResponse.success(myExtracurricularFacade.lookupMyExtracurricular(customUserDetails, page, size));
+        int safePage = (page < 1) ? 0 : page - 1;
+        return ApiResponse.success(myExtracurricularFacade.lookupMyExtracurricular(customUserDetails, safePage, size));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(ApiPath.SEARCH_MY_EXTRACURRICULAR)
+    @Operation(summary = "내가 추가한 비교과 활동 검색", description = "searchMyExtracurricular")
+    public ApiResponse<PageResponse<ExtracurricularResponse>> searchMyExtracurricular(
+            @RequestParam(name = "key") String key,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        int safePage = (page < 1) ? 0 : page - 1;
+        return ApiResponse.success(myExtracurricularFacade.searchMyExtracurricular(key, safePage, size, customUserDetails));
     }
 }

@@ -22,4 +22,5 @@ public final class ApiPath {
     public static final String DETAIL_SCHEDULE = "/v1/member/schedule/{scheduleId}";
     public static final String CHANGE_INTEREST = "/v1/member/interest";
     public static final String MY_EXTRACURRICULAR = "/v1/member/extracurricular";
+    public static final String SEARCH_MY_EXTRACURRICULAR = "/v1/member/search-extracurricular";
 }

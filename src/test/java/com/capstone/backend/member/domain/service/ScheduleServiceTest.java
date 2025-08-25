@@ -5,7 +5,6 @@ import static com.capstone.backend.member.domain.value.ScheduleType.NORMAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
@@ -659,5 +658,25 @@ public class ScheduleServiceTest {
         assertThat(result).isSameAs(mockPage);
         verify(scheduleRepository, times(1))
                 .findAllByMyExtracurricular(memberId, pageable);
+    }
+
+    @Test
+    @DisplayName("findAllByMyExtracurricularAndTitle 메서드를 호출하는가")
+    void searchMyExtracurricular_shouldCallRepository() {
+        //given
+        Long memberId = 1L;
+        String key = "test";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<Extracurricular> mockPage = new PageImpl<>(List.of());
+        when(scheduleRepository.findAllByMyExtracurricularAndTitle(memberId, key, pageable))
+                .thenReturn(mockPage);
+        // when
+        Page<Extracurricular> result = scheduleService.searchMyExtracurricular(memberId, key, pageable);
+
+        // then
+        assertThat(result).isSameAs(mockPage);
+        verify(scheduleRepository, times(1))
+                .findAllByMyExtracurricularAndTitle(memberId, key, pageable);
     }
 }

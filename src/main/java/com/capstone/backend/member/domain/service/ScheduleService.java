@@ -113,4 +113,9 @@ public class ScheduleService {
     public Page<Extracurricular> getMyExtracurricular(Long memberId, Pageable pageable) {
         return scheduleRepository.findAllByMyExtracurricular(memberId, pageable);
     }
+
+    @Transactional(readOnly = true)
+    public Page<Extracurricular> searchMyExtracurricular(Long memberId, String key, Pageable pageable) {
+        return scheduleRepository.findAllByMyExtracurricularAndTitle(memberId, key, pageable);
+    }
 }

@@ -7,9 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
 import com.capstone.backend.extracurricular.domain.repository.ExtracurricularRepository;
 import com.capstone.backend.member.domain.entity.Schedule;
-import com.capstone.backend.member.domain.repository.ScheduleRepository;
 import java.time.LocalDateTime;
-import java.time.Year;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
@@ -156,5 +154,86 @@ public class ScheduleRepositoryTest {
         assertThat(page.getContent())
                 .extracting(Extracurricular::getTitle)
                 .containsExactlyInAnyOrder("비교과A", "비교과B");
+    }
+
+    @DisplayName("LIKE 검색 + 페이징 기본 동작")
+    @Test
+    void findAllByMyExtracurricularAndTitle_like_with_paging() {
+        //given
+        Long memberId = 1L;
+        Extracurricular e1 = extracurricularRepository.save(
+                Extracurricular.builder().title("비교과A").extracurricularId(1L).build()
+        );
+        Extracurricular e2 = extracurricularRepository.save(
+                Extracurricular.builder().title("비교과B").extracurricularId(2L).build()
+        );
+        Extracurricular e3 = extracurricularRepository.save(
+                Extracurricular.builder().title("비교과C").extracurricularId(3L).build()
+        );
+        Schedule s1 = Schedule.builder()
+                .memberId(memberId)
+                .extracurricularId(e1.getExtracurricularId())
+                .title("스터디 일정")
+                .startDateTime(LocalDateTime.now())
+                .endDateTime(LocalDateTime.now().plusHours(2))
+                .build();
+
+        Schedule s2 = Schedule.builder()
+                .memberId(memberId)
+                .extracurricularId(e2.getExtracurricularId())
+                .title("세미나 일정")
+                .startDateTime(LocalDateTime.now())
+                .endDateTime(LocalDateTime.now().plusHours(2))
+                .build();
+
+        Schedule s3 = Schedule.builder()
+                .memberId(memberId)
+                .extracurricularId(e3.getExtracurricularId())
+                .title("개인 일정")
+                .startDateTime(LocalDateTime.now())
+                .endDateTime(LocalDateTime.now().plusHours(1))
+                .build();
+        scheduleRepository.save(s1);
+        scheduleRepository.save(s2);
+        scheduleRepository.save(s3);
+
+        String key = "비교과";
+        Pageable pageable = PageRequest.of(0, 2);
+        // when
+        Page<Extracurricular> page = scheduleRepository.findAllByMyExtracurricularAndTitle(memberId, key, pageable);
+        // then
+        assertThat(page.getContent()).hasSize(2);
+        assertThat(page.getTotalElements()).isEqualTo(3);
+        assertThat(page.getTotalPages()).isEqualTo(2);
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.isLast()).isFalse();
+
+        assertThat(page.getContent().get(0).getTitle()).contains(key);
+        assertThat(page.getContent().get(1).getTitle()).contains(key);
+    }
+
+    @Test
+    @DisplayName("검색 결과가 없을 때도 Page 메타데이터가 정상이어야 한다")
+    void findAllByMyExtracurricularAndTitle_noResult() {
+        // given
+        Long memberId = 1L;
+        Schedule s = Schedule.builder()
+                .memberId(memberId)
+                .extracurricularId(null)
+                .title("스터디 일정")
+                .startDateTime(LocalDateTime.now())
+                .endDateTime(LocalDateTime.now().plusHours(2))
+                .build();
+        scheduleRepository.save(s);
+        Pageable pageable = PageRequest.of(0, 10);
+        String key = "비교과";
+        // when
+        Page<Extracurricular> page = scheduleRepository.findAllByMyExtracurricularAndTitle(memberId, key, pageable);
+        // then
+        assertThat(page.getContent()).isEmpty();
+        assertThat(page.getTotalElements()).isZero();
+        assertThat(page.getTotalPages()).isZero();
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.isLast()).isTrue();
     }
 }

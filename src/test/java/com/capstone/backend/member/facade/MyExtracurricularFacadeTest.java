@@ -83,4 +83,31 @@ public class MyExtracurricularFacadeTest {
         verify(memberService).getByEmail(member.getEmail());
         verify(scheduleService).getMyExtracurricular(memberId, pageRequest);
     }
+
+    @DisplayName("내가 추가한 비교과 검색")
+    @Test
+    void searchMyExtracurricular_success() {
+        // given
+        int page = 0, size = 2;
+        Long memberId = 1L;
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        Extracurricular e1 = Extracurricular.builder().id(1L).title("자바 스터디").build();
+        Extracurricular e2 = Extracurricular.builder().id(2L).title("알고리즘 세미나").build();
+        String key = "test";
+        Page<Extracurricular> mockPage =
+                new PageImpl<>(List.of(e1, e2), pageRequest, 5);
+
+        when(scheduleService.searchMyExtracurricular(memberId, key, pageRequest))
+                .thenReturn(mockPage);
+
+        // when
+        PageResponse<ExtracurricularResponse> resp =
+                myExtracurricularFacade.searchMyExtracurricular(key, page, size, customUserDetails);
+
+        // then
+        verify(memberService).getByEmail(member.getEmail());
+        verify(scheduleService).searchMyExtracurricular(memberId, key, pageRequest);
+    }
 }

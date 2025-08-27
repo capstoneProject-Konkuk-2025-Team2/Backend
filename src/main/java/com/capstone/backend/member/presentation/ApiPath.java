@@ -23,4 +23,8 @@ public final class ApiPath {
     public static final String CHANGE_INTEREST = "/v1/member/interest";
     public static final String MY_EXTRACURRICULAR = "/v1/member/extracurricular";
     public static final String SEARCH_MY_EXTRACURRICULAR = "/v1/member/search-extracurricular";
+    public static final String REVIEW = "/v1/review";
+    public static final String REVIEW_SEARCH = "/v1/search-review";
+    public static final String MY_REVIEW = "/v1/member/review";
+    public static final String MY_REVIEW_SEARCH = "/v1/member/search-review";
 }

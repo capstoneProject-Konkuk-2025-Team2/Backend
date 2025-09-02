@@ -9,17 +9,21 @@ public record ReviewResponse(
         Long reviewId,
         @Schema(description = "관련된 비교과 ID", example = "1")
         Long extracurricularId,
+        @Schema(description = "관련된 비교과 제목", example = "A비교과")
+        String title,
         @Schema(description = "리뷰내용", example = "좋아요!")
         String content,
         @Schema(description = "별점", example = "FIVE")
         Star star
 ) {
     public static ReviewResponse of(
-            Review review
+            Review review,
+            String title
     ) {
         return new ReviewResponse(
                 review.getId(),
                 review.getExtracurricularId(),
+                title,
                 review.getContent(),
                 review.getStar()
         );

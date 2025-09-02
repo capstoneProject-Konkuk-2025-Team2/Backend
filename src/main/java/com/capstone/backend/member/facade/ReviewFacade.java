@@ -2,6 +2,8 @@ package com.capstone.backend.member.facade;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.core.common.page.response.PageResponse;
+import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
+import com.capstone.backend.extracurricular.domain.service.ExtracurricularService;
 import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.entity.Review;
 import com.capstone.backend.member.domain.service.MemberService;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 public class ReviewFacade {
     private final ReviewService reviewService;
     private final MemberService memberService;
+    private final ExtracurricularService extracurricularService;
 
     public boolean createReview(CustomUserDetails customUserDetails, CreateReviewRequest createReviewRequest) {
         Member member = memberService.getByEmail(customUserDetails.getUsername());
@@ -30,7 +33,10 @@ public class ReviewFacade {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Review> reviewPage = reviewService.viewReview(pageRequest);
         Page<ReviewResponse> reviewResponsePage
-                = reviewPage.map(ReviewResponse::of);
+                = reviewPage.map(review -> {
+            Extracurricular extracurricular = extracurricularService.getByExtracurricularId(review.getExtracurricularId());
+            return ReviewResponse.of(review, extracurricular.getTitle());
+        });
         return PageResponse.from(reviewResponsePage);
     }
 
@@ -38,7 +44,11 @@ public class ReviewFacade {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Review> reviewPage = reviewService.searchReview(key, pageRequest);
         Page<ReviewResponse> reviewResponsePage
-                = reviewPage.map(ReviewResponse::of);
+                = reviewPage.map(review -> {
+            Extracurricular extracurricular = extracurricularService.getByExtracurricularId(
+                    review.getExtracurricularId());
+            return ReviewResponse.of(review, extracurricular.getTitle());
+        });
         return PageResponse.from(reviewResponsePage);
     }
 
@@ -47,7 +57,11 @@ public class ReviewFacade {
         Member member = memberService.getByEmail(customUserDetails.getUsername());
         Page<Review> reviewPage = reviewService.viewMyReview(member.getId(), pageRequest);
         Page<ReviewResponse> reviewResponsePage
-                = reviewPage.map(ReviewResponse::of);
+                = reviewPage.map(review -> {
+            Extracurricular extracurricular = extracurricularService.getByExtracurricularId(
+                    review.getExtracurricularId());
+            return ReviewResponse.of(review, extracurricular.getTitle());
+        });
         return PageResponse.from(reviewResponsePage);
     }
 
@@ -56,7 +70,11 @@ public class ReviewFacade {
         Member member = memberService.getByEmail(customUserDetails.getUsername());
         Page<Review> reviewPage = reviewService.searchMyReview(member.getId(), key, pageRequest);
         Page<ReviewResponse> reviewResponsePage
-                = reviewPage.map(ReviewResponse::of);
+                = reviewPage.map(review -> {
+            Extracurricular extracurricular = extracurricularService.getByExtracurricularId(
+                    review.getExtracurricularId());
+            return ReviewResponse.of(review, extracurricular.getTitle());
+        });
         return PageResponse.from(reviewResponsePage);
     }
 

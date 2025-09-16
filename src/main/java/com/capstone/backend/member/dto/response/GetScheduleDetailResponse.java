@@ -4,6 +4,7 @@ import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
 import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.value.ScheduleType;
 import com.capstone.backend.member.dto.request.ExtracurricularField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -15,8 +16,12 @@ public record GetScheduleDetailResponse(
         String content,
         @Schema(description = "스케쥴 타입", example = "EXTRACURRICULAR(비교과 관련), NORMAL(일반 일정)")
         ScheduleType scheduleType,
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         @Schema(description = "시작 날짜", example = "2025-07-19T14:30:45")
         LocalDateTime startDateTime,
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         @Schema(description = "끝 날짜", example = "2025-07-20T14:30:45")
         LocalDateTime endDateTime,
         @Schema(description = "관련된 비교과(일반 일정일 경우에는 null값이 들어옴)")

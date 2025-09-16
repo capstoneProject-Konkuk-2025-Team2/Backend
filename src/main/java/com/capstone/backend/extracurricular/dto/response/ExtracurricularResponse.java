@@ -1,6 +1,7 @@
 package com.capstone.backend.extracurricular.dto.response;
 
 import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
@@ -11,12 +12,17 @@ public record ExtracurricularResponse(
         String title,
         @Schema(description = "비교과 url", example = "https://abc.cdf")
         String url,
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         @Schema(description = "비교과 등록 시작일", example = "2025-07-15T14:00:00")
         LocalDateTime applicationStart,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         @Schema(description = "비교과 등록 마감일", example = "2025-07-17T14:00:00")
         LocalDateTime applicationEnd,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         @Schema(description = "비교과 활동 시작일", example = "2025-07-20T14:00:00")
         LocalDateTime activityStart,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         @Schema(description = "비교과 활동 마감일", example = "2025-07-20T17:00:00")
         LocalDateTime activityEnd
 ) {

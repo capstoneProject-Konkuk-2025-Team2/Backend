@@ -2,9 +2,9 @@ package com.capstone.backend.member.dto.response;
 
 import com.capstone.backend.member.domain.entity.Timetable;
 import com.capstone.backend.member.domain.value.Day;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalTime;
-import lombok.Builder;
 
 public record LookupTimetableResponse(
         @Schema(description = "시간표 엔트리 ID(DB PK값)", example = "1")
@@ -17,8 +17,12 @@ public record LookupTimetableResponse(
         String eventName,
         @Schema(description = "시간표 내용", example = "공C487")
         String eventDetail,
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss.SSSSSS")
         @Schema(description = "시작 시각", example = "09:00:00.000000")
         LocalTime startTime,
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss.SSSSSS")
         @Schema(description = "끝 시각", example = "11:00:00.000000")
         LocalTime endTime
 ) {

@@ -4,16 +4,12 @@ import com.capstone.backend.chatbot.dto.chatbot.RecommendedProgram;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-public record ChatbotQuestionResponse(
-        @JsonProperty("user_summary")
-        String userSummary,
-        @JsonProperty("recommendation_intro")
-        String recommendationInfo,
+public record ChatbotQuestionResponse (
         @JsonProperty("answer")
         String answer,
-        @JsonProperty("total_programs")
-        Long totalPrograms,
-        @JsonProperty("recommended_programs")
-        List<RecommendedProgram> recommendedPrograms
+        @JsonProperty("recommendations")
+        List<RecommendedProgram> recommendations,
+        @JsonProperty("recommended_ids")
+        List<Long> recommended_ids
 ) {
 }

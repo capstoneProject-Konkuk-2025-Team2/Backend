@@ -11,7 +11,7 @@ public record ChatbotQuestionRequest(
             String question
     ) {
         return new ChatbotQuestionRequest(
-                2L, //Todo 외부 api 오류 해결시 member.getId로 고치기
+                member.getId(),
                 question
         );
     }

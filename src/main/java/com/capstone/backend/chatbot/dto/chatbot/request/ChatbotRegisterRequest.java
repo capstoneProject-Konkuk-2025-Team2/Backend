@@ -10,7 +10,8 @@ public record ChatbotRegisterRequest (
         String major,
         String grade,
         List<String> interests,
-        List<RegisterTimetable> timetable
+        List<RegisterTimetable> timetable,
+        String email
 ) {
     public static ChatbotRegisterRequest of(
             Member member,
@@ -23,7 +24,8 @@ public record ChatbotRegisterRequest (
                 member.getDepartment(),
                 member.getStringGrade(),
                 interests,
-                timetable
+                timetable,
+                member.getEmail()
         );
     }
 }

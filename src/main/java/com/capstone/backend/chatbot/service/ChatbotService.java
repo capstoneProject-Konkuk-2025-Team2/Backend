@@ -2,7 +2,6 @@ package com.capstone.backend.chatbot.service;
 
 import com.capstone.backend.chatbot.dto.chatbot.request.ChatbotQuestionRequest;
 import com.capstone.backend.chatbot.dto.chatbot.request.ChatbotRegisterRequest;
-import com.capstone.backend.chatbot.dto.chatbot.response.ChatbotQuestionResponse;
 import com.capstone.backend.chatbot.dto.our.response.QuestionToChatServerResponse;
 import com.capstone.backend.chatbot.presentation.ChatbotApiPath;
 import com.capstone.backend.core.infrastructure.exception.CustomException;

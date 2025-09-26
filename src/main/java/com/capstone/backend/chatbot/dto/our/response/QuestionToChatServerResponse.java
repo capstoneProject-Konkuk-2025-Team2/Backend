@@ -9,7 +9,7 @@ import java.util.List;
 public record QuestionToChatServerResponse(
         @Schema(description = "응답", example = "OO님의 관심사는 ~~이며, 다음의 비교과를 추천합니다.")
         String answer,
-        @Schema(description = "추천할 비교과 id 목록")
+        @Schema(description = "챗봇이 추천한 비교과 프로그램 목록")
         List<Program> sources
 ) {
         public static QuestionToChatServerResponse of(JsonNode data) {

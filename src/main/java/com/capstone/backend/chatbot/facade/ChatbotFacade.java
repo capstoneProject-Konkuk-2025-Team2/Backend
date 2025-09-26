@@ -3,7 +3,6 @@ package com.capstone.backend.chatbot.facade;
 import com.capstone.backend.chatbot.dto.chatbot.request.ChatbotQuestionRequest;
 import com.capstone.backend.chatbot.dto.chatbot.request.ChatbotRegisterRequest;
 import com.capstone.backend.chatbot.dto.chatbot.RegisterTimetable;
-import com.capstone.backend.chatbot.dto.chatbot.response.ChatbotQuestionResponse;
 import com.capstone.backend.chatbot.dto.our.request.QuestionToChatServerRequest;
 import com.capstone.backend.chatbot.dto.our.response.QuestionToChatServerResponse;
 import com.capstone.backend.chatbot.service.ChatbotService;

@@ -11,6 +11,7 @@ public final class ApiPath {
     public static final String MAKE_TIMETABLE = "/v1/member/timetable";
     public static final String LOOKUP_TIMETABLE = "/v1/member/timetable";
     public static final String CHANGE_TIMETABLE = "/v1/member/timetable";
+    public static final String DELETE_TIMETABLE = "/v1/member/timetable";
     public static final String SETTING_INTEREST = "/v1/member/interest";
     public static final String SETTING_ACADEMIC_INFO = "/v1/member/academic-info";
     public static final String LOOKUP_MEMBER_INFO = "/v1/member/information";

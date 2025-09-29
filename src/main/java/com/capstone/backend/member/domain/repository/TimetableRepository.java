@@ -13,4 +13,6 @@ public interface TimetableRepository extends JpaRepository<Timetable, Long> {
 
     @Query("SELECT t FROM Timetable t WHERE t.memberId =:memberId AND t.id = :id")
     Optional<Timetable> findByMemberIdAndId(@Param("memberId") Long memberId, @Param("id") Long id);
+
+    void deleteByMemberIdAndId(Long memberId, Long timetableId);
 }

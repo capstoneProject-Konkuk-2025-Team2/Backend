@@ -4,6 +4,7 @@ import com.capstone.backend.core.auth.dto.CustomUserDetails;
 import com.capstone.backend.core.common.web.response.ApiResponse;
 import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import com.capstone.backend.member.dto.request.AcademicInfoRequest;
+import com.capstone.backend.member.dto.request.DeleteTimetableRequest;
 import com.capstone.backend.member.dto.request.InterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import com.capstone.backend.member.facade.SetMemberInfoFacade;
@@ -14,6 +15,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,6 +66,16 @@ public class SetMemberInfoController {
             @RequestBody ChangeTimetableRequest changeTimetableRequest
     ) {
         return ApiResponse.success(setMemberInfoFacade.changeTimetable(customUserDetails, changeTimetableRequest));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping(ApiPath.DELETE_TIMETABLE)
+    @Operation(summary = "시간표 삭제", description = "deleteTimetable")
+    public ApiResponse<Boolean> deleteTimetable(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody DeleteTimetableRequest deleteTimetableRequest
+    ) {
+        return ApiResponse.success(setMemberInfoFacade.deleteTimetable(customUserDetails, deleteTimetableRequest));
     }
 
     @ResponseStatus(HttpStatus.OK)

@@ -34,4 +34,9 @@ public class TimetableService {
     public void changeTimetable(Timetable timetable, ChangeTimetableRequest changeTimetableRequest) {
         timetable.changeTimetable(changeTimetableRequest);
     }
+
+    @Transactional
+    public void deleteMemberIdAndTimetableId(Long memberId, Long timetableId) {
+        timetableRepository.deleteByMemberIdAndId(memberId, timetableId);
+    }
 }

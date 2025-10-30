@@ -14,9 +14,9 @@ import com.capstone.backend.core.configuration.env.AppEnv;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.member.domain.entity.Member;
 import com.capstone.backend.member.domain.repository.MemberRepository;
-import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.value.Role;
 import com.capstone.backend.member.dto.request.AcademicInfoRequest;
+import com.capstone.backend.member.dto.request.FcmTokenRequest;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -227,5 +227,25 @@ class MemberServiceTest {
         assertEquals(academicInfoRequest.college(), member.getCollege());
         assertEquals(academicInfoRequest.department(), member.getDepartment());
         assertEquals(academicInfoRequest.name(), member.getName());
+    }
+
+    @DisplayName("updateFcmToken - 성공")
+    @Test
+    void updateFcmToken_success() {
+        //given
+        Long memberId = 1L;
+        String email = "abc@def.com";
+        Member member = Member.builder()
+                .id(memberId)
+                .email(email)
+                .build();
+        FcmTokenRequest fcmTokenRequest = new FcmTokenRequest(
+                "itisfcmtoken"
+        );
+        when(memberRepository.findById(memberId)).thenReturn(Optional.ofNullable(member));
+        //when
+        memberService.updateFcmToken(memberId, fcmTokenRequest.fcmToken());
+        //then
+        assertEquals(fcmTokenRequest.fcmToken(), member.getFcmToken());
     }
 }

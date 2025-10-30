@@ -28,4 +28,5 @@ public final class ApiPath {
     public static final String REVIEW_SEARCH = "/v1/search-review";
     public static final String MY_REVIEW = "/v1/member/review";
     public static final String MY_REVIEW_SEARCH = "/v1/member/search-review";
+    public static final String FCM_TOKEN = "/v1/member/fcm-token";
 }

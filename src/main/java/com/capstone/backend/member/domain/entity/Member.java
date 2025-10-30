@@ -57,6 +57,9 @@ public class Member extends BaseEntity {
     @Column(name = "DEPARTMENT", length = 30)
     private String department;
 
+    @Column(name = "FCM_TOKEN", length = 200)
+    private String fcmToken;
+
     public static Member createTemporaryMember(String email) {
         return Member.builder()
                 .email(email)
@@ -88,5 +91,9 @@ public class Member extends BaseEntity {
 
     public String getStringGrade(){
         return this.grade.toString() + "학년";
+    }
+
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 }

@@ -44,6 +44,7 @@ jobs:
           mkdir -p test/resources
           echo "$APPLICATION_PROPERTIES" > main/resources/application.yml
           echo "$ERROR_MESSAGES_PROPERTIES" > main/resources/api-error-messages.properties
+          echo "$FCM_JSON" > main/resources/fcm.json
           echo "$TEST_APPLICATION_PROPERTIES" > test/resources/application.yml
 
       - name: gradlew 권한 부여

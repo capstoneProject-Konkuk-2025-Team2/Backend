@@ -62,7 +62,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
     // Google Auth Library (GoogleCredentials)
-    implementation 'com.google.auth:google-auth-library-oauth2-http:1.22.0'
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.35.0'
 
     // OkHttp (HTTP 통신용)
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'

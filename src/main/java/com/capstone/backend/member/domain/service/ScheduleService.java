@@ -125,7 +125,7 @@ public class ScheduleService {
         return scheduleRepository.findAllByMyExtracurricularAndTitle(memberId, key, pageable);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Boolean setAlarmSchedule(Long memberId, ScheduleAlarmRequest scheduleAlarmRequest) {
         Schedule schedule = getByMemberIdAndId(memberId, scheduleAlarmRequest.scheduleId());
         Duration offset = Duration.ofDays(1);

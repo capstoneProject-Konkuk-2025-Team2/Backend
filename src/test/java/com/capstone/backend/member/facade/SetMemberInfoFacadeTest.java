@@ -19,9 +19,9 @@ import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.domain.value.Role;
 import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import com.capstone.backend.member.dto.request.AcademicInfoRequest;
+import com.capstone.backend.member.dto.request.FcmTokenRequest;
 import com.capstone.backend.member.dto.request.InterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
-import com.capstone.backend.member.facade.SetMemberInfoFacade;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -164,5 +164,17 @@ class SetMemberInfoFacadeTest {
         //then
         verify(memberService).getByEmail(customUserDetails.getUsername());
         verify(interestService).changeInterest(member.getId(), interestRequest);
+    }
+
+    @DisplayName("fcm 업데이트 테스트")
+    @Test
+    void updateFcmToken() {
+        //given
+        FcmTokenRequest fcmTokenRequest = new FcmTokenRequest("itisfcmtoken");
+        //when
+        setMemberInfoFacade.updateFcmToken(customUserDetails, fcmTokenRequest);
+        //then
+        verify(memberService).getByEmail(customUserDetails.getUsername());
+        verify(memberService).updateFcmToken(member.getId(), fcmTokenRequest.fcmToken());
     }
 }

@@ -1,5 +1,6 @@
 package com.capstone.backend.member.domain.service;
 
+import com.capstone.backend.alarm.service.AlarmService;
 import com.capstone.backend.core.common.web.response.ExtendedHttpStatus;
 import com.capstone.backend.core.infrastructure.exception.CustomException;
 import com.capstone.backend.extracurricular.domain.entity.Extracurricular;
@@ -9,10 +10,14 @@ import com.capstone.backend.member.domain.repository.ScheduleRepository;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
+import com.capstone.backend.member.dto.request.ScheduleAlarmRequest;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ExtracurricularService extracurricularService;
+    private final AlarmService alarmService;
 
     @Transactional
     public void save(Schedule schedule) {
@@ -117,5 +123,26 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public Page<Extracurricular> searchMyExtracurricular(Long memberId, String key, Pageable pageable) {
         return scheduleRepository.findAllByMyExtracurricularAndTitle(memberId, key, pageable);
+    }
+
+    @Transactional
+    public Boolean setAlarmSchedule(Long memberId, ScheduleAlarmRequest scheduleAlarmRequest) {
+        Schedule schedule = getByMemberIdAndId(memberId, scheduleAlarmRequest.scheduleId());
+        Duration offset = Duration.ofDays(1);
+        if(scheduleAlarmRequest.isAlarm()) {
+            Instant sendAt = schedule.getStartDateTime()
+                    .atZone(ZoneId.of("Asia/Seoul")).toInstant()
+                    .minus(offset);
+
+            if (sendAt.isBefore(Instant.now())) {
+                return true;
+            }
+
+            alarmService.enqueueSchedule(schedule, offset);
+        }
+        else {
+            alarmService.disableNotification(memberId, schedule.getId());
+        }
+        return true;
     }
 }

@@ -5,6 +5,7 @@ import com.capstone.backend.core.common.web.response.ApiResponse;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
+import com.capstone.backend.member.dto.request.ScheduleAlarmRequest;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
 import com.capstone.backend.member.facade.ScheduleFacade;
@@ -78,5 +79,15 @@ public class ScheduleController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         return ApiResponse.success(scheduleFacade.getScheduleDetail(scheduleId, customUserDetails));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping(ApiPath.ALARM_SCHEDULE)
+    @Operation(summary = "스케쥴 알림 설정", description = "scheduleAlarm")
+    public ApiResponse<Boolean> setAlarmSchedule(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody ScheduleAlarmRequest scheduleAlarmRequest
+    ) {
+        return ApiResponse.success(scheduleFacade.setAlarmSchedule(customUserDetails, scheduleAlarmRequest));
     }
 }

@@ -1,12 +1,12 @@
 package com.capstone.backend.member.facade;
 
 import com.capstone.backend.core.auth.dto.CustomUserDetails;
-import com.capstone.backend.member.domain.entity.Schedule;
 import com.capstone.backend.member.domain.service.MemberService;
 import com.capstone.backend.member.domain.service.ScheduleService;
 import com.capstone.backend.member.dto.request.ChangeScheduleRequest;
 import com.capstone.backend.member.dto.request.CreateScheduleRequest;
 import com.capstone.backend.member.dto.request.DeleteScheduleRequest;
+import com.capstone.backend.member.dto.request.ScheduleAlarmRequest;
 import com.capstone.backend.member.dto.response.GetScheduleByYearAndMonthResponse;
 import com.capstone.backend.member.dto.response.GetScheduleDetailResponse;
 import java.util.List;
@@ -51,5 +51,10 @@ public class ScheduleFacade {
     public GetScheduleDetailResponse getScheduleDetail(Long scheduleId, CustomUserDetails customUserDetails) {
         Long memberId = memberService.getByEmail(customUserDetails.getUsername()).getId();
         return scheduleService.getScheduleDetail(memberId, scheduleId);
+    }
+
+    public Boolean setAlarmSchedule(CustomUserDetails customUserDetails, ScheduleAlarmRequest scheduleAlarmRequest) {
+        Long memberId = memberService.getByEmail(customUserDetails.getUsername()).getId();
+        return scheduleService.setAlarmSchedule(memberId, scheduleAlarmRequest);
     }
 }

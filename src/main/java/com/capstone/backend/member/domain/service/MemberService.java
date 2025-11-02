@@ -77,4 +77,10 @@ public class MemberService {
                 academicInfoRequest.name()
         );
     }
+
+    @Transactional
+    public void updateFcmToken(Long memberId, String fcmToken) {
+        Member member = getById(memberId);
+        member.updateFcmToken(fcmToken);
+    }
 }

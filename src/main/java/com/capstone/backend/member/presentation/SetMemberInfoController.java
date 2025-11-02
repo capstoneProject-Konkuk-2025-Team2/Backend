@@ -5,6 +5,7 @@ import com.capstone.backend.core.common.web.response.ApiResponse;
 import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import com.capstone.backend.member.dto.request.AcademicInfoRequest;
 import com.capstone.backend.member.dto.request.DeleteTimetableRequest;
+import com.capstone.backend.member.dto.request.FcmTokenRequest;
 import com.capstone.backend.member.dto.request.InterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import com.capstone.backend.member.facade.SetMemberInfoFacade;
@@ -86,5 +87,15 @@ public class SetMemberInfoController {
             @RequestBody InterestRequest interestRequest
     ) {
         return ApiResponse.success(setMemberInfoFacade.changeInterest(customUserDetails, interestRequest));
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(ApiPath.FCM_TOKEN)
+    @Operation(summary = "fcm 토큰 발급", description = "updateFcmToken")
+    public ApiResponse<Boolean> updateFcmToken(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody FcmTokenRequest fcmTokenRequest
+    ) {
+        return ApiResponse.success(setMemberInfoFacade.updateFcmToken(customUserDetails, fcmTokenRequest));
     }
 }

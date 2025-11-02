@@ -9,6 +9,7 @@ import com.capstone.backend.member.domain.service.TimetableService;
 import com.capstone.backend.member.dto.request.ChangeTimetableRequest;
 import com.capstone.backend.member.dto.request.AcademicInfoRequest;
 import com.capstone.backend.member.dto.request.DeleteTimetableRequest;
+import com.capstone.backend.member.dto.request.FcmTokenRequest;
 import com.capstone.backend.member.dto.request.InterestRequest;
 import com.capstone.backend.member.dto.request.MakeMemberTimetableRequest;
 import java.util.List;
@@ -67,6 +68,13 @@ public class SetMemberInfoFacade {
         Member member = memberService.getByEmail(customUserDetails.getUsername());
         timetableService.findByMemberIdAndId(member.getId(), deleteTimetableRequest.deleteTimetableId());
         timetableService.deleteMemberIdAndTimetableId(member.getId(), deleteTimetableRequest.deleteTimetableId());
+        return true;
+    }
+
+    @Transactional
+    public Boolean updateFcmToken(CustomUserDetails customUserDetails, FcmTokenRequest fcmTokenRequest) {
+        Member member = memberService.getByEmail(customUserDetails.getUsername());
+        memberService.updateFcmToken(member.getId(), fcmTokenRequest.fcmToken());
         return true;
     }
 }

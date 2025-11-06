@@ -128,6 +128,7 @@ public class ScheduleService {
     @Transactional
     public Boolean setAlarmSchedule(Long memberId, ScheduleAlarmRequest scheduleAlarmRequest) {
         Schedule schedule = getByMemberIdAndId(memberId, scheduleAlarmRequest.scheduleId());
+        schedule.setAlarm(scheduleAlarmRequest.isAlarm());
         Duration offset = Duration.ofDays(1);
         if(scheduleAlarmRequest.isAlarm()) {
             Instant sendAt = schedule.getStartDateTime()

@@ -10,12 +10,14 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AlarmService {
     private final RedisTemplate<String, String> redisTemplate;
     private final MemberService memberService;
@@ -64,7 +66,7 @@ public class AlarmService {
             Member m = memberService.findById(memberId).orElse(null);
             Schedule s = scheduleRepository.findScheduleByMemberIdAndId(memberId, scheduleId).orElse(null);
             if (m == null || s == null || m.getFcmToken() == null) continue;
-
+            log.info("알림 발생 : " + memberId + "오늘 일정 알림" + s.getTitle() + " 시작 임박");
             fcmService.sendMessageTo(m.getFcmToken(), "오늘 일정 알림", s.getTitle() + " 시작 임박", null);
         }
     }

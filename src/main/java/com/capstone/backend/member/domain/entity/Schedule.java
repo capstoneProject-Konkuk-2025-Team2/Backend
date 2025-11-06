@@ -45,6 +45,9 @@ public class Schedule {
     @Column(name = "CONTENT")
     private String content;
 
+    @Column(name = "isAlarm")
+    private Boolean isAlarm = false;
+
     public static Schedule createSchedule(Long memberId, CreateScheduleRequest createScheduleRequest) {
         return Schedule.builder()
                 .memberId(memberId)
@@ -67,5 +70,9 @@ public class Schedule {
     public void setScheduleDateTime(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
+    }
+
+    public void setAlarm(Boolean isAlarm) {
+        this.isAlarm = isAlarm;
     }
 }

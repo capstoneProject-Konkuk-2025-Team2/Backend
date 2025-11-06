@@ -20,7 +20,10 @@ public record GetScheduleByYearAndMonthResponse(
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         @Schema(description = "끝 날짜", example = "2025-07-20T14:30:45")
-        LocalDateTime endDateTime
+        LocalDateTime endDateTime,
+
+        @Schema(description = "알림 설정 여부", example = "true")
+        Boolean isAlarm
 ) {
         public static GetScheduleByYearAndMonthResponse of(
                 Schedule schedule
@@ -33,7 +36,8 @@ public record GetScheduleByYearAndMonthResponse(
                         schedule.getTitle(),
                         type,
                         schedule.getStartDateTime(),
-                        schedule.getEndDateTime()
+                        schedule.getEndDateTime(),
+                        schedule.getIsAlarm()
                 );
         }
 }

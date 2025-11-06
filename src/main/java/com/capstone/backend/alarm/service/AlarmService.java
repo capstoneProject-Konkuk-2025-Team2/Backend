@@ -41,7 +41,7 @@ public class AlarmService {
         redisTemplate.opsForZSet().remove(key, value);
     }
 
-    @Scheduled(cron = "0 0 * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
     public void drainAndSend() throws IOException {
         long now = Instant.now().toEpochMilli();
         // 1) due 목록 조회
